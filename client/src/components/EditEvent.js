@@ -44,7 +44,8 @@ function EditEvent() {
 
 
 
-    console.log(event.creator === userId, "true si Id du créateur de l'event a le même Id de l'user connecté")
+    // console.log(event.creator === userId, "true si Id du créateur de l'event a le même Id de l'user connecté")
+
     return (
         <div>
             {event.creator !== userId ? <h1>Vous ne pouvez pas éditer cet évènement !</h1> :
@@ -82,16 +83,6 @@ function EditEvent() {
                         />
                     </label>
                     <br />
-                    {/* <label>
-                        Évènement:
-                        <input
-                            type="text"
-                            name="theme"
-                            value={event.theme}
-                            onChange={handleChange}
-                            required
-                        />
-                    </label> */}
                     <label>
                         Événement:
                         <select name="theme" value={event.theme} onChange={handleChange} required>
@@ -139,31 +130,11 @@ function EditEvent() {
                         />
                     </label>
                     <br />
-                    {/* <label>
-                        Image:
-                        {event.image == '' ?
-                            <input
-                                type="file"
-                                name="image"
-                                value={event.image}
-                                onChange={handleChange}
-                            /> :
-                        }}
-                    </label> */}
                     <div>
-                        <img src={event.image} alt="image" style={{ width: "150px", height: "150px" }} />
+                        <img src={event.image} alt="img de l'évènement" style={{ width: "150px", height: "150px" }} />
                         <input type="button" value="Supprimer" onClick={() => event.image = ''} />
                     </div>
                     <br />
-                    {/* <label>
-                        Intervenents:
-                        <input
-                            type="text"
-                            name="speakers"
-                            value={event.speakers}
-                            onChange={handleChange}
-                        />
-                    </label> */}
                     <label>
                         Intervenants:
                         <input

@@ -22,7 +22,7 @@ function EventDetail() {
             <h3>Theme: {event.theme}</h3>
             <h3>Date début - Date fin: {moment(event.startDate).format('DD-MM-YYYY')} - {moment(event.endDate).format('DD-MM-YYYY')}</h3>
             <h3>Adresse: {event.location}</h3>
-            <h3>Image: {<img src={event.image} alt="image" style={{ width: "150px", height: "150px" }} />}</h3>
+            <h3>Image: {<img src={event.image} alt="img de l'évènement" style={{ width: "150px", height: "150px" }} />}</h3>
             <h3>Intervenants: {event.speakers}</h3>
             <h3>Prix: {event.price === 0 ? "Gratuit" : 0 + "€"}</h3>
             <h3>lien du site: {event.ticketLink}</h3>

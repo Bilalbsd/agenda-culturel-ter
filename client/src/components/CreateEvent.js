@@ -57,7 +57,7 @@ function CreateEvent() {
         // console.log(image, "image")
         // console.log(formData, "formData")
         try {
-            const res = await axios.post('http://localhost:5000/api/event', formData, {
+            const res = await axios.post(`http://localhost:5000/api/event`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -105,16 +105,6 @@ function CreateEvent() {
                         />
                     </label>
                     <br />
-                    {/* <label>
-                        Événement:
-                        <input
-                            type="text"
-                            name="theme"
-                            value={event.theme}
-                            onChange={handleChange}
-                            required
-                        />
-                        </label> */}
                     <label>
                         Événement:
                         <select name="theme" value={event.theme} onChange={handleChange} required>
@@ -172,15 +162,6 @@ function CreateEvent() {
                         />
                     </label>
                     <br />
-                    {/* <label>
-                        Intervenants:
-                        <input
-                            type="text"
-                            name="speakers"
-                            value={event.speakers}
-                            onChange={handleChange}
-                        />
-                    </label> */}
                     <label>Nombre d'intervenants:
                         <input type="number" value={speakersCount} onChange={handleSpeakersCountChange} min={0} max={10} />
                         {Array.from({ length: speakersCount }, (_, i) => (
@@ -190,15 +171,6 @@ function CreateEvent() {
                             </div>
                         ))}
                     </label>
-                    {/* <label>
-                        Speakers:
-                        <input
-                            type="text"
-                            name="speakers"
-                            value={event.speakers.join(',')}
-                            onChange={handleSpeakersChange}
-                        />
-                    </label> */}
                     <br />
                     <label>
                         Prix:

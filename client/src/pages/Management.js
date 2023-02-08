@@ -11,7 +11,7 @@ function ManagementPage() {
     console.log(userRole, "userRole")
     return (
         <div>
-            {userRole != "manager" ? <h1>Vous ne pouvez pas accéder à cette partie du site !</h1> :
+            {userRole !== "manager" ? <h1>Vous ne pouvez pas accéder à cette partie du site !</h1> :
                 <div>
                     <h2>Gestionnaire</h2>
                     <UserManagement />

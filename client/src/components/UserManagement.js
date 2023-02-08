@@ -9,9 +9,9 @@ function UserManagement() {
 
     useEffect(() => {
         axios
-            .get('http://localhost:5000/api/user')
-            .then(res => setUsers(res.data))
+            .get(`http://localhost:5000/api/user/`)
             // .then(res => console.log(res.data))
+            .then(res => setUsers(res.data))
             .catch(err => console.error(err));
     }, [userRole]);
 
