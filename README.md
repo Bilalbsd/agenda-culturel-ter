@@ -21,6 +21,7 @@ de théâtre, les matchs sportifs, les conférences, etc.
 *React Router Dom* :Permet de gérer les routes de l'application  
 *Axios* : Permet d'effectuer des requêtes dans l'API REST  
 *JWT Decode* : Permet de décoder et de récupérer le payload des token JWT  
+*Moment*: Permet de gérer le format des dates 
 
 
 ***Back-End***  
