@@ -22,6 +22,7 @@ de théâtre, les matchs sportifs, les conférences, etc.
 *Axios* : Permet d'effectuer des requêtes dans l'API REST  
 *JWT Decode* : Permet de décoder et de récupérer le payload des token JWT  
 *Moment*: Permet de gérer le format des dates 
+*Material UI* : Permet d'utiliser des composants de Material Design pour l'UI 
 
 
 ***Back-End***  
