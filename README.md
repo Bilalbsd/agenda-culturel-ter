@@ -1,5 +1,5 @@
 # agenda-culturel-ter
-Projet TER d'agenda culturel en ReactJS et NodeJS
+Projet TER d'agenda culturel et sportif en ReactJS et NodeJS
 
 ## Présentation du projet
 
