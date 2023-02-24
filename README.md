@@ -1,5 +1,5 @@
 # agenda-culturel-ter
-Projet TER d'agenda culturel en ReactJS et NodeJS
+Projet TER d'agenda culturel et sportif en ReactJS et NodeJS
 
 ## Présentation du projet
 
@@ -21,7 +21,8 @@ de théâtre, les matchs sportifs, les conférences, etc.
 *React Router Dom* :Permet de gérer les routes de l'application  
 *Axios* : Permet d'effectuer des requêtes dans l'API REST  
 *JWT Decode* : Permet de décoder et de récupérer le payload des token JWT  
-*Moment*: Permet de gérer le format des dates 
+*Moment*: Permet de gérer le format des dates  
+*Material UI* : Permet d'utiliser des composants de Material Design pour l'UI  
 
 
 ***Back-End***  
