@@ -3,7 +3,7 @@ import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 
 function CreateEvent() {
-    const { userId, userRole } = useContext(AuthContext);
+    const { userId, userRole, nbMaxEvent, setNbMaxEvent } = useContext(AuthContext);
     const [event, setEvent] = useState({});
 
     // On utilise un useEffect pour initialiser 'creator: userId' car sinon on a 'creator: null'
@@ -47,9 +47,34 @@ function CreateEvent() {
         setEvent({ ...event, speakers: newSpeakers });
     }
 
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const res = await axios.get(`http://localhost:5000/api/user/${userId}`);
+                setNbMaxEvent(res.data.nbMaxEvent); // mettre à jour la valeur de nbMaxEvent
+            } catch (err) {
+                console.log(err);
+            }
+        };
+        fetchUser();
+    }, [userId]); // déclencher l'effet à chaque changement de userId
+
+    const updateNbMaxEvent = async () => {
+        try {
+            const res = await axios.put(`http://localhost:5000/api/user/${userId}`, {
+                nbMaxEvent: nbMaxEvent - 1 // utiliser la valeur actuelle de nbMaxEvent obtenue de l'API
+            });
+            console.log(res, "res");
+            setNbMaxEvent(nbMaxEvent - 1);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     const handleSubmit = async e => {
         e.preventDefault();
 
+        updateNbMaxEvent();
         const formData = new FormData();
         formData.append('image', image);
         // On ajoute les éléments de event dans formData
@@ -70,7 +95,7 @@ function CreateEvent() {
 
     return (
         <div>
-            {userRole !== "creator" ? <h1>Vous n'avez pas les permissions nécessaires pour accéder à cette page !</h1> :
+            {userRole !== "creator" ? <h1>Vous n'avez pas les permissions nécessaires pour accéder à cette page !</h1> : nbMaxEvent === 0 ? <h1>Vous avez atteint la limite de création d'événement ! Veuillez souscrire à un abonnement.</h1> :
                 <form onSubmit={handleSubmit}>
                     <label>
                         Titre:
@@ -79,7 +104,6 @@ function CreateEvent() {
                             name="title"
                             value={event.title}
                             onChange={handleChange}
-
                         />
                     </label>
                     <br />
@@ -118,6 +142,40 @@ function CreateEvent() {
                             <option value="Exposition">Exposition</option>
                         </select>
                     </label>
+                    <br />
+
+                    {event.theme === "Concert" &&
+                        <div>
+                            <label>
+                                Nombre de groupes:
+                                <input
+                                    type="number"
+                                    name="nbGroups"
+                                    value={event.nbGroups}
+                                    onChange={handleChange}
+                                    min="1"
+                                    max="10"
+                                    required
+                                />
+                            </label>
+                        </div>
+                    }
+                    <br />
+                    {event.theme === "Théâtre" &&
+                        <div>
+                            <label>
+                                Nombre de pièces:
+                                <input
+                                    type="number"
+                                    name="nbPieces"
+                                    value={event.nbPieces}
+                                    onChange={handleChange}
+                                    min="1"
+                                    max="5"
+                                    required
+                                />
+                            </label>
+                        </div>}
                     <br />
                     <label>
                         Date de début:
@@ -202,7 +260,7 @@ function CreateEvent() {
                         />
                     </label>
                     <br />
-                    <button type="submit">Create Event</button>
+                    <button type="submit" onClick={updateNbMaxEvent}>Create Event</button>
                 </form>
             }
         </div>

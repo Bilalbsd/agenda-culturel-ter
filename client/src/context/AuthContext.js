@@ -9,6 +9,11 @@ export function AuthProvider({ children }) {
   const [userLastname, setUserLastname] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [nbMaxEvent, setNbMaxEvent] = useState(null);
+  const [phone, setPhone] = useState(null);
+  const [title, setTitle] = useState(null);
+  const [companyName, setCompanyName] = useState(null);
+  const [address, setAddress] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -27,6 +32,11 @@ export function AuthProvider({ children }) {
         setUserLastname(decoded.lastname);
         setUserEmail(decoded.email);
         setUserRole(decoded.role);
+        setNbMaxEvent(decoded.nbMaxEvent);
+        setPhone(decoded.phone);
+        setTitle(decoded.title);
+        setCompanyName(decoded.companyName);
+        setAddress(decoded.address);
         setIsAuthenticated(true);
       } catch (err) {
         setIsAuthenticated(false);
@@ -36,7 +46,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ userId, userFirstname, userLastname, userEmail, userRole, isAuthenticated }}>
+    <AuthContext.Provider value={{ userId, userFirstname, userLastname, userEmail, userRole, nbMaxEvent, phone, title, companyName, address, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

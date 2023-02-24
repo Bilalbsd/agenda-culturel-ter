@@ -6,10 +6,10 @@ require('dotenv').config({ path: '../config/.env' })
 
 
 module.exports.signUp = async (req, res) => {
-  const { email, password, firstname, lastname, role } = req.body
+  const { email, password, firstname, lastname, role, phone, title, companyName, address } = req.body
 
   try {
-    const user = await User.create({ email, password, firstname, lastname, role });
+    const user = await User.create({ email, password, firstname, lastname, role, phone, title, companyName, address });
     res.status(201).json({ user: user._id });
   }
   catch (err) {
@@ -39,7 +39,12 @@ module.exports.signIn = async (req, res) => {
       firstname: user.firstname,
       lastname: user.lastname,
       email: user.email,
-      role: user.role
+      role: user.role,
+      phone: user.phone,
+      title: user.title,
+      companyName: user.companyName,
+      address: user.address,
+      nbMaxEvent: user.nbMaxEvent
     };
 
     const token = jwt.sign(payload, process.env.PRIVATE_TOKEN, { expiresIn: '72h' })

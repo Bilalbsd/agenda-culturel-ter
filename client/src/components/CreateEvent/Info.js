@@ -1,25 +1,35 @@
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import Information from '../components/CreateEvent/Information';
+import jwtDecode from 'jwt-decode';
 
 import { AuthContext } from '../context/AuthContext';
 
+
 const Home = () => {
     const { userId, isAuthenticated, userFirstname, userLastname, userEmail, userRole } = useContext(AuthContext);
+    console.log(userId, "user de home")
+    console.log(isAuthenticated, "isAuthenticated de home")
 
     const [nbMaxEvent, setNbMaxEvent] = useState(null);
 
     useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const res = await axios.get(`http://localhost:5000/api/user/${userId}`);
-                setNbMaxEvent(res.data.nbMaxEvent); // mettre à jour la valeur de nbMaxEvent
-            } catch (err) {
-                console.log(err);
-            }
-        };
-        fetchUser();
-    }, [userId]); // déclencher l'effet à chaque changement de userId
+        const token = localStorage.getItem('token');
+        const decoded = jwtDecode(token);
+        setNbMaxEvent(decoded.nbMaxEvent)
+    }, [])
+    console.log(nbMaxEvent, "nbMaxEvent");
+
+    const updateNbMaxEvent = async () => {
+        try {
+            const res = await axios.put(`http://localhost:5000/api/user/${userId}`, {
+                nbMaxEvent: 10
+            });
+            console.log(res, "res");
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     return (
         <div>
@@ -30,6 +40,8 @@ const Home = () => {
             <h2>Rôle : {userRole}</h2>
             <h2>Nombre maximum d'event à créer: {nbMaxEvent}</h2>
             <h2>Est connecté ? : {isAuthenticated ? "oui" : "non"}</h2>
+
+            <button type="submit" onClick={updateNbMaxEvent}>Envoyer</button>
 
             <Information />
         </div>

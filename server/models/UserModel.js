@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { isEmail } = require('validator')
+const { isEmail, isMobilePhone } = require('validator')
 const bcrypt = require('bcrypt')
 
 const SALT_WORK_FACTOR = 10
@@ -7,11 +7,16 @@ const SALT_WORK_FACTOR = 10
 const UserSchema = new mongoose.Schema({
     email: {
         type: String,
-        required: true,
+        required: false,
         validate: [isEmail],
         lowercase: true,
         unique: true,
         trim: true
+    },
+    phone: {
+        type: String,
+        validate: [isMobilePhone],
+        required: false
     },
     password: {
         type: String,
@@ -25,11 +30,28 @@ const UserSchema = new mongoose.Schema({
     },
     firstname: {
         type: String,
-        required: true
+        required: false
     },
     lastname: {
         type: String,
-        required: true
+        required: false
+    },
+    title: {
+        type: String,
+        required: false
+    },
+    companyName: {
+        type: String,
+        required: false
+    },
+    address: {
+        type: String,
+        required: false
+    },
+    nbMaxEvent: {
+        type: Number,
+        default: 3,
+        min: 0
     }
 },
     {
