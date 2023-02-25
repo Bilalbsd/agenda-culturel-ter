@@ -5,7 +5,7 @@ function Logout() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         localStorage.removeItem('token');
-        window.location.reload()
+        // window.location.reload()
     };
     
     return (

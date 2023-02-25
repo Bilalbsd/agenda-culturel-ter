@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import Information from '../components/CreateEvent/Information';
+import EventsList from '../components/EventsList';
+import NavBar from '../components/NavBar';
 
 import { AuthContext } from '../context/AuthContext';
 
@@ -23,7 +25,7 @@ const Home = () => {
 
     return (
         <div>
-            <h1>Bienvenue sur l'Agenda Culturel ! Id : {userId} </h1>
+            {/* <h1>Bienvenue sur l'Agenda Culturel ! Id : {userId} </h1>
             <h2>Prénom : {userFirstname}</h2>
             <h2>Nom : {userLastname}</h2>
             <h2>Email : {userEmail}</h2>
@@ -31,7 +33,9 @@ const Home = () => {
             <h2>Nombre maximum d'event à créer: {nbMaxEvent}</h2>
             <h2>Est connecté ? : {isAuthenticated ? "oui" : "non"}</h2>
 
-            <Information />
+            <Information /> */}
+            <NavBar />
+            <EventsList />
         </div>
     );
 };

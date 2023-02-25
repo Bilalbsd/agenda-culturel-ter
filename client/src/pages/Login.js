@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import Login from '../components/Login';
-import Logout from '../components/Logout';
+import NavBar from '../components/NavBar';
 import { AuthContext } from '../context/AuthContext';
 
 function LoginPage() {
@@ -8,8 +8,8 @@ function LoginPage() {
     console.log(isAuthenticated, "est connecté de login/logout")
     return (
         <div>
-            <h2>Login</h2>
-            {isAuthenticated ? <div> <p>Vous êtes connecté !</p> <Logout /></div> : <div> <p>Connectez-vous !</p> <Login /></div>}
+            <NavBar />
+            <Login />
         </div>
     );
 }

@@ -144,23 +144,6 @@ function CreateEvent() {
                     </label>
                     <br />
 
-                    {event.theme === "Concert" &&
-                        <div>
-                            <label>
-                                Nombre de groupes:
-                                <input
-                                    type="number"
-                                    name="nbGroups"
-                                    value={event.nbGroups}
-                                    onChange={handleChange}
-                                    min="1"
-                                    max="10"
-                                    required
-                                />
-                            </label>
-                        </div>
-                    }
-                    <br />
                     {event.theme === "Théâtre" &&
                         <div>
                             <label>
@@ -176,6 +159,54 @@ function CreateEvent() {
                                 />
                             </label>
                         </div>}
+                    <br />
+                    
+                    {event.theme === "Concert" &&
+                        <div>
+                            <label>
+                                Nom du chanteur:
+                                <input
+                                    type="text"
+                                    name="singer"
+                                    value={event.singer}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </label>
+                            <label>
+                                Présentation du chanteur:
+                                <textarea
+                                    name="singerPresentation"
+                                    value={event.singerPresentation}
+                                    onChange={handleChange}
+                                />
+                            </label>
+                        </div>
+                    }
+                    <br />
+
+                    {event.theme === "Concert" &&
+                        <div>
+                            <label>
+                                Nom du chanteur:
+                                <input
+                                    type="text"
+                                    name="singer"
+                                    value={event.singer}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </label>
+                            <label>
+                                Présentation du chanteur:
+                                <textarea
+                                    name="singerPresentation"
+                                    value={event.singerPresentation}
+                                    onChange={handleChange}
+                                />
+                            </label>
+                        </div>
+                    }
                     <br />
                     <label>
                         Date de début:

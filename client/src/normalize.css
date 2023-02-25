@@ -1,0 +1,57 @@
+/* Réinitialisation des styles par défaut des navigateurs */
+html {
+    line-height: 1.15; /* 1 */
+    -webkit-text-size-adjust: 100%; /* 2 */
+  }
+  
+  /* Styles pour les éléments qui apparaissent à l'intérieur du corps HTML */
+  body {
+    margin: 0;
+  }
+  
+  /* Balise pour les éléments de groupe */
+  main {
+    display: block;
+  }
+  
+  /* Réduction de la marge de `h1` */
+  h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+  }
+  
+  /* Styles pour les liens non visités */
+  a {
+    background-color: transparent;
+  }
+  
+  /* Réduction de la marge pour les éléments de liste non ordonnée */
+  ul {
+    margin: 0;
+  }
+  
+  /* Styles pour les images réactives */
+  img {
+    border-style: none;
+  }
+  
+  /* Réduction de la marge pour les éléments de liste ordonnée */
+  ol {
+    margin: 0;
+  }
+  
+  /* Réduction de la marge pour les éléments de la liste de description */
+  dl {
+    margin: 0;
+  }
+  
+  /* Réduction de la marge pour les éléments de la liste de description */
+  dt {
+    font-weight: bold;
+  }
+  
+  /* Réduction de la marge pour les éléments de la liste de description */
+  dd {
+    margin-left: 0;
+  }
+  
