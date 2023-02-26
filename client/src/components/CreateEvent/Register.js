@@ -1,27 +1,33 @@
-import React, { useContext, useState } from 'react';
+import * as React from 'react';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 
 function Register() {
-    const { isAuthenticated, nbMaxEvent, userId } = useContext(AuthContext);
-    const [formData, setFormData] = useState({
-        title: '',
-        lastname: '',
-        email: '',
-        phone: '',
-        password: '',
-        companyName: '',
-        address: '',
+    const { isAuthenticated } = React.useContext(AuthContext);
+    const [formData, setFormData] = React.useState({
         role: 'creator',
     });
 
-    const [emailError, setEmailError] = useState("");
-    const [phoneError, setPhoneError] = useState("");
-    const [passwordError, setPasswordError] = useState("");
-    const [confirmPasswordError, setConfirmPasswordError] = useState("");
+    const [emailError, setEmailError] = React.useState("");
+    const [phoneError, setPhoneError] = React.useState("");
+    const [passwordError, setPasswordError] = React.useState("");
+    const [confirmPasswordError, setConfirmPasswordError] = React.useState("");
 
-    const [acceptedTerms, setAcceptedTerms] = useState(false);
-    const [confirmPassword, setConfirmPassword] = useState("");
+    const [acceptedTerms, setAcceptedTerms] = React.useState(false);
+    const [confirmPassword, setConfirmPassword] = React.useState("");
 
     const handleChange = e => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -66,6 +72,7 @@ function Register() {
         }
 
         // Si toutes les données sont valides, envoyer la requête au serveur
+        console.log(formData.email, "formData.email");
         if (isValid) {
             axios
                 .post(`http://localhost:5000/api/user/register`, formData)
@@ -82,61 +89,169 @@ function Register() {
     };
 
     return (
-        <div>
+        <>
             {isAuthenticated ? <p>Vous êtes connecté, veuillez vous déconnecter pour register</p> :
-                <form onSubmit={handleSubmit}>
-                    <label>
-                        title:
-                        <input type="text" name="title" value={formData.title} onChange={handleChange} />
-                    </label>
-                    <br />
-                    <label>
-                        Lastname:
-                        <input type="text" name="lastname" value={formData.lastname} onChange={handleChange} />
-                    </label>
-                    <br />
-                    <label>
-                        Email:
-                        <input type="email" name="email" value={formData.email} onChange={handleChange} />
-                    </label>
-                    {emailError === "" ? null : <p>{emailError}</p>}
-                    <br />
-                    <label>
-                        Phone:
-                        <input type="tel" name="phone" value={formData.phone} onChange={handleChange} />
-                    </label>
-                    <br />
-                    <label>
-                        Password:
-                        <input type="password" name="password" value={formData.password} onChange={handleChange} required />
-                    </label>
-                    {passwordError === "" ? null : <p>{passwordError}</p>}
-                    <br />
-                    <label>
-                        Confirm Password:
-                        <input type="password" name="confirmPassword" value={confirmPassword} onChange={handleConfirmPasswordChange} required />
-                    </label>
-                    {confirmPasswordError === "" ? null : <p>{confirmPasswordError}</p>}
-                    <br />
-                    <label>
-                        Company Name:
-                        <input type="text" name="companyName" value={formData.companyName} onChange={handleChange} />
-                    </label>
-                    <br />
-                    <label>
-                        Address:
-                        <input type="text" name="address" value={formData.address} onChange={handleChange} />
-                    </label>
-                    <br />
-                    <label>
-                        Accepter les conditions d'utilisation:
-                        <input type="checkbox" name="acceptedTerms" checked={acceptedTerms} onClick={() => setAcceptedTerms(true)} required />
-                    </label>
-                    <br />
-                    <button type="submit">Register</button>
-                </form>
+                <Container component="main" maxWidth="xs">
+                    <CssBaseline />
+                    <Box
+                        sx={{
+                            marginTop: 8,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Avatar sx={{ m: 1, bgcolor: 'black' }}>
+                            <LockOutlinedIcon />
+                        </Avatar>
+                        <Typography component="h1" variant="h5">
+                            Inscription
+                        </Typography>
+                        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <TextField
+
+                                        value={formData.title}
+                                        onChange={handleChange}
+                                        fullWidth
+                                        id="title"
+                                        label="Titre"
+                                        name="title"
+                                        autoComplete="title"
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        autoComplete="given-name"
+                                        name="firstname"
+                                        value={formData.firstname}
+                                        onChange={handleChange}
+                                        required
+                                        fullWidth
+                                        id="firstName"
+                                        label="Prénom"
+                                        autoFocus
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        value={formData.lastname}
+                                        onChange={handleChange}
+                                        required
+                                        fullWidth
+                                        id="lastName"
+                                        label="Nom"
+                                        name="lastname"
+                                        autoComplete="family-name"
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        required
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        fullWidth
+                                        id="email"
+                                        label="Email"
+                                        name="email"
+                                        autoComplete="email"
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        fullWidth
+                                        id="phone"
+                                        label="Numero de téléphone"
+                                        name="phone"
+                                        autoComplete="phone"
+                                    />
+                                </Grid>
+                                {emailError === "" ? null : <p>{emailError}</p>}
+                                <Grid item xs={12}>
+                                    <TextField
+                                        required
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        fullWidth
+                                        name="password"
+                                        label="Mot de passe"
+                                        type="password"
+                                        id="password"
+                                        autoComplete="new-password"
+                                    />
+                                </Grid>
+                                {passwordError === "" ? null : <p>{passwordError}</p>}
+                                <Grid item xs={12}>
+                                    <TextField
+                                        required
+                                        value={confirmPassword}
+                                        onChange={handleConfirmPasswordChange}
+                                        fullWidth
+                                        name="confirm-password"
+                                        label="Confirmer Mot de passe"
+                                        type="password"
+                                        id="confirm-password"
+                                        autoComplete="confirm-password"
+                                    />
+                                </Grid>
+                                {confirmPasswordError === "" ? null : <p>{confirmPasswordError}</p>}
+                                <Grid item xs={12}>
+                                    <TextField
+
+                                        value={formData.companyName}
+                                        onChange={handleChange}
+                                        fullWidth
+                                        id="companyName"
+                                        label="Nom de société"
+                                        name="companyName"
+                                        autoComplete="companyName"
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+
+                                        value={formData.address}
+                                        onChange={handleChange}
+                                        fullWidth
+                                        id="address"
+                                        label="Adresse"
+                                        name="address"
+                                        autoComplete="address"
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Grid item xs={12}>
+                                        <FormControlLabel
+                                            control={<Checkbox value="acceptedTerms" checked={acceptedTerms} color="primary" />}
+                                            label="Accepter les conditions d'utilisation: "
+                                        />
+                                    </Grid>
+                                </Grid>
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    sx={{ mt: 3, mb: 2 }}
+                                >
+                                    S'inscrire
+                                </Button>
+                                <Grid container justifyContent="flex-end">
+                                    <Grid item>
+                                        <Link href="#" variant="body2">
+                                            Se connecter
+                                        </Link>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </Box>
+                </Container>
             }
-        </div>
+        </>
     );
 }
 

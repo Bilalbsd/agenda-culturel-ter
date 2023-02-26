@@ -90,12 +90,12 @@ function ResponsiveAppBar() {
 
                     {isAuthenticated && userRole === "creator" && isSmallScreen &&
                         <>
-                            <NavLink to="/profil" style={{ textDecoration: 'none', color: 'white' }}>
+                            <NavLink to="/create-event" style={{ textDecoration: 'none', color: 'white' }}>
                                 <MenuItem onClick={handleCloseNavMenu}>
                                     <Typography textAlign="center" fontFamily="Roboto" fontWeight="bold">{"Créer un événement".toUpperCase()}</Typography>
                                 </MenuItem>
                             </NavLink>
-                            <NavLink to="/compte" style={{ textDecoration: 'none', color: 'white' }}>
+                            <NavLink to="/events" style={{ textDecoration: 'none', color: 'white' }}>
                                 <MenuItem onClick={handleCloseNavMenu}>
                                     <Typography textAlign="center" fontFamily="Roboto" fontWeight="bold">{"Mes événements".toUpperCase()}</Typography>
                                 </MenuItem>
