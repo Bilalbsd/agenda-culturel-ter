@@ -1,6 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
+import { Button, FormControl, Grid, Input, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import EventIcon from '@mui/icons-material/Event';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import { DropzoneArea } from "mui-file-dropzone";
 
 function CreateEvent() {
     const { userId, userRole, nbMaxEvent, setNbMaxEvent } = useContext(AuthContext);
@@ -29,10 +33,12 @@ function CreateEvent() {
     // console.log(userId, "creatorBefore")
 
     const [image, setImage] = useState(null);
+    const [changeEvent, setChangeEvent] = useState(null);
 
     const handleChange = e => {
         setEvent({ ...event, [e.target.name]: e.target.value });
         setImage(e.target.files[0]);
+        setChangeEvent(e.target.value)
     };
 
     const [speakersCount, setSpeakersCount] = useState(1);
@@ -94,207 +100,429 @@ function CreateEvent() {
     };
 
     return (
-        <div>
-            {userRole !== "creator" ? <h1>Vous n'avez pas les permissions nécessaires pour accéder à cette page !</h1> : nbMaxEvent === 0 ? <h1>Vous avez atteint la limite de création d'événement ! Veuillez souscrire à un abonnement.</h1> :
-                <form onSubmit={handleSubmit}>
-                    <label>
-                        Titre:
-                        <input
-                            type="text"
-                            name="title"
-                            value={event.title}
-                            onChange={handleChange}
-                        />
-                    </label>
-                    <br />
-                    <label>
-                        Pays:
-                        <input
-                            type="text"
-                            name="country"
-                            value={event.country}
-                            onChange={handleChange}
-                            required
-                        />
-                    </label>
-                    <br />
-                    <label>
-                        Ville:
-                        <input
-                            type="text"
-                            name="city"
-                            value={event.city}
-                            onChange={handleChange}
-                            required
-                        />
-                    </label>
-                    <br />
-                    <label>
-                        Événement:
-                        <select name="theme" value={event.theme} onChange={handleChange} required>
-                            <option value="" disabled>Choisir un événement</option>
-                            <option value="Théâtre">Théâtre</option>
-                            <option value="Sport">Sport</option>
-                            <option value="Concert">Concert</option>
-                            <option value="Festival">Festival</option>
-                            <option value="Danse">Danse</option>
-                            <option value="Spectacle">Spectacle</option>
-                            <option value="Exposition">Exposition</option>
-                        </select>
-                    </label>
-                    <br />
+        <Grid container justifyContent="center">
+            {userRole !== 'creator' ? (
+                <Grid item xs={12}>
+                    <Typography variant="h5">Vous n'avez pas les permissions nécessaires pour accéder à cette page !</Typography>
+                </Grid>
+            ) : nbMaxEvent === 0 ? (
+                <Grid item xs={12}>
+                    <Typography variant="h5">Vous avez atteint la limite de création d'événement ! Veuillez souscrire à un abonnement.</Typography>
+                </Grid>
+            ) : (
+                <Grid item xs={6} md={4}>
+                    <Typography variant="h5">Créer un événement</Typography>
+                    <form onSubmit={handleSubmit}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    name="title"
+                                    label="Titre"
+                                    fullWidth
+                                    value={event.title}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    name="country"
+                                    label="Pays"
+                                    fullWidth
+                                    value={event.country}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    name="city"
+                                    label="Ville"
+                                    fullWidth
+                                    value={event.city}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth required>
+                                    <InputLabel htmlFor="event-theme-select">Événement</InputLabel>
+                                    <Select
+                                        native
+                                        value={event.theme}
+                                        onChange={handleChange}
+                                        inputProps={{
+                                            name: 'theme',
+                                            id: 'event-theme-select',
+                                        }}
+                                    >
+                                        <option aria-label="Choisir un événement" value="" disabled />
+                                        <option value="Théâtre">Théâtre</option>
+                                        <option value="Sport">Sport</option>
+                                        <option value="Concert">Concert</option>
+                                        <option value="Festival">Festival</option>
+                                        <option value="Danse">Danse</option>
+                                        <option value="Spectacle">Spectacle</option>
+                                        <option value="Exposition">Exposition</option>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            {event.theme === 'Théâtre' && (
+                                <>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="nbPieces"
+                                            label="Nombre de pièces"
+                                            fullWidth
+                                            type="number"
+                                            value={event.nbPieces}
+                                            onChange={handleChange}
+                                            inputProps={{ min: '1', max: '5', required: true }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="actor"
+                                            label="Nom du/des comédien(s)"
+                                            fullWidth
+                                            value={event.speaker}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="actorPresentation"
+                                            label="Présentation du/des comédien(s)"
+                                            fullWidth
+                                            multiline
+                                            rows={4}
+                                            value={event.speakerPresentation}
+                                            onChange={handleChange}
+                                        />
+                                    </Grid>
+                                </>
 
-                    {event.theme === "Théâtre" &&
-                        <div>
-                            <label>
-                                Nombre de pièces:
+                            )}
+                            {event.theme === 'Sport' && (
+                                <>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="singer"
+                                            label="Type de sport"
+                                            fullWidth
+                                            value={event.typeSport}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="nbMatch"
+                                            label="Nombre de matches"
+                                            fullWidth
+                                            type="number"
+                                            value={event.nbMatch}
+                                            onChange={handleChange}
+                                            inputProps={{ min: '1', max: '5', required: true }}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+                            {event.theme === 'Festival' && (
+                                <>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="nbPeople"
+                                            label="Capacité d'accueil"
+                                            fullWidth
+                                            type="number"
+                                            value={event.nbPeople}
+                                            onChange={handleChange}
+                                            inputProps={{ min: '1', required: true }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="artist"
+                                            label="Nom du/des artistes(s)"
+                                            fullWidth
+                                            value={event.speaker}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="artistPresentation"
+                                            label="Présentation du/des artistes(s)"
+                                            fullWidth
+                                            multiline
+                                            rows={4}
+                                            value={event.speakerPresentation}
+                                            onChange={handleChange}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+                            {event.theme === 'Danse' && (
+                                <>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="nbPeople"
+                                            label="Capacité d'accueil"
+                                            fullWidth
+                                            type="number"
+                                            value={event.nbPeople}
+                                            onChange={handleChange}
+                                            inputProps={{ min: '1', required: true }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="danser"
+                                            label="Nom du/des danseur(s)"
+                                            fullWidth
+                                            value={event.speaker}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="danserPresentation"
+                                            label="Présentation du/des danseur(s)"
+                                            fullWidth
+                                            multiline
+                                            rows={4}
+                                            value={event.speakerPresentation}
+                                            onChange={handleChange}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+                            {event.theme === 'Spectacle' && (
+                                <>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="nbPeople"
+                                            label="Capacité d'accueil"
+                                            fullWidth
+                                            type="number"
+                                            value={event.nbPeople}
+                                            onChange={handleChange}
+                                            inputProps={{ min: '1', required: true }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="speaker"
+                                            label="Nom du/des intervenant(s)"
+                                            fullWidth
+                                            value={event.speaker}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="speakerPresentation"
+                                            label="Présentation du/des intervenant(s)"
+                                            fullWidth
+                                            multiline
+                                            rows={4}
+                                            value={event.speakerPresentation}
+                                            onChange={handleChange}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+                            {event.theme === 'Exposition' && (
+                                <>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="nbPeople"
+                                            label="Capacité d'accueil"
+                                            fullWidth
+                                            type="number"
+                                            value={event.nbPeople}
+                                            onChange={handleChange}
+                                            inputProps={{ min: '1', required: true }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="speaker"
+                                            label="Nom du/des conférencier(s)"
+                                            fullWidth
+                                            value={event.speaker}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="speakerPresentation"
+                                            label="Présentation du/des conférencier(s)"
+                                            fullWidth
+                                            multiline
+                                            rows={4}
+                                            value={event.speakerPresentation}
+                                            onChange={handleChange}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+                            {event.theme === 'Concert' && (
+                                <>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="singer"
+                                            label="Nom du/des chanteur(s)"
+                                            fullWidth
+                                            value={event.speaker}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="singerPresentation"
+                                            label="Présentation du/des chanteur(s)"
+                                            fullWidth
+                                            multiline
+                                            rows={4}
+                                            value={event.speakerPresentation}
+                                            onChange={handleChange}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    name="startDate"
+                                    label="Date de début"
+                                    fullWidth
+                                    type="datetime-local"
+                                    value={event.startDate}
+                                    onChange={handleChange}
+                                    InputLabelProps={{ shrink: true }}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    name="endDate"
+                                    label="Date de fin"
+                                    fullWidth
+                                    type="datetime-local"
+                                    value={event.endDate}
+                                    onChange={handleChange}
+                                    InputLabelProps={{ shrink: true }}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={3}>
                                 <input
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                    id="image-input"
+                                    type="file"
+                                    name="image"
+                                    onChange={handleChange}
+                                />
+                                <label htmlFor="image-input">
+                                    <Button variant="contained" component="span" startIcon={<PhotoCameraIcon />}>
+                                        Upload
+                                    </Button>
+                                </label>
+                                {/* <DropzoneArea onChange={handleChange} /> */}
+                            </Grid>
+                            <Grid item xs={12} sm={9}>
+                                <TextField
+                                    id="location-input"
+                                    label="Adresse"
+                                    type="text"
+                                    name="location"
+                                    fullWidth
+                                    value={event.location}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </Grid>
+
+
+                            {/* <Grid item xs={12} sm={3}>
+                                <TextField
+                                    id="speakers-count-input"
+                                    label="Nombre d'intervenants"
                                     type="number"
-                                    name="nbPieces"
-                                    value={event.nbPieces}
-                                    onChange={handleChange}
-                                    min="1"
-                                    max="5"
-                                    required
+                                    fullWidth
+                                    value={speakersCount}
+                                    onChange={handleSpeakersCountChange}
+                                    inputProps={{ min: 0, max: 10 }}
                                 />
-                            </label>
-                        </div>}
-                    <br />
-                    
-                    {event.theme === "Concert" &&
-                        <div>
-                            <label>
-                                Nom du chanteur:
-                                <input
+                            </Grid>
+                            <Grid item xs={12} sm={9}>
+                                {Array.from({ length: speakersCount }, (_, i) => (
+                                    <div key={i}>
+                                        <TextField
+                                            fullWidth
+                                            id={`speaker-name-input-${i}`}
+                                            label={`Nom de l'intervenant ${i + 1}`}
+                                            type="text"
+                                            value={event.speakers[i] || ''}
+                                            onChange={(e) => handleSpeakersChange(e, i)}
+                                        />
+                                    </div>
+                                ))}
+                            </Grid> */}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    id="price-input"
+                                    label="Prix"
+                                    type="number"
+                                    name="price"
+                                    fullWidth
+                                    value={event.price}
+                                    onChange={handleChange}
+                                    inputProps={{ min: 0 }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    id="ticket-link-input"
+                                    label="Lien du ticket"
                                     type="text"
-                                    name="singer"
-                                    value={event.singer}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </label>
-                            <label>
-                                Présentation du chanteur:
-                                <textarea
-                                    name="singerPresentation"
-                                    value={event.singerPresentation}
+                                    name="ticketLink"
+                                    fullWidth
+                                    value={event.ticketLink}
                                     onChange={handleChange}
                                 />
-                            </label>
-                        </div>
-                    }
-                    <br />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    id="description-input"
+                                    label="Description"
+                                    multiline
+                                    rows={4}
+                                    name="description"
+                                    fullWidth
+                                    value={event.description}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Button variant="contained" color="primary" type="submit">
+                                    Créer l'événement
+                                </Button>
+                            </Grid>
+                        </Grid>
 
-                    {event.theme === "Concert" &&
-                        <div>
-                            <label>
-                                Nom du chanteur:
-                                <input
-                                    type="text"
-                                    name="singer"
-                                    value={event.singer}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </label>
-                            <label>
-                                Présentation du chanteur:
-                                <textarea
-                                    name="singerPresentation"
-                                    value={event.singerPresentation}
-                                    onChange={handleChange}
-                                />
-                            </label>
-                        </div>
-                    }
-                    <br />
-                    <label>
-                        Date de début:
-                        <input
-                            type="date"
-                            name="startDate"
-                            value={event.startDate}
-                            onChange={handleChange}
-                            required
-                        />
-                    </label>
-                    <br />
-                    <label>
-                        Date de fin:
-                        <input
-                            type="date"
-                            name="endDate"
-                            value={event.endDate}
-                            onChange={handleChange}
-                            required
-                        />
-                    </label>
-                    <br />
-                    <label>
-                        Adresse:
-                        <input
-                            type="text"
-                            name="location"
-                            value={event.location}
-                            onChange={handleChange}
-                            required
-                        />
-                    </label>
-                    <br />
-                    <label>
-                        Image:
-                        <input
-                            type="file"
-                            name="image"
-                            value={event.image}
-                            onChange={handleChange}
-                        />
-                    </label>
-                    <br />
-                    <label>Nombre d'intervenants:
-                        <input type="number" value={speakersCount} onChange={handleSpeakersCountChange} min={0} max={10} />
-                        {Array.from({ length: speakersCount }, (_, i) => (
-                            <div key={i}>
-                                <label>Nom de l'intervenant {i + 1} :</label>
-                                <input type="text" value={event.speakers[i] || ''} onChange={(e) => handleSpeakersChange(e, i)} />
-                            </div>
-                        ))}
-                    </label>
-                    <br />
-                    <label>
-                        Prix:
-                        <input
-                            type="number"
-                            name="price"
-                            value={event.price}
-                            onChange={handleChange}
-                            min={0}
-                        />
-                    </label>
-                    <br />
-                    <label>
-                        Lien du ticket:
-                        <input
-                            type="text"
-                            name="ticketLink"
-                            value={event.ticketLink}
-                            onChange={handleChange}
-                        />
-                    </label>
-                    <br />
-                    <label>
-                        Descritpion:
-                        <textarea
-                            name="description"
-                            value={event.description}
-                            onChange={handleChange}
-                        />
-                    </label>
-                    <br />
-                    <button type="submit" onClick={updateNbMaxEvent}>Create Event</button>
-                </form>
+                    </form>
+                </Grid >
+            )
             }
-        </div>
+        </Grid >
     );
 }
 
