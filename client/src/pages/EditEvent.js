@@ -1,10 +1,12 @@
 import React from 'react';
+import NavBar from '../components/NavBar';
 import EditEvent from '../components/EditEvent';
 
 function EditEventPage() {
     return (
         <div>
-            <h2>Modifier l'évènement</h2>
+            <NavBar />
+            <br /> <br />
             <EditEvent />
         </div>
     );

@@ -6,7 +6,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { CardActionArea, Chip, Grid, Paper, TextField } from '@mui/material';
+import { Box, CardActionArea, Chip, Grid, Paper, TextField } from '@mui/material';
 import { Container } from '@mui/system';
 import { NavLink } from 'react-router-dom';
 import 'moment/locale/fr'
@@ -65,18 +65,31 @@ function EventsList() {
     };
 
     return (
-        <div>
-            <h2>Liste des Événements</h2>
-            <TextField
-                label="Recherche"
-                variant="outlined"
-                margin="normal"
-                fullWidth
-                value={searchQuery}
-                onChange={handleSearchChange}
-            />
-            
+        <>
             <Container maxWidth="lg">
+                <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
+                    <Typography
+                        component="h1"
+                        variant="h2"
+                        align="center"
+                        color="text.primary"
+                        gutterBottom
+                    >
+                        Liste des événements
+                    </Typography>
+                    <Typography variant="h5" align="center" color="text.secondary" component="p">
+                        Vous trouverez ici les différents événements que nous proposons.
+                    </Typography>
+                </Container>
+                <TextField
+                    label="Recherche"
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                />
+                <br /> <br /> <br />
                 <Grid container spacing={2}>
                     {filteredEvents.map((event) => (
                         <Grid item key={event._id} xs={12} sm={6} md={4}>
@@ -108,7 +121,7 @@ function EventsList() {
                     ))}
                 </Grid>
             </Container>
-        </div>
+        </>
     );
 }
 
