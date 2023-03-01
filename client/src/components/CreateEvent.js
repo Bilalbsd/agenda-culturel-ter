@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { Button, FormControl, Grid, Input, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Alert, Button, FormControl, Grid, Input, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import CheckIcon from '@mui/icons-material/Check';
 import { DropzoneArea } from "mui-file-dropzone";
 
 function CreateEvent() {
@@ -54,18 +55,18 @@ function CreateEvent() {
     }
 
     useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const res = await axios.get(`http://localhost:5000/api/user/${userId}`);
-                setNbMaxEvent(res.data.nbMaxEvent); // mettre à jour la valeur de nbMaxEvent
-            } catch (err) {
-                console.log(err);
-            }
-        };
-        fetchUser();
-    }, [userId]); // déclencher l'effet à chaque changement de userId
+        try {
+            const res = axios.get(`http://localhost:5000/api/user/${userId}`);
+            setNbMaxEvent(res.data.nbMaxEvent); // mettre à jour la valeur de nbMaxEvent
+        } catch (err) {
+            console.log(err);
+        }
+    }, [userId, nbMaxEvent]); // déclencher l'effet à chaque changement de userId
 
     const updateNbMaxEvent = async () => {
+        <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
+            This is a success alert — check it out!
+        </Alert>
         try {
             const res = await axios.put(`http://localhost:5000/api/user/${userId}`, {
                 nbMaxEvent: nbMaxEvent - 1 // utiliser la valeur actuelle de nbMaxEvent obtenue de l'API
@@ -80,7 +81,7 @@ function CreateEvent() {
     const handleSubmit = async e => {
         e.preventDefault();
 
-        updateNbMaxEvent();
+        // updateNbMaxEvent();
         const formData = new FormData();
         formData.append('image', image);
         // On ajoute les éléments de event dans formData
@@ -97,6 +98,7 @@ function CreateEvent() {
         } catch (err) {
             console.log(err);
         }
+
     };
 
     return (
@@ -111,7 +113,13 @@ function CreateEvent() {
                 </Grid>
             ) : (
                 <Grid item xs={6} md={4}>
-                    <Typography variant="h5">Créer un événement</Typography>
+                    <Grid display="flex"
+                        width="100hv" height={80}
+                        // bgcolor="lightgreen"
+                        alignItems="center"
+                        justifyContent="center">
+                        <Typography variant="h4">Créer un événement</Typography>
+                    </Grid>
                     <form onSubmit={handleSubmit}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -512,7 +520,7 @@ function CreateEvent() {
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <Button variant="contained" color="primary" type="submit">
+                                <Button variant="contained" color="primary" type="submit" onClick={updateNbMaxEvent}>
                                     Créer l'événement
                                 </Button>
                             </Grid>

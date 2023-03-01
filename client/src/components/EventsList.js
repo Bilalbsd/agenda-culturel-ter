@@ -6,8 +6,11 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { CardActionArea, Chip, Grid, TextField } from '@mui/material';
+import { CardActionArea, Chip, Grid, Paper, TextField } from '@mui/material';
 import { Container } from '@mui/system';
+import { NavLink } from 'react-router-dom';
+import 'moment/locale/fr'
+moment.locale('fr')
 
 function EventsList() {
     const [events, setEvents] = useState([]);
@@ -77,28 +80,30 @@ function EventsList() {
                 <Grid container spacing={2}>
                     {filteredEvents.map((event) => (
                         <Grid item key={event._id} xs={12} sm={6} md={4}>
-                            <span style={{ cursor: 'pointer' }}>
-                                <Card sx={{ height: '100%' }}>
-                                    <CardActionArea>
-                                        <CardMedia
-                                            component="img"
-                                            height="300"
-                                            image={event.image}
-                                            alt="image"
-                                        />
-                                    </CardActionArea>
-                                    <CardContent>
-                                        <Typography gutterBottom variant="h5" component="div">
-                                            {event.title}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            <Chip label={moment(event.startDate).format('ll') + " - " + moment(event.startDate).format('ll')} color="primary" />
-                                            <br />
-                                            {shortenDescription(event.description)}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </span>
+                            <NavLink to={`/events/${event._id}`} style={{ textDecoration: 'none' }}>
+                                <span style={{ cursor: 'pointer' }}>
+                                    <Card sx={{ height: '100%' }}>
+                                        <CardActionArea>
+                                            <CardMedia
+                                                component="img"
+                                                height="300"
+                                                image={event.image}
+                                                alt="image"
+                                            />
+                                        </CardActionArea>
+                                        <CardContent>
+                                            <Typography gutterBottom variant="h5" component="div">
+                                                {event.title}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                <Chip label={moment(event.startDate).format('ll') + " - " + moment(event.endDate).format('ll')} sx={{ marginBottom: 1 }} />
+                                                <br />
+                                                {shortenDescription(event.description)}
+                                            </Typography>
+                                        </CardContent>
+                                    </Card>
+                                </span>
+                            </NavLink>
                         </Grid>
                     ))}
                 </Grid>
