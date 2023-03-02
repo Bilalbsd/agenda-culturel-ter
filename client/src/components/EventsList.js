@@ -6,7 +6,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { Box, CardActionArea, Chip, Grid, Paper, TextField } from '@mui/material';
+import { Box, Button, ButtonGroup, CardActionArea, Chip, Grid, Paper, TextField } from '@mui/material';
 import { Container } from '@mui/system';
 import { NavLink } from 'react-router-dom';
 import 'moment/locale/fr'
@@ -42,27 +42,79 @@ function EventsList() {
             .toLowerCase();
     };
 
-    // Filtrer les événements selon la recherche
-    const filteredEvents = events.filter((event) => {
-        // Transformer les chaînes de caractères en minuscules et sans accents
-        const title = removeAccents(event.title.toLowerCase());
-        const country = removeAccents(event.country.toLowerCase());
-        const city = removeAccents(event.city.toLowerCase());
-        const theme = removeAccents(event.theme.toLowerCase());
-        const location = removeAccents(event.location.toLowerCase());
-        // const speakers = removeAccents(event.speakers.toLowerCase());
-        const description = removeAccents(event.description.toLowerCase());
-
-        // Transformer la recherche en minuscules et sans accents
-        const query = removeAccents(searchQuery.toLowerCase());
-
-        // Rechercher le texte de la recherche dans les différents attributs inscrits
-        return title.includes(query) || country.includes(query) || city.includes(query) || theme.includes(query) || location.includes(query) || description.includes(query);
-    });
-
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
     };
+
+    const [sortOrder, setSortOrder] = useState("A venir");
+
+    const handleSort = (order) => {
+        setSortOrder(order);
+    };
+
+    const filterAndSortEvents = (events, searchQuery, sortOrder) => {
+        const now = new Date();
+
+        return events.filter((event) => {
+            // Transformer les chaînes de caractères en minuscules et sans accents
+            const title = removeAccents(event.title.toLowerCase());
+            const country = removeAccents(event.country.toLowerCase());
+            const city = removeAccents(event.city.toLowerCase());
+            const theme = removeAccents(event.theme.toLowerCase());
+            const location = removeAccents(event.location.toLowerCase());
+            const description = removeAccents(event.description.toLowerCase());
+
+            // Transformer la recherche en minuscules et sans accents
+            const query = removeAccents(searchQuery.toLowerCase());
+
+            // Rechercher le texte de la recherche dans les différents attributs inscrits
+            return title.includes(query) || country.includes(query) || city.includes(query) || theme.includes(query) || location.includes(query) || description.includes(query);
+        })
+            .filter((event) => {
+                const endDate = new Date(event.endDate);
+                const startDate = new Date(event.startDate);
+
+                if (sortOrder === "Passé") {
+                    return endDate < now;
+                } else if (sortOrder === "A venir") {
+                    return endDate >= now;
+                } else if (sortOrder === "Actuel") {
+                    return startDate <= now && endDate >= now;
+                }
+                else {
+                    return true;
+                }
+            });
+    };
+
+    const filteredAndSortedEvents = filterAndSortEvents(events, searchQuery, sortOrder);
+
+    const buttons = [
+        {
+            label: "Passé",
+            value: "Passé",
+        },
+        // {
+        //     label: "Actuel",
+        //     value: "Actuel",
+        // },
+        {
+            label: "A venir",
+            value: "A venir",
+        },
+        {
+            label: "Tous",
+            value: "Tous",
+        },
+    ].map((button) => (
+        <Button
+            key={button.value}
+            variant={sortOrder === button.value ? "primary" : "outline-primary"}
+            onClick={() => handleSort(button.value)}
+        >
+            {button.label}
+        </Button>
+    ));
 
     return (
         <>
@@ -90,8 +142,11 @@ function EventsList() {
                     onChange={handleSearchChange}
                 />
                 <br /> <br /> <br />
+                <ButtonGroup size="large" aria-label="large button group">
+                    {buttons}
+                </ButtonGroup>
                 <Grid container spacing={2}>
-                    {filteredEvents.map((event) => (
+                    {filteredAndSortedEvents.map((event) => (
                         <Grid item key={event._id} xs={12} sm={6} md={4}>
                             <NavLink to={`/events/${event._id}`} style={{ textDecoration: 'none' }}>
                                 <span style={{ cursor: 'pointer' }}>
