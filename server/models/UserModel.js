@@ -7,7 +7,6 @@ const SALT_WORK_FACTOR = 10
 const UserSchema = new mongoose.Schema({
     email: {
         type: String,
-        required: false,
         validate: [isEmail],
         lowercase: true,
         unique: true,
@@ -15,8 +14,7 @@ const UserSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        validate: [isMobilePhone],
-        required: false
+        // validate: [isMobilePhone],
     },
     password: {
         type: String,
@@ -30,33 +28,45 @@ const UserSchema = new mongoose.Schema({
     },
     firstname: {
         type: String,
-        required: false
     },
     lastname: {
         type: String,
-        required: false
     },
     title: {
         type: String,
-        required: false
     },
     companyName: {
         type: String,
-        required: false
     },
     address: {
         type: String,
-        required: false
+    },
+    subscription: {
+        type: String,
+        required: true,
+        enum: ['free', 'mensual', 'punctual', 'supmensual', 'suppunctual'],
+        default: 'free'
     },
     nbMaxEvent: {
         type: Number,
         default: 3,
         min: 0
+    },
+    isValidated: {
+        type: Boolean,
+        default: true
     }
 },
     {
         timestamps: true
     });
+
+UserSchema.pre('save', function (next) {
+    if (this.isModified('role') && this.role === 'creator') {
+        this.isValidated = false;
+    }
+    next();
+});
 
 
 /*

@@ -3,10 +3,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import Information from '../components/CreateEvent/Information';
 import EventsList from '../components/EventsList';
 import NavBar from '../components/NavBar';
+import Footer from '../components/Footer';
 
 import { AuthContext } from '../context/AuthContext';
 
+
 const Home = () => {
+    if (navigator.geolocation) {
+    }
     const { userId, isAuthenticated, userFirstname, userLastname, userEmail, userRole } = useContext(AuthContext);
 
     const [nbMaxEvent, setNbMaxEvent] = useState(null);
@@ -36,6 +40,7 @@ const Home = () => {
             <Information /> */}
             <NavBar />
             <EventsList />
+            <Footer />
         </div>
     );
 };

@@ -178,18 +178,18 @@ function CreateEvent() {
                                 <>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="nbPieces"
+                                            name="nbEvent"
                                             label="Nombre de pièces"
                                             fullWidth
                                             type="number"
-                                            value={event.nbPieces}
+                                            value={event.nbEvent}
                                             onChange={handleChange}
                                             inputProps={{ min: '1', max: '5', required: true }}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="actor"
+                                            name="speaker"
                                             label="Nom du/des comédien(s)"
                                             fullWidth
                                             value={event.speaker}
@@ -199,7 +199,7 @@ function CreateEvent() {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="actorPresentation"
+                                            name="speakerPresentation"
                                             label="Présentation du/des comédien(s)"
                                             fullWidth
                                             multiline
@@ -215,21 +215,21 @@ function CreateEvent() {
                                 <>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="singer"
+                                            name="typeEvent"
                                             label="Type de sport"
                                             fullWidth
-                                            value={event.typeSport}
+                                            value={event.typeEvent}
                                             onChange={handleChange}
                                             required
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="nbMatch"
+                                            name="nbEvent"
                                             label="Nombre de matches"
                                             fullWidth
                                             type="number"
-                                            value={event.nbMatch}
+                                            value={event.nbEvent}
                                             onChange={handleChange}
                                             inputProps={{ min: '1', max: '5', required: true }}
                                         />
@@ -240,18 +240,18 @@ function CreateEvent() {
                                 <>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="nbPeople"
+                                            name="capacity"
                                             label="Capacité d'accueil"
                                             fullWidth
                                             type="number"
-                                            value={event.nbPeople}
+                                            value={event.capacity}
                                             onChange={handleChange}
                                             inputProps={{ min: '1', required: true }}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="artist"
+                                            name="speaker"
                                             label="Nom du/des artistes(s)"
                                             fullWidth
                                             value={event.speaker}
@@ -261,7 +261,7 @@ function CreateEvent() {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="artistPresentation"
+                                            name="speakerPresentation"
                                             label="Présentation du/des artistes(s)"
                                             fullWidth
                                             multiline
@@ -276,18 +276,18 @@ function CreateEvent() {
                                 <>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="nbPeople"
+                                            name="capacity"
                                             label="Capacité d'accueil"
                                             fullWidth
                                             type="number"
-                                            value={event.nbPeople}
+                                            value={event.capacity}
                                             onChange={handleChange}
                                             inputProps={{ min: '1', required: true }}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="danser"
+                                            name="speaker"
                                             label="Nom du/des danseur(s)"
                                             fullWidth
                                             value={event.speaker}
@@ -297,7 +297,7 @@ function CreateEvent() {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="danserPresentation"
+                                            name="speakerPresentation"
                                             label="Présentation du/des danseur(s)"
                                             fullWidth
                                             multiline
@@ -312,11 +312,11 @@ function CreateEvent() {
                                 <>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="nbPeople"
+                                            name="capacity"
                                             label="Capacité d'accueil"
                                             fullWidth
                                             type="number"
-                                            value={event.nbPeople}
+                                            value={event.capacity}
                                             onChange={handleChange}
                                             inputProps={{ min: '1', required: true }}
                                         />
@@ -348,11 +348,11 @@ function CreateEvent() {
                                 <>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="nbPeople"
+                                            name="capacity"
                                             label="Capacité d'accueil"
                                             fullWidth
                                             type="number"
-                                            value={event.nbPeople}
+                                            value={event.capacity}
                                             onChange={handleChange}
                                             inputProps={{ min: '1', required: true }}
                                         />
@@ -384,7 +384,7 @@ function CreateEvent() {
                                 <>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="singer"
+                                            name="speaker"
                                             label="Nom du/des chanteur(s)"
                                             fullWidth
                                             value={event.speaker}
@@ -394,7 +394,7 @@ function CreateEvent() {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="singerPresentation"
+                                            name="speakerPresentation"
                                             label="Présentation du/des chanteur(s)"
                                             fullWidth
                                             multiline

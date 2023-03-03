@@ -1,11 +1,12 @@
 
 import React from 'react';
 import EventDetail from '../components/EventDetail';
+import NavBar from '../components/NavBar';
 
 function Event() {
     return (
         <div>
-            <h2>Détail de l'évènement</h2>
+            <NavBar />
             <EventDetail/>
         </div>
     );
