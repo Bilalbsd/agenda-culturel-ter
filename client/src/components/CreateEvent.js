@@ -1,35 +1,66 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { Alert, Button, FormControl, Grid, Input, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Alert, Button, FormControl, Grid, Input, InputAdornment, InputLabel, List, ListItem, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import CheckIcon from '@mui/icons-material/Check';
 import { DropzoneArea } from "mui-file-dropzone";
 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvGBV9DUig0t9hvtFy4YcTrouE8S22lQM"></script>
+
+
 function CreateEvent() {
     const { userId, userRole, nbMaxEvent, setNbMaxEvent } = useContext(AuthContext);
     const [event, setEvent] = useState({});
+    const [location, setLocation] = useState("");
+    const [map, setMap] = useState(null);
+    const [marker, setMarker] = useState(null);
+    const [predictions, setPredictions] = useState(null);
+    const [coords, setCoords] = useState(null);
 
     // On utilise un useEffect pour initialiser 'creator: userId' car sinon on a 'creator: null'
+    // useEffect(() => {
+    //     setEvent({
+    //         title: '',
+    //         country: '',
+    //         city: '',
+    //         theme: '',
+    //         startDate: '',
+    //         endDate: '',
+    //         location: location,
+    //         creator: userId,
+    //         image: '',
+    //         speakers: '',
+    //         price: 0,
+    //         ticketLink: '',
+    //         description: ''
+    //     });
+    //     // On modifie creator à chaque update de userId
+    // }, [userId, location])
+
     useEffect(() => {
-        setEvent({
-            title: '',
-            country: '',
-            city: '',
-            theme: '',
-            startDate: '',
-            endDate: '',
-            location: '',
-            creator: userId,
-            image: '',
-            speakers: [],
-            price: 0,
-            ticketLink: '',
-            description: ''
+        setEvent(prevState => {
+            return {
+                ...prevState,
+                country: prevState.country || '',
+                city: prevState.city || '',
+                theme: prevState.theme || '',
+                startDate: prevState.startDate || '',
+                endDate: prevState.endDate || '',
+                location: location || '',
+                creator: userId || '',
+                image: '',
+                speakers: prevState.speakers || [],
+                price: prevState.price || 0,
+                ticketLink: prevState.ticketLink || '',
+                description: prevState.description || '',
+                coords1: prevState.coords1 || '',
+                coords2: prevState.coords2 || '',
+            }
         });
-        // On modifie creator à chaque update de userId
-    }, [userId])
+    }, [userId, location]);
+
 
     // console.log(userId, "creatorBefore")
 
@@ -78,6 +109,80 @@ function CreateEvent() {
         }
     };
 
+    const CLE_API = "AIzaSyBvGBV9DUig0t9hvtFy4YcTrouE8S22lQM";
+
+    useEffect(() => {
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${CLE_API}&libraries=places`;
+        script.onload = () => {
+            const map = new window.google.maps.Map(document.getElementById("map"), {
+                center: { lat: 0, lng: 0 },
+                zoom: 2,
+            });
+            setMap(map);
+        };
+        document.body.appendChild(script);
+    }, []);
+
+    const handleInputChange = (event) => {
+        setLocation(event.target.value);
+        const service = new window.google.maps.places.AutocompleteService();
+        service.getPlacePredictions({ input: event.target.value }, (results) => {
+            setPredictions(results);
+        });
+    };
+
+    // const handlePlaceSelect = (prediction) => {
+    //     const placeService = new window.google.maps.places.PlacesService(map);
+    //     placeService.getDetails({ placeId: prediction.place_id }, (placeResult) => {
+    //         const lat = placeResult.geometry.location.lat();
+    //         const lng = placeResult.geometry.location.lng();
+    //         const marker = new window.google.maps.Marker({
+    //             position: { lat, lng },
+    //             map: map,
+    //         });
+    //         setMarker(marker);
+    //         setCoords({ lat, lng });
+    //         map.setCenter({ lat, lng });
+    //         map.setZoom(15);
+    //         setLocation(prediction.description);
+    //         setPredictions(null);
+    //     });
+    // };
+
+    const handlePlaceSelect = (prediction) => {
+        const placeService = new window.google.maps.places.PlacesService(map);
+        placeService.getDetails({ placeId: prediction.place_id }, (placeResult) => {
+            const lat = placeResult.geometry.location.lat();
+            const lng = placeResult.geometry.location.lng();
+            const marker = new window.google.maps.Marker({
+                position: { lat, lng },
+                map: map,
+            });
+            setMarker(marker);
+            setCoords({ lat, lng });
+            map.setCenter({ lat, lng });
+            map.setZoom(15);
+            setLocation(prediction.description);
+            setPredictions(null);
+            setEvent({
+                ...event,
+                country: placeResult.address_components.find(component => component.types.includes('country')).long_name,
+                city: placeResult.address_components.find(component => component.types.includes('locality')).long_name,
+                coords1: lat,
+                coords2: lng
+            });
+        });
+    };
+
+    // console.log(location, "location")
+    // console.log(marker, "marker")
+    // console.log(predictions, "predictions")
+    // console.log(coords, "coords")
+
+    console.log(event.title, "event.title");
+    console.log(event.location, "event.location")
+
     const handleSubmit = async e => {
         e.preventDefault();
 
@@ -100,6 +205,7 @@ function CreateEvent() {
         }
 
     };
+
 
     return (
         <Grid container justifyContent="center">
@@ -129,26 +235,6 @@ function CreateEvent() {
                                     fullWidth
                                     value={event.title}
                                     onChange={handleChange}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    name="country"
-                                    label="Pays"
-                                    fullWidth
-                                    value={event.country}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    name="city"
-                                    label="Ville"
-                                    fullWidth
-                                    value={event.city}
-                                    onChange={handleChange}
-                                    required
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -429,7 +515,7 @@ function CreateEvent() {
                                     required
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={3}>
+                            <Grid item xs={12}>
                                 <input
                                     accept="image/*"
                                     style={{ display: 'none' }}
@@ -445,8 +531,8 @@ function CreateEvent() {
                                 </label>
                                 {/* <DropzoneArea onChange={handleChange} /> */}
                             </Grid>
-                            <Grid item xs={12} sm={9}>
-                                <TextField
+                            <Grid item xs={12}>
+                                {/* <TextField
                                     id="location-input"
                                     label="Adresse"
                                     type="text"
@@ -454,10 +540,48 @@ function CreateEvent() {
                                     fullWidth
                                     value={event.location}
                                     onChange={handleChange}
+                                    inputRef={(ref) => { this.addressInput = ref; }}
+                                    onFocus={handlePlaceSelect}
+                                    required
+                                /> */}
+                                <TextField fullWidth label="Location" value={location} onChange={handleInputChange} />
+                                {predictions && (
+                                    <List>
+                                        {predictions.map((prediction) => (
+                                            <ListItem
+                                                key={prediction.place_id}
+                                                button
+                                                onClick={() => handlePlaceSelect(prediction)}
+                                            >
+                                                <ListItemText primary={prediction.description} />
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                )}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    name="country"
+                                    label="Pays"
+                                    fullWidth
+                                    value={'' + event.country}
+                                    onChange={handleChange}
                                     required
                                 />
                             </Grid>
-
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    name="city"
+                                    label="Ville"
+                                    fullWidth
+                                    value={'' + event.city}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <div id="map" style={{ height: "400px", width: "100%" }}></div>
+                            </Grid>
 
                             {/* <Grid item xs={12} sm={3}>
                                 <TextField

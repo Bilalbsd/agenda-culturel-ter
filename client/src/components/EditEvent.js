@@ -3,7 +3,7 @@ import axios from 'axios';
 import { NavLink, useParams } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import moment from 'moment';
-import { Button, FormControl, Grid, Input, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Button, FormControl, Grid, Input, InputAdornment, InputLabel, List, ListItem, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 // import 'moment/locale/fr'
 // moment.locale('fr')
@@ -12,11 +12,43 @@ function EditEvent() {
     const { id } = useParams();
     const [event, setEvent] = useState({});
     const { userId } = useContext(AuthContext);
+    const [location, setLocation] = useState("");
+    const [map, setMap] = useState(null);
+    const [marker, setMarker] = useState(null);
+    const [predictions, setPredictions] = useState(null);
+    const [coords, setCoords] = useState(null);
+    const [initialCoords, setInitialCoords] = useState(null);
+
+    useEffect(() => {
+        setEvent(prevState => {
+            return {
+                ...prevState,
+                country: prevState.country || '',
+                city: prevState.city || '',
+                theme: prevState.theme || '',
+                startDate: prevState.startDate || '',
+                endDate: prevState.endDate || '',
+                location: location || '',
+                creator: userId || '',
+                image: '',
+                speakers: prevState.speakers || [],
+                price: prevState.price || 0,
+                ticketLink: prevState.ticketLink || '',
+                description: prevState.description || '',
+                coords1: prevState.coords1 || '',
+                coords2: prevState.coords2 || '',
+            }
+        });
+    }, [userId, location]);
+
 
     useEffect(() => {
         axios
             .get(`http://localhost:5000/api/event/${id}`)
-            .then(res => setEvent(res.data))
+            .then(res => {
+                setEvent(res.data);
+                console.log(event, "event")
+            })
             .catch(err => console.error(err));
     }, [id]);
 
@@ -33,7 +65,10 @@ function EditEvent() {
         e.preventDefault();
         axios
             .put(`http://localhost:5000/api/event/${id}`, event)
-            .then(res => console.log(res))
+            .then(res => {
+                console.log(res);
+                setInitialCoords([event.coords1, event.coords2])
+            })
             .catch(err => console.error(err));
     };
 
@@ -48,7 +83,62 @@ function EditEvent() {
             .catch(err => console.error(err));
     };
 
+    const CLE_API = "AIzaSyBvGBV9DUig0t9hvtFy4YcTrouE8S22lQM";
 
+
+    useEffect(() => {
+        if (event.coords1 && event.coords2) {
+            setInitialCoords([event.coords1, event.coords2]);
+        }
+    }, [event.coords1, event.coords2]);
+
+
+    useEffect(() => {
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${CLE_API}&libraries=places`;
+        script.onload = () => {
+            const map = new window.google.maps.Map(document.getElementById("map"), {
+                center: { lat: initialCoords[0], lng: initialCoords[1] },
+                zoom: 15,
+            });
+            setMap(map);
+        };
+        document.body.appendChild(script);
+    }, [initialCoords]);
+
+    const handleInputChange = (event) => {
+        setLocation(event.target.value);
+        const service = new window.google.maps.places.AutocompleteService();
+        service.getPlacePredictions({ input: event.target.value }, (results) => {
+            setPredictions(results);
+        });
+    };
+
+    const handlePlaceSelect = (prediction) => {
+        const placeService = new window.google.maps.places.PlacesService(map);
+        placeService.getDetails({ placeId: prediction.place_id }, (placeResult) => {
+            const lat = placeResult.geometry.location.lat();
+            const lng = placeResult.geometry.location.lng();
+            const marker = new window.google.maps.Marker({
+                position: { lat: lat, lng: lng },
+                map: map,
+            });
+            setMarker(marker);
+            setCoords({ lat, lng });
+            map.setCenter({ lat, lng });
+            map.setZoom(15);
+            setLocation(prediction.description);
+            setPredictions(null);
+            setEvent({
+                ...event,
+                country: placeResult.address_components.find(component => component.types.includes('country')).long_name,
+                city: placeResult.address_components.find(component => component.types.includes('locality')).long_name,
+                location: location,
+                coords1: coords.lat,
+                coords2: coords.lng
+            });
+        });
+    };
 
     // console.log(event.creator === userId, "true si Id du créateur de l'event a le même Id de l'user connecté")
 
@@ -78,26 +168,6 @@ function EditEvent() {
                                     onChange={handleChange}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    name="country"
-                                    label="Pays"
-                                    fullWidth
-                                    value={event.country}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    name="city"
-                                    label="Ville"
-                                    fullWidth
-                                    value={event.city}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </Grid>
                             <Grid item xs={12}>
                                 <FormControl fullWidth required>
                                     <InputLabel htmlFor="event-theme-select">Événement</InputLabel>
@@ -125,18 +195,18 @@ function EditEvent() {
                                 <>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="nbPieces"
+                                            name="nbEvent"
                                             label="Nombre de pièces"
                                             fullWidth
                                             type="number"
-                                            value={event.nbPieces}
+                                            value={event.nbEvent}
                                             onChange={handleChange}
                                             inputProps={{ min: '1', max: '5', required: true }}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="actor"
+                                            name="speaker"
                                             label="Nom du/des comédien(s)"
                                             fullWidth
                                             value={event.speaker}
@@ -146,7 +216,7 @@ function EditEvent() {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="actorPresentation"
+                                            name="speakerPresentation"
                                             label="Présentation du/des comédien(s)"
                                             fullWidth
                                             multiline
@@ -162,21 +232,21 @@ function EditEvent() {
                                 <>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="singer"
+                                            name="typeEvent"
                                             label="Type de sport"
                                             fullWidth
-                                            value={event.typeSport}
+                                            value={event.typeEvent}
                                             onChange={handleChange}
                                             required
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="nbMatch"
+                                            name="nbEvent"
                                             label="Nombre de matches"
                                             fullWidth
                                             type="number"
-                                            value={event.nbMatch}
+                                            value={event.nbEvent}
                                             onChange={handleChange}
                                             inputProps={{ min: '1', max: '5', required: true }}
                                         />
@@ -187,18 +257,18 @@ function EditEvent() {
                                 <>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="nbPeople"
+                                            name="capacity"
                                             label="Capacité d'accueil"
                                             fullWidth
                                             type="number"
-                                            value={event.nbPeople}
+                                            value={event.capacity}
                                             onChange={handleChange}
                                             inputProps={{ min: '1', required: true }}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="artist"
+                                            name="speaker"
                                             label="Nom du/des artistes(s)"
                                             fullWidth
                                             value={event.speaker}
@@ -208,7 +278,7 @@ function EditEvent() {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="artistPresentation"
+                                            name="speakerPresentation"
                                             label="Présentation du/des artistes(s)"
                                             fullWidth
                                             multiline
@@ -223,18 +293,18 @@ function EditEvent() {
                                 <>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="nbPeople"
+                                            name="capacity"
                                             label="Capacité d'accueil"
                                             fullWidth
                                             type="number"
-                                            value={event.nbPeople}
+                                            value={event.capacity}
                                             onChange={handleChange}
                                             inputProps={{ min: '1', required: true }}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="danser"
+                                            name="speaker"
                                             label="Nom du/des danseur(s)"
                                             fullWidth
                                             value={event.speaker}
@@ -244,7 +314,7 @@ function EditEvent() {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="danserPresentation"
+                                            name="speakerPresentation"
                                             label="Présentation du/des danseur(s)"
                                             fullWidth
                                             multiline
@@ -259,11 +329,11 @@ function EditEvent() {
                                 <>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="nbPeople"
+                                            name="capacity"
                                             label="Capacité d'accueil"
                                             fullWidth
                                             type="number"
-                                            value={event.nbPeople}
+                                            value={event.capacity}
                                             onChange={handleChange}
                                             inputProps={{ min: '1', required: true }}
                                         />
@@ -295,11 +365,11 @@ function EditEvent() {
                                 <>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="nbPeople"
+                                            name="capacity"
                                             label="Capacité d'accueil"
                                             fullWidth
                                             type="number"
-                                            value={event.nbPeople}
+                                            value={event.capacity}
                                             onChange={handleChange}
                                             inputProps={{ min: '1', required: true }}
                                         />
@@ -331,7 +401,7 @@ function EditEvent() {
                                 <>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="singer"
+                                            name="speaker"
                                             label="Nom du/des chanteur(s)"
                                             fullWidth
                                             value={event.speaker}
@@ -341,7 +411,7 @@ function EditEvent() {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
-                                            name="singerPresentation"
+                                            name="speakerPresentation"
                                             label="Présentation du/des chanteur(s)"
                                             fullWidth
                                             multiline
@@ -392,45 +462,47 @@ function EditEvent() {
                                 </label>
                                 {/* <DropzoneArea onChange={handleChange} /> */}
                             </Grid>
-                            <Grid item xs={12} sm={9}>
+                            <Grid item xs={12} >
+                                <TextField fullWidth label="Location" defaultValue={event.location} value={location} onChange={handleInputChange} />
+                                {predictions && (
+                                    <List>
+                                        {predictions.map((prediction) => (
+                                            <ListItem
+                                                key={prediction.place_id}
+                                                button
+                                                onClick={() => handlePlaceSelect(prediction)}
+                                            >
+                                                <ListItemText primary={prediction.description} />
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                )}
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
                                 <TextField
-                                    id="location-input"
-                                    label="Adresse"
-                                    type="text"
-                                    name="location"
+                                    name="country"
+                                    label="Pays"
                                     fullWidth
-                                    value={event.location}
+                                    value={'' + event.country}
                                     onChange={handleChange}
                                     required
                                 />
                             </Grid>
-
-
-                            {/* <Grid item xs={12} sm={3}>
+                            <Grid item xs={12} sm={6}>
                                 <TextField
-                                    id="speakers-count-input"
-                                    label="Nombre d'intervenants"
-                                    type="number"
+                                    name="city"
+                                    label="Ville"
                                     fullWidth
-                                    value={speakersCount}
-                                    onChange={handleSpeakersCountChange}
-                                    inputProps={{ min: 0, max: 10 }}
+                                    value={'' + event.city}
+                                    onChange={handleChange}
+                                    required
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={9}>
-                                {Array.from({ length: speakersCount }, (_, i) => (
-                                    <div key={i}>
-                                        <TextField
-                                            fullWidth
-                                            id={`speaker-name-input-${i}`}
-                                            label={`Nom de l'intervenant ${i + 1}`}
-                                            type="text"
-                                            value={event.speakers[i] || ''}
-                                            onChange={(e) => handleSpeakersChange(e, i)}
-                                        />
-                                    </div>
-                                ))}
-                            </Grid> */}
+                            <Grid item xs={12}>
+                                <div id="map" style={{ height: "400px", width: "100%" }}></div>
+                            </Grid>
+
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     id="price-input"
@@ -466,6 +538,7 @@ function EditEvent() {
                                     onChange={handleChange}
                                 />
                             </Grid>
+
                             <Grid item xs={9} sm={4}>
                                 <Button variant="contained" color="primary" type="submit">
                                     Modifier l'événement

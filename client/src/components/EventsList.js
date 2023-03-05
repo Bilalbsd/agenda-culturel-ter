@@ -6,13 +6,18 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { Box, Button, ButtonGroup, CardActionArea, Chip, Grid, Paper, TextField } from '@mui/material';
+import { Box, Button, ButtonGroup, CardActionArea, Checkbox, Chip, Grid, Paper, TextField } from '@mui/material';
 import { Container } from '@mui/system';
 import { NavLink } from 'react-router-dom';
-import 'moment/locale/fr'
+
+import Favorite from '@mui/icons-material/Favorite';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+
+import 'moment/locale/fr';
 moment.locale('fr')
 
 function EventsList() {
+    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
     const [events, setEvents] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -23,39 +28,62 @@ function EventsList() {
             .catch((err) => console.error(err));
     }, []);
 
-    // Définir la longueur maximale pour la description
-    const maxLength = 150;
+    const apiKey = "AIzaSyBvGBV9DUig0t9hvtFy4YcTrouE8S22lQM";
 
-    // Fonction pour raccourcir la description et ajouter "..."
-    const shortenDescription = (description) => {
-        if (description.length > maxLength) {
-            return description.slice(0, maxLength).concat('...');
-        }
-        return description;
+    const [userLocation, setUserLocation] = useState(null);
+
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setUserLocation({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                });
+            },
+            (error) => {
+                console.error(error);
+            }
+        );
+    }, []);
+
+    const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
+        const earthRadius = 6371; // en km
+        const dLat = deg2rad(lat2 - lat1);
+        const dLon = deg2rad(lon2 - lon1);
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(deg2rad(lat1)) *
+            Math.cos(deg2rad(lat2)) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = earthRadius * c;
+        return distance;
     };
 
-    // Fonction pour retirer les accents d'une chaine de caractères
-    const removeAccents = (str) => {
-        return str
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .toLowerCase();
+    const deg2rad = (deg) => {
+        return deg * (Math.PI / 180);
     };
 
-    const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value);
-    };
-
-    const [sortOrder, setSortOrder] = useState("A venir");
-
-    const handleSort = (order) => {
-        setSortOrder(order);
-    };
-
-    const filterAndSortEvents = (events, searchQuery, sortOrder) => {
+    const filterAndSortEvents = (events, searchQuery, sortOrder, userLocation) => {
         const now = new Date();
 
-        return events.filter((event) => {
+        const sortedEvents = events
+            .map((event) => {
+                const distance = getDistanceFromLatLonInKm(
+                    userLocation.lat,
+                    userLocation.lng,
+                    event.coords1,
+                    event.coords2
+                );
+                return {
+                    ...event,
+                    distance,
+                };
+            })
+            .sort((a, b) => a.distance + b.distance);
+
+        return sortedEvents.filter((event) => {
             // Transformer les chaînes de caractères en minuscules et sans accents
             const title = removeAccents(event.title.toLowerCase());
             const country = removeAccents(event.country.toLowerCase());
@@ -87,7 +115,40 @@ function EventsList() {
             });
     };
 
-    const filteredAndSortedEvents = filterAndSortEvents(events, searchQuery, sortOrder);
+
+
+    // Définir la longueur maximale pour la description
+    const maxLength = 150;
+
+    // Fonction pour raccourcir la description et ajouter "..."
+    const shortenDescription = (description) => {
+        if (description.length > maxLength) {
+            return description.slice(0, maxLength).concat('...');
+        }
+        return description;
+    };
+
+    // Fonction pour retirer les accents d'une chaine de caractères
+    const removeAccents = (str) => {
+        return str
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase();
+    };
+
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+
+    const [sortOrder, setSortOrder] = useState("A venir");
+
+    const handleSort = (order) => {
+        setSortOrder(order);
+    };
+
+    const filteredAndSortedEvents = filterAndSortEvents(events, searchQuery, sortOrder, userLocation);
+
+    // const filteredAndSortedEvents = filterAndSortEvents(events, searchQuery, sortOrder);
 
     const buttons = [
         {
@@ -168,7 +229,7 @@ function EventsList() {
                                                 <br />
                                                 {shortenDescription(event.description)}
                                             </Typography>
-                                        </CardContent>
+                                            <Checkbox {...label} icon={<FavoriteBorder />} checkedIcon={<Favorite />} />                                        </CardContent>
                                     </Card>
                                 </span>
                             </NavLink>
