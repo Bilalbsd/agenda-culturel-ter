@@ -6,6 +6,7 @@ import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
 
 import { AuthContext } from '../context/AuthContext';
+import Localisation from '../components/Localisation';
 
 
 const Home = () => {
@@ -39,6 +40,8 @@ const Home = () => {
 
             <Information /> */}
             <NavBar />
+            {/* <Localisation /> */}
+            {/* <Information /> */}
             <EventsList />
             <Footer />
         </div>

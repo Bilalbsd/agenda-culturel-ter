@@ -1,34 +1,53 @@
-import React, { useEffect, useState } from 'react';
+import { Box, Modal, Typography } from '@mui/material';
+import React, { useContext, useState, useEffect } from 'react';
+import { AuthContext } from '../../context/AuthContext';
+import { FirstConnectionContext } from '../../context/FirstConnectionContext';
 
 function Information() {
-    const [showModal, setShowModal] = useState(false);
+    const { hasSeenMessage, setHasSeenMessage } = useContext(FirstConnectionContext);
+    const { userId, userRole, nbMaxEvent, isAuthenticated } = useContext(AuthContext);
+
+    const style = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+    };
+
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
-        const isUserLoggedIn = localStorage.getItem('isUserLoggedIn');
-
-        if (!isUserLoggedIn) {
-            setShowModal(true);
-            localStorage.setItem('isUserLoggedIn', true);
+        if (hasSeenMessage && isAuthenticated) {
+            setOpen(true);
         }
-    }, []);
+    }, [hasSeenMessage, isAuthenticated]);
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     return (
-        <div className="information">
-            {showModal && (
-                <div className="modal">
-                    <h2>Bienvenue!</h2>
-                    <p>C'est votre première connexion!</p>
-                </div>
-            )}
-            <h1>Connexion première fois
-                --- Explication :
-                ------- Le créateur bénéficie d'un certain nombre gratuit d'évènements
-                ------- Après, il faut choisir un type d'abonnement :
-                ------------ abonnement mensuel
-                ------------ abonnement ponctuel (un certains nombre d'évènements)
-                ------------ abonnement mensuel Supérieur
-                ------------ abonnement ponctuel (un certains nombre d'évènements) Supérieur
-            </h1>
+        <div>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Text in a modal
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                    </Typography>
+                </Box>
+            </Modal>
         </div>
     );
 }

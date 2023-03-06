@@ -38,7 +38,7 @@ function ResponsiveAppBar() {
             }
         };
         fetchUser();
-    }, [userId]); // déclencher l'effet à chaque changement de userId
+    }, [userId, nbMaxEvent]); // déclencher l'effet à chaque changement de userId
 
 
     let pages = []
@@ -70,23 +70,24 @@ function ResponsiveAppBar() {
                 <Toolbar disableGutters>
                     <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
 
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        href="/"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'none', md: 'flex' },
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        LOGO
-                    </Typography>
+                    <NavLink to="/" style={{ textDecoration: 'none', color: 'white' }} >
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="a"
+                            sx={{
+                                mr: 2,
+                                display: { xs: 'none', md: 'flex' },
+                                fontFamily: 'monospace',
+                                fontWeight: 700,
+                                letterSpacing: '.3rem',
+                                color: 'inherit',
+                                textDecoration: 'none',
+                            }}
+                        >
+                            LOGO
+                        </Typography>
+                    </NavLink>
 
                     {isAuthenticated && userRole === "creator" && isSmallScreen &&
                         <>
@@ -95,9 +96,14 @@ function ResponsiveAppBar() {
                                     <Typography textAlign="center" fontFamily="Roboto" fontWeight="bold">{"Créer un événement".toUpperCase()}</Typography>
                                 </MenuItem>
                             </NavLink>
-                            <NavLink to="/events" style={{ textDecoration: 'none', color: 'white' }}>
+                            <NavLink to="/personal-events" style={{ textDecoration: 'none', color: 'white' }}>
                                 <MenuItem onClick={handleCloseNavMenu}>
                                     <Typography textAlign="center" fontFamily="Roboto" fontWeight="bold">{"Mes événements".toUpperCase()}</Typography>
+                                </MenuItem>
+                            </NavLink>
+                            <NavLink to="/pricing" style={{ textDecoration: 'none', color: 'white' }}>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography textAlign="center" fontFamily="Roboto" fontWeight="bold">{"Abonnements".toUpperCase()}</Typography>
                                 </MenuItem>
                             </NavLink>
                         </>
@@ -178,14 +184,19 @@ function ResponsiveAppBar() {
 
                             {isAuthenticated && userRole === "creator" &&
                                 <>
-                                    <NavLink to="/create-event" style={{ textDecoration: 'none' }}>
+                                    <NavLink to="/create-event" style={{ textDecoration: 'none', color: 'black' }}>
                                         <MenuItem onClick={handleCloseNavMenu}>
                                             <Typography textAlign="center">Créer un événement</Typography>
                                         </MenuItem>
                                     </NavLink>
-                                    <NavLink to="/events" style={{ textDecoration: 'none' }}>
+                                    <NavLink to="/personal-events" style={{ textDecoration: 'none', color: 'black' }}>
                                         <MenuItem onClick={handleCloseNavMenu}>
                                             <Typography textAlign="center">Mes événements</Typography>
+                                        </MenuItem>
+                                    </NavLink>
+                                    <NavLink to="/pricing" style={{ textDecoration: 'none', color: 'black' }}>
+                                        <MenuItem onClick={handleCloseNavMenu}>
+                                            <Typography textAlign="center">Abonnements</Typography>
                                         </MenuItem>
                                     </NavLink>
                                 </>

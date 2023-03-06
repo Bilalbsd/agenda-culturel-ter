@@ -62,6 +62,9 @@ function Profil() {
                             <Grid item xs={12}>
                                 <TextField label="Adresse de la société" name="address" value={"" + user.address} fullWidth onChange={handleChange} />
                             </Grid>
+                            <Grid item xs={12}>
+                                <TextField disabled label="Abonnement" name="subscription" value={"" + user.subscription} fullWidth onChange={handleChange} />
+                            </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField disabled label="Jetons de création" value={"" + nbMaxEvent} fullWidth />
                             </Grid>

@@ -38,8 +38,17 @@ const EventSchema = new mongoose.Schema({
     image: {
         type: String
     },
-    speakers: {
-        type: [String]
+    speaker: {
+        type: String
+    },
+    speakerPresentation: {
+        type: String
+    },
+    typeEvent: {
+        type: String
+    },
+    nbEvent: {
+        type: Number
     },
     price: {
         type: Number
@@ -52,6 +61,15 @@ const EventSchema = new mongoose.Schema({
     },
     description: {
         type: String
+    },
+    capacity: {
+        type: Number
+    },
+    coords1: {
+        type: Number
+    },
+    coords2: {
+        type: Number
     }
 },
     {
