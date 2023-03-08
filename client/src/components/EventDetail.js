@@ -31,30 +31,7 @@ function EventDetail() {
                     >
                         {event.title}
                     </Typography>
-                    <Typography variant="h5" align="center" color="text.secondary" component="p" sx={{ marginBottom: 10 }}>
-                        {event.description}
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <img src={event.image} alt="img de l'évènement" style={{ width: "300", height: "300" }} />
-                    </Box>
-                    <Typography variant="h3" align="left" color="text.primary" component="p">
-                        Informations
-                    </Typography>
-                    <Grid spacing={5}>
-                        <Grid item xs={12} md={6}>
-                            <Typography variant="h5" component="h5">Pays: {event.country}</Typography>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Typography variant="h5" component="h5">Ville: {event.city}</Typography>
-                        </Grid>
-                        <Typography variant="h5" component="h5">Theme: {event.theme}</Typography>
-                        <Typography variant="h5" component="h5">Date début: {moment(event.startDate).format('lll')}</Typography>
-                        <Typography variant="h5" component="h5">Date fin: {moment(event.endDate).format('lll')}</Typography>
-                        <Typography variant="h5" component="h5">Adresse: {event.location}</Typography>
-                        <Typography variant="h5" component="h5">Intervenants: {event.speakers}</Typography>
-                        <Typography variant="h5" component="h5">Prix: {event.price === 0 ? "Gratuit" : 0 + "€"}</Typography>
-                        <Typography variant="h5" component="h5">lien du site:<Link href={event.ticketLink}>{event.ticketLink}</Link></Typography>
-                    </Grid>
+                    
                 </Container>
             </Container>
         </div >

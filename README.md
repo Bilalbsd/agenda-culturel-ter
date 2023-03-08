@@ -23,7 +23,7 @@ de théâtre, les matchs sportifs, les conférences, etc.
 *JWT Decode* : Permet de décoder et de récupérer le payload des token JWT  
 *Moment*: Permet de gérer le format des dates  
 *Material UI* : Permet d'utiliser des composants de Material Design pour l'UI  
-
+*Api Google Map* : Permet de localiser l'utilisateur et de proposer des événements à proximité
 
 ***Back-End***  
 ---
