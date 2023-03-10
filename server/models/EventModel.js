@@ -15,7 +15,7 @@ const EventSchema = new mongoose.Schema({
     },
     theme: {
         type: String,
-        enum : ["Théâtre", "Sport", "Concert", "Festival", "Danse", "Spectacle", "Exposition"],
+        enum: ["Théâtre", "Sport", "Concert", "Festival", "Danse", "Spectacle", "Exposition"],
         required: true
     },
     startDate: {
@@ -70,6 +70,20 @@ const EventSchema = new mongoose.Schema({
     },
     coords2: {
         type: Number
+    },
+    rating: {
+        type: [Number],
+        min: 0,
+        max: 5
+    },
+    comments: {
+        type: [{
+            rating: Number,
+            commenterId: String,
+            commenterUsername: String,
+            text: String,
+            timestamp: Number
+        }]
     }
 },
     {

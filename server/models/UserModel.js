@@ -52,6 +52,9 @@ const UserSchema = new mongoose.Schema({
         default: 3,
         min: 0
     },
+    favoriteEvents: {
+        type: [String]
+    },
     isValidated: {
         type: Boolean,
         default: true

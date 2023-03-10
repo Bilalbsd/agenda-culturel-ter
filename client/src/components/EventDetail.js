@@ -2,82 +2,75 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link, useParams } from 'react-router-dom';
 import moment from 'moment';
-import { Box, Grid, Typography, Button, Checkbox } from '@mui/material';
+import { Box, Grid, Typography, TextField, Rating, Button } from '@mui/material';
 import { Container } from '@mui/system';
-import 'moment/locale/fr'
-import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
-import Favorite from '@mui/icons-material/Favorite';
+import 'moment/locale/fr';
 import { AuthContext } from '../context/AuthContext';
-moment.locale('fr')
+import FavButton from "./FavButton";
+moment.locale('fr');
 
 function EventDetail() {
     const { id } = useParams();
-    const [event, setEvent] = useState({});
-    const [favorite, setFavorite] = useState(false);
+    const [event, setEvent] = useState({ comments: [] });
 
-    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
-    const { userId, userRole, nbMaxEvent, setNbMaxEvent } = useContext(AuthContext);
+    const [comment, setComment] = useState("");
+    const [rating, setRating] = useState(0);
+
+    const [comments, setComments] = useState([]);
+    const [ratings, setRatings] = useState([]);
+
+
+    const { userId, userRole, firstname } = useContext(AuthContext);
 
 
     useEffect(() => {
         axios
             .get(`http://localhost:5000/api/event/${id}`)
-            .then(res => setEvent(res.data))
+            .then(res => {
+                setEvent(res.data);
+                setComments(res.data.comments);
+                setRatings(res.data.rating);
+                console.log(event, "event")
+            })
             .catch(err => console.error(err));
     }, [id]);
 
-    const [favoriteEvents, setFavoriteEvents] = useState([]);
 
-    // Récupérer les données de l'utilisateur à partir de l'API
-    useEffect(() => {
-        axios.get(`http://localhost:5000/api/user/${userId}`)
-            .then(res => {
-                setFavoriteEvents(res.data.favoriteEvents);
-                if (res.data.favoriteEvents.includes(id)) {
-                    setFavorite(true);
-                } else {
-                    setFavorite(false);
-                }
-            })
-            .catch(err => console.error(err));
-    }, [userId]);
-
-
-    const handleFavorite = () => {
-        if (!favoriteEvents.includes(id)) {
-            axios.put(`http://localhost:5000/api/user/${userId}`, {
-                favoriteEvents: [...favoriteEvents, id] // Concatenate the new id with the existing list
-            })
-                .then(res => { setFavorite(true); console.log(res) })
-                .catch(err => console.error(err));
-        }
+    const handleRatingChange = (event, value) => {
+        setRating(value);
     };
 
-    const handleSubmit = (event) => {
+    const handleCommentChange = event => {
+        setComment(event.target.value);
+    };
+
+    const handleSubmit = event => {
         event.preventDefault();
-        const formData = new FormData(event.target);
-        const comment = formData.get('comment');
-        const rating = formData.get('rating');
-        axios.put(`http://localhost:5000/api/event/${id}`, {
-            comment: comment,
+        const newComment = {
             rating: rating,
-        })
+            commenterId: userId ? userId : "anonymous",
+            commenterUsername: firstname ? firstname : "Anonymous",
+            text: comment,
+            timestamp: Date.now(),
+        };
+        // Ajouter le nouveau commentaire à la liste des commentaires
+        setComments([...comments, newComment]);
+        // Envoyer la requête au serveur pour mettre à jour l'événement avec les nouveaux commentaires
+        axios
+            .put(`http://localhost:5000/api/event/${id}`, {
+                comments: [...comments, newComment]
+            })
             .then(res => {
-                console.log(res, "res")
-                // Mettre à jour l'état de l'événement pour inclure la nouvelle évaluation
-                setEvent(prevEvent => {
-                    const newComments = Array.isArray(prevEvent.comments) ? [...prevEvent.comments, res.data] : [res.data];
-                    return {
-                        ...prevEvent,
-                        comment: newComments
-                    }
-                });
-                console.log(res, "event")
+                // Mettre à jour l'état de l'événement avec les commentaires mis à jour
+                const updatedEvent = { ...res.data, comments: res.data.comments };
+                setEvent(updatedEvent);
+                console.log(updatedEvent, "updated event");
             })
             .catch(err => console.error(err));
+        // Réinitialiser l'état de la note et du commentaire
+        setRating(0);
+        setComment('');
     };
-
-
 
     return (
         <div>
@@ -117,42 +110,62 @@ function EventDetail() {
                         <Typography variant="h5" component="h5">lien du site:<Link href={event.ticketLink}>{event.ticketLink}</Link></Typography>
                     </Grid>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <Checkbox
-                            {...label}
-                            icon={<FavoriteBorder />}
-                            checkedIcon={<Favorite />}
-                            onClick={handleFavorite}
+                    <FavButton />
+
+                    <Box sx={{ width: '100%', mb: 5 }}>
+                        {event.comments?.map(comment => (
+                            <Box key={comment.timestamp} sx={{ mb: 2 }}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                    {comment.commenterUsername}
+                                </Typography>
+                                <Typography variant="body1" sx={{ fontStyle: 'italic' }}>
+                                    {moment(comment.timestamp).fromNow()}
+                                </Typography>
+                                <Rating
+                                    name="rating"
+                                    value={comment.rating}
+                                    disabled
+                                    size="large"
+                                />
+                                <Typography variant="body1">
+                                    {comment.text}
+                                </Typography>
+                            </Box>
+                        )) ?? []}
+                    </Box>
+
+
+                    <Grid item>
+                        <Rating
+                            name="rating"
+                            value={rating}
+                            onChange={handleRatingChange}
+                            size="large"
                         />
+                    </Grid>
+                    <Grid item>
+                        <TextField
+                            id="comment"
+                            name="comment"
+                            label="Commentaire"
+                            multiline
+                            maxRows={4}
+                            value={comment}
+                            onChange={handleCommentChange}
+                            variant="outlined"
+                        />
+                    </Grid>
+                    <Grid item>
                         <Button
                             variant="contained"
-                            color="primary"
-                            disabled={favorite}
-                            onClick={handleFavorite}
+                            onClick={handleSubmit}
                         >
-                            {favorite ? 'Favori ajouté' : 'Ajouter aux favoris'}
+                            Ajouter
                         </Button>
-                    </Box>
-                    <form onSubmit={handleSubmit}>
-                        <label>
-                            Commentaire :
-                            <textarea />
-                        </label>
-                        <label>
-                            Evaluation :
-                            <select>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                            </select>
-                        </label>
-                        <button type="submit">Envoyer</button>
-                    </form>
+                    </Grid>
 
                 </Container>
-            </Container>
+            </Container >
         </div >
     );
 }
