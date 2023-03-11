@@ -2,11 +2,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link, useParams } from 'react-router-dom';
 import moment from 'moment';
-import { Box, Grid, Typography, TextField, Rating, Button } from '@mui/material';
+import { Box, Grid, Typography, TextField, Rating, Button, IconButton, Avatar } from '@mui/material';
 import { Container } from '@mui/system';
 import 'moment/locale/fr';
 import { AuthContext } from '../context/AuthContext';
 import FavButton from "./FavButton";
+import FavButton2 from "./FavButton2";
+import TwitterIcon from '@mui/icons-material/Twitter';
+import UserGroupList from './UserGroupList';
 moment.locale('fr');
 
 function EventDetail() {
@@ -17,10 +20,15 @@ function EventDetail() {
     const [rating, setRating] = useState(0);
 
     const [comments, setComments] = useState([]);
-    const [ratings, setRatings] = useState([]);
+
+    const [averageRating, setAverageRating] = useState(0);
 
 
-    const { userId, userRole, firstname } = useContext(AuthContext);
+    const { userId, userRole, userFirstname, userLastname, isAuthenticated } = useContext(AuthContext);
+
+    const encodedText = encodeURIComponent("Je partage cet événement incroyable !");
+    const encodedUrl = encodeURIComponent(`http://localhost:5000/api/event/${id}`);
+    const shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
 
 
     useEffect(() => {
@@ -29,12 +37,19 @@ function EventDetail() {
             .then(res => {
                 setEvent(res.data);
                 setComments(res.data.comments);
-                setRatings(res.data.rating);
-                console.log(event, "event")
+                console.log(event, "event");
+
+                const ratings = res.data.comments.map(comment => comment.rating);
+                console.log(ratings, "ratings");
+
+                // Calculer la note moyenne
+                const totalRating = ratings.reduce((total, rating) => total + rating, 0);
+                const average = totalRating / ratings.length;
+                console.log(totalRating, "totalRating");
+                setAverageRating(average);
             })
             .catch(err => console.error(err));
     }, [id]);
-
 
     const handleRatingChange = (event, value) => {
         setRating(value);
@@ -46,31 +61,42 @@ function EventDetail() {
 
     const handleSubmit = event => {
         event.preventDefault();
+
+        // Input validation
+        if (!comment || !rating || rating < 1 || rating > 5) {
+            // Display an error message to the user
+            console.error('Commentaire ou note invalide !');
+            return;
+        }
+
         const newComment = {
             rating: rating,
             commenterId: userId ? userId : "anonymous",
-            commenterUsername: firstname ? firstname : "Anonymous",
+            commenterUsername: userFirstname ? userFirstname + ' ' + userLastname : "Anonyme",
             text: comment,
             timestamp: Date.now(),
         };
-        // Ajouter le nouveau commentaire à la liste des commentaires
-        setComments([...comments, newComment]);
-        // Envoyer la requête au serveur pour mettre à jour l'événement avec les nouveaux commentaires
+
         axios
             .put(`http://localhost:5000/api/event/${id}`, {
                 comments: [...comments, newComment]
             })
             .then(res => {
-                // Mettre à jour l'état de l'événement avec les commentaires mis à jour
+                setComments([...comments, newComment]);
+                setRating(0);
+                setComment('');
+
                 const updatedEvent = { ...res.data, comments: res.data.comments };
                 setEvent(updatedEvent);
                 console.log(updatedEvent, "updated event");
             })
-            .catch(err => console.error(err));
-        // Réinitialiser l'état de la note et du commentaire
-        setRating(0);
-        setComment('');
+            .catch(err => {
+
+                console.error(err);
+                alert('Une erreur est survenue lors de l\'envoie du commentaire.');
+            });
     };
+
 
     return (
         <div>
@@ -110,29 +136,36 @@ function EventDetail() {
                         <Typography variant="h5" component="h5">lien du site:<Link href={event.ticketLink}>{event.ticketLink}</Link></Typography>
                     </Grid>
 
-                    <FavButton />
+                    {isAuthenticated ? <FavButton /> : <FavButton2 event={event} />}
+
+                    {/* <UserGroupList /> */}
+
 
                     <Box sx={{ width: '100%', mb: 5 }}>
                         {event.comments?.map(comment => (
-                            <Box key={comment.timestamp} sx={{ mb: 2 }}>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                    {comment.commenterUsername}
-                                </Typography>
-                                <Typography variant="body1" sx={{ fontStyle: 'italic' }}>
-                                    {moment(comment.timestamp).fromNow()}
-                                </Typography>
-                                <Rating
-                                    name="rating"
-                                    value={comment.rating}
-                                    disabled
-                                    size="large"
-                                />
-                                <Typography variant="body1">
-                                    {comment.text}
-                                </Typography>
+                            <Box key={comment.timestamp} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                <Avatar alt={comment.commenterUsername} src="/static/images/avatar/1.jpg" sx={{ mr: 2 }} />
+                                <Box sx={{ flex: 1 }}>
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                        {comment.commenterUsername}
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontStyle: 'italic' }}>
+                                        {moment(comment.timestamp).fromNow()}
+                                    </Typography>
+                                    <Rating
+                                        name="rating"
+                                        value={comment.rating}
+                                        disabled
+                                        size="large"
+                                    />
+                                    <Typography variant="body1">
+                                        {comment.text}
+                                    </Typography>
+                                </Box>
                             </Box>
                         )) ?? []}
                     </Box>
+
 
 
                     <Grid item>
@@ -163,6 +196,12 @@ function EventDetail() {
                             Ajouter
                         </Button>
                     </Grid>
+                    <Grid item>
+                        <Typography variant="h5" component="h5">Note moyenne : {averageRating.toFixed(1)}</Typography>
+                    </Grid>
+                    <IconButton component="a" href={shareUrl} target="_blank" rel="noopener">
+                        <TwitterIcon />
+                    </IconButton>
 
                 </Container>
             </Container >

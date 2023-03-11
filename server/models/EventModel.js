@@ -65,10 +65,10 @@ const EventSchema = new mongoose.Schema({
     capacity: {
         type: Number
     },
-    coords1: {
+    lat: {
         type: Number
     },
-    coords2: {
+    lng: {
         type: Number
     },
     rating: {

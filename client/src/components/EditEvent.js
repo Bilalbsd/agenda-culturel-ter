@@ -35,8 +35,8 @@ function EditEvent() {
                 price: prevState.price || 0,
                 ticketLink: prevState.ticketLink || '',
                 description: prevState.description || '',
-                coords1: prevState.coords1 || '',
-                coords2: prevState.coords2 || '',
+                lat: prevState.lat || '',
+                lng: prevState.lng || '',
             }
         });
     }, [userId, location]);
@@ -67,7 +67,7 @@ function EditEvent() {
             .put(`http://localhost:5000/api/event/${id}`, event)
             .then(res => {
                 console.log(res);
-                setInitialCoords([event.coords1, event.coords2])
+                setInitialCoords([event.lat, event.lng])
             })
             .catch(err => console.error(err));
     };
@@ -87,12 +87,13 @@ function EditEvent() {
 
 
     useEffect(() => {
-        if (event.coords1 && event.coords2) {
-            setInitialCoords([event.coords1, event.coords2]);
+        if (event.lat && event.lng) {
+            setInitialCoords([event.lat, event.lng]);
         }
-    }, [event.coords1, event.coords2]);
-
-
+    }, [event.lat, event.lng]);
+    
+    console.log(initialCoords, "initialCoords")
+    
     useEffect(() => {
         const script = document.createElement("script");
         script.src = `https://maps.googleapis.com/maps/api/js?key=${CLE_API}&libraries=places`;
@@ -134,8 +135,8 @@ function EditEvent() {
                 country: placeResult.address_components.find(component => component.types.includes('country')).long_name,
                 city: placeResult.address_components.find(component => component.types.includes('locality')).long_name,
                 location: location,
-                coords1: coords.lat,
-                coords2: coords.lng
+                lat: coords.lat,
+                lng: coords.lng
             });
         });
     };

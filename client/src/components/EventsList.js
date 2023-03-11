@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import moment from 'moment';
-
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { Box, Button, ButtonGroup, CardActionArea, Chip, Grid, Paper, TextField } from '@mui/material';
+import { Box, Button, ButtonGroup, CardActionArea, Chip, Grid, TextField } from '@mui/material';
 import { Container } from '@mui/system';
 import { NavLink } from 'react-router-dom';
 import 'moment/locale/fr'
@@ -15,12 +14,28 @@ moment.locale('fr')
 function EventsList() {
     const [events, setEvents] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
+
 
     useEffect(() => {
         axios
             .get('http://localhost:5000/api/event')
-            .then((res) => setEvents(res.data))
+            .then((res) => { setEvents(res.data); console.log(events, "events") })
             .catch((err) => console.error(err));
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setUserLocation({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                    });
+                },
+                (error) => {
+                    console.error(error);
+                }
+            );
+        }
     }, []);
 
     // Définir la longueur maximale pour la description
@@ -84,7 +99,31 @@ function EventsList() {
                 else {
                     return true;
                 }
-            });
+            })
+            .map((event) => {
+                const lat1 = userLocation.lat;
+                const lng1 = userLocation.lng;
+                const lat2 = event.lat;
+                const lng2 = event.lng;
+
+                const R = 6371; // rayon de la Terre en km
+                const dLat = ((lat2 - lat1) * Math.PI) / 180;
+                const dLng = ((lng2 - lng1) * Math.PI) / 180;
+                const a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos((lat1 * Math.PI) / 180) *
+                    Math.cos((lat2 * Math.PI) / 180) *
+                    Math.sin(dLng / 2) *
+                    Math.sin(dLng / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                const distance = R * c;
+
+                return {
+                    ...event,
+                    distance,
+                };
+            })
+            .sort((a, b) => a.distance - b.distance);
     };
 
     const filteredAndSortedEvents = filterAndSortEvents(events, searchQuery, sortOrder);
@@ -161,7 +200,7 @@ function EventsList() {
                                         </CardActionArea>
                                         <CardContent>
                                             <Typography gutterBottom variant="h5" component="div">
-                                                {event.title}
+                                                {event.title} - {Math.round(event.distance)} km
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
                                                 <Chip label={moment(event.startDate).format('ll') + " - " + moment(event.endDate).format('ll')} sx={{ marginBottom: 1 }} />

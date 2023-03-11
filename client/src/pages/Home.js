@@ -28,6 +28,8 @@ const Home = () => {
         fetchUser();
     }, [userId]); // déclencher l'effet à chaque changement de userId
 
+
+
     return (
         <div>
             {/* <h1>Bienvenue sur l'Agenda Culturel ! Id : {userId} </h1>

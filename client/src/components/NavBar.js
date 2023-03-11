@@ -15,7 +15,7 @@ import AdbIcon from '@mui/icons-material/Adb';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import CircleIcon from '@mui/icons-material/Circle';
 import LoginIcon from '@mui/icons-material/Login';
-import { Badge } from '@mui/material';
+import { Badge, Modal } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import { NavLink } from "react-router-dom";
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -59,6 +59,22 @@ function ResponsiveAppBar() {
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+    };
+
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const style = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
     };
 
     const isSmallScreen = useMediaQuery('(min-width: 900px)');
@@ -263,12 +279,30 @@ function ResponsiveAppBar() {
                             size="large"
                             aria-label="show 17 new notifications"
                             color="inherit"
+                            onClick={handleOpen}
                         >
                             <Badge badgeContent={17} color="error">
                                 <NotificationsIcon />
                             </Badge>
                         </IconButton>
                         {/* <p>Notifications</p> */}
+                        {!isAuthenticated &&
+                            <Modal
+                                open={open}
+                                onClose={handleClose}
+                                aria-labelledby="modal-modal-title"
+                                aria-describedby="modal-modal-description"
+                            >
+                                <Box sx={style}>
+                                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                                        Restez informé
+                                    </Typography>
+                                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                                        Vous devez être connecté pour profiter de cette fonctionnalité !
+                                    </Typography>
+                                </Box>
+                            </Modal>
+                        }
                     </MenuItem>
 
                     {isAuthenticated ?
@@ -295,19 +329,21 @@ function ResponsiveAppBar() {
                                 open={Boolean(anchorElUser)}
                                 onClose={handleCloseUserMenu}
                             >
-                                <NavLink to="/profil" style={{ textDecoration: 'none' }}>
+                                <NavLink to="/profil" style={{ textDecoration: 'none', color: 'black'}}>
                                     <MenuItem onClick={handleCloseUserMenu}>
                                         <Typography textAlign="center">Profil</Typography>
                                     </MenuItem>
                                 </NavLink>
-                                <NavLink to="/compte" style={{ textDecoration: 'none' }}>
+                                <NavLink to="/favorite" style={{ textDecoration: 'none', color: 'black'}}>
                                     <MenuItem onClick={handleCloseUserMenu}>
-                                        <Typography textAlign="center">Compte</Typography>
+                                        <Typography textAlign="center">Favoris</Typography>
                                     </MenuItem>
                                 </NavLink>
-                                <MenuItem onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center" onClick={() => { localStorage.removeItem('token'); window.location.reload(); }}>Déconnexion</Typography>
-                                </MenuItem>
+                                <div onClick={() => { localStorage.removeItem('token'); window.location.reload(); }}>
+                                    <MenuItem onClick={handleCloseUserMenu}>
+                                        <Typography textAlign="center" color="red">Déconnexion</Typography>
+                                    </MenuItem>
+                                </div>
                             </Menu>
                         </Box>
                         : <MenuItem>

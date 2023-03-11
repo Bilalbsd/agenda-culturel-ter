@@ -17,33 +17,38 @@ moment.locale('fr')
 function Favorite() {
     const [events, setEvents] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [favoriteIds, setFavoriteIds] = useState('');
 
-    const { userId, userRole, nbMaxEvent, setNbMaxEvent } = useContext(AuthContext);
+    const { userId, userRole, nbMaxEvent, setNbMaxEvent, isAuthenticated } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchFavorites = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/user/${userId}`);
-                const favoriteIds = res.data.favoriteEvents;
-                console.log(favoriteIds, "favoriteIds");
-    
-                const eventsRes = await axios.get('http://localhost:5000/api/event');
-                // console.log(eventsRes.data[i]._id, "events")
-    
+                let favorites = [];
+                let eventsRes = await axios.get('http://localhost:5000/api/event');
+
+                if (isAuthenticated) {
+                    const res = await axios.get(`http://localhost:5000/api/user/${userId}`);
+                    favorites = res.data.favoriteEvents;
+                } else {
+                    favorites = localStorage.getItem("favorites") || [];
+                }
+
                 // Filter events based on favoriteIds
-                const favoriteEvents = eventsRes.data.filter(event => favoriteIds.includes(event._id));
-    
+                const favoriteEvents = eventsRes.data.filter(event => favorites.includes(event._id));
+
                 // Set the state with filtered events
                 setEvents(favoriteEvents);
-                console.log(events, "events")
+                setFavoriteIds(favorites);
             } catch (err) {
                 console.error(err);
             }
         };
-    
+
         fetchFavorites();
-    }, [userId]);
-    
+    }, [userId, isAuthenticated]);
+
+
     // Définir la longueur maximale pour la description
     const maxLength = 150;
 
