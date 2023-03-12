@@ -115,7 +115,7 @@ function EventDetail() {
                         {event.description}
                     </Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <img src={event.image} alt="img de l'évènement" style={{ width: "300", height: "300" }} />
+                        <img src={event.image} alt="img de l'évènement" style={{ width: "800px", height: "500px" }} />
                     </Box>
                     <Typography variant="h3" align="left" color="text.primary" component="p">
                         Informations
@@ -155,7 +155,7 @@ function EventDetail() {
                                     <Rating
                                         name="rating"
                                         value={comment.rating}
-                                        disabled
+                                        readOnly
                                         size="large"
                                     />
                                     <Typography variant="body1">
@@ -197,7 +197,7 @@ function EventDetail() {
                         </Button>
                     </Grid>
                     <Grid item>
-                        <Typography variant="h5" component="h5">Note moyenne : {averageRating.toFixed(1)}</Typography>
+                        <Typography variant="h5" component="h5">Note moyenne : {averageRating ? averageRating.toFixed(1) : "Aucune évaluation"}</Typography>
                     </Grid>
                     <IconButton component="a" href={shareUrl} target="_blank" rel="noopener">
                         <TwitterIcon />

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { NavLink, useParams } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import moment from 'moment';
-import { Button, FormControl, Grid, Input, InputAdornment, InputLabel, List, ListItem, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Alert, Button, FormControl, Grid, Input, InputAdornment, InputLabel, List, ListItem, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 // import 'moment/locale/fr'
 // moment.locale('fr')
@@ -12,6 +12,9 @@ function EditEvent() {
     const { id } = useParams();
     const [event, setEvent] = useState({});
     const { userId } = useContext(AuthContext);
+
+    const [open, setOpen] = useState(false);
+
     const [location, setLocation] = useState("");
     const [map, setMap] = useState(null);
     const [marker, setMarker] = useState(null);
@@ -67,7 +70,8 @@ function EditEvent() {
             .put(`http://localhost:5000/api/event/${id}`, event)
             .then(res => {
                 console.log(res);
-                setInitialCoords([event.lat, event.lng])
+                setInitialCoords([event.lat, event.lng]);
+                setOpen(true);
             })
             .catch(err => console.error(err));
     };
@@ -91,9 +95,9 @@ function EditEvent() {
             setInitialCoords([event.lat, event.lng]);
         }
     }, [event.lat, event.lng]);
-    
+
     console.log(initialCoords, "initialCoords")
-    
+
     useEffect(() => {
         const script = document.createElement("script");
         script.src = `https://maps.googleapis.com/maps/api/js?key=${CLE_API}&libraries=places`;
@@ -165,7 +169,7 @@ function EditEvent() {
                                     name="title"
                                     label="Titre"
                                     fullWidth
-                                    value={event.title}
+                                    value={'' + event.title}
                                     onChange={handleChange}
                                 />
                             </Grid>
@@ -189,6 +193,7 @@ function EditEvent() {
                                         <option value="Danse">Danse</option>
                                         <option value="Spectacle">Spectacle</option>
                                         <option value="Exposition">Exposition</option>
+                                        <option value="Autre">Autre</option>
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -423,6 +428,42 @@ function EditEvent() {
                                     </Grid>
                                 </>
                             )}
+                            {event.theme === 'Autre' && (
+                                <>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="capacity"
+                                            label="Capacité d'accueil"
+                                            fullWidth
+                                            type="number"
+                                            value={event.capacity}
+                                            onChange={handleChange}
+                                            inputProps={{ min: '1', required: true }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="speaker"
+                                            label="Nom du/des intervenant(s)"
+                                            fullWidth
+                                            value={event.speaker}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="speakerPresentation"
+                                            label="Présentation du/des intervenant(s)"
+                                            fullWidth
+                                            multiline
+                                            rows={4}
+                                            value={event.speakerPresentation}
+                                            onChange={handleChange}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     name="startDate"
@@ -539,7 +580,11 @@ function EditEvent() {
                                     onChange={handleChange}
                                 />
                             </Grid>
-
+                            <Grid item xs={12}>
+                                {open &&
+                                    <Alert variant="outlined" >Cet événement a été modifié avec succès !</Alert>
+                                }
+                            </Grid>
                             <Grid item xs={9} sm={4}>
                                 <Button variant="contained" color="primary" type="submit">
                                     Modifier l'événement
@@ -547,7 +592,6 @@ function EditEvent() {
                             </Grid>
                         </Grid>
                     </form>
-
                 </Grid >
             )
             }

@@ -55,8 +55,8 @@ function CreateEvent() {
                 price: prevState.price || 0,
                 ticketLink: prevState.ticketLink || '',
                 description: prevState.description || '',
-                coords1: prevState.coords1 || '',
-                coords2: prevState.coords2 || '',
+                lat: prevState.lat || '',
+                lng: prevState.lng || '',
             }
         });
     }, [userId, location]);
@@ -169,8 +169,8 @@ function CreateEvent() {
                 ...event,
                 country: placeResult.address_components.find(component => component.types.includes('country')).long_name,
                 city: placeResult.address_components.find(component => component.types.includes('locality')).long_name,
-                coords1: lat,
-                coords2: lng
+                lat: lat,
+                lng: lng
             });
         });
     };
@@ -257,6 +257,7 @@ function CreateEvent() {
                                         <option value="Danse">Danse</option>
                                         <option value="Spectacle">Spectacle</option>
                                         <option value="Exposition">Exposition</option>
+                                        <option value="Autre">Autre</option>
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -482,6 +483,42 @@ function CreateEvent() {
                                         <TextField
                                             name="speakerPresentation"
                                             label="Présentation du/des chanteur(s)"
+                                            fullWidth
+                                            multiline
+                                            rows={4}
+                                            value={event.speakerPresentation}
+                                            onChange={handleChange}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+                            {event.theme === 'Autre' && (
+                                <>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="capacity"
+                                            label="Capacité d'accueil"
+                                            fullWidth
+                                            type="number"
+                                            value={event.capacity}
+                                            onChange={handleChange}
+                                            inputProps={{ min: '1', required: true }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="speaker"
+                                            label="Nom du/des intervenant(s)"
+                                            fullWidth
+                                            value={event.speaker}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            name="speakerPresentation"
+                                            label="Présentation du/des intervenant(s)"
                                             fullWidth
                                             multiline
                                             rows={4}
