@@ -6,6 +6,7 @@ function UserManagement() {
     const [users, setUsers] = useState([]);
     const { isAuthenticated, userRole } = useContext(AuthContext);
     const [selectedRole, setSelectedRole] = useState({});
+    const [validation, setValidation] = useState({});
 
     useEffect(() => {
         axios
@@ -19,6 +20,11 @@ function UserManagement() {
     const handleRoleChange = (id, role) => {
         setSelectedRole({ ...selectedRole, [id]: role });
         console.log(selectedRole)
+    };
+
+    const handleValidateChange = (id, validate) => {
+        setValidation({ ...validation, [id]: validate });
+        console.log(validation)
     };
 
     const handleUpdateRole = id => {
@@ -38,11 +44,29 @@ function UserManagement() {
             .catch(err => console.error(err));
     };
 
+    const handleUpdateValidate = id => {
+        axios
+            .put(`http://localhost:5000/api/user/${id}`, { isValidated: validation[id] })
+            .then(res => {
+                setUsers(
+                    users.map(user => {
+                        if (user._id === id) {
+                            return { ...user, isValidated: validation[id] };
+                        }
+                        return user;
+                    })
+
+                );
+            })
+            .catch(err => console.error(err));
+    };
+
     const handleDelete = id => {
         axios
             .delete(`http://localhost:5000/api/user/${id}`)
             .then(res => {
                 setUsers(users.filter(user => user._id !== id));
+                console.log(users, "users");
             })
             .catch(err => console.error(err));
     };
@@ -58,6 +82,7 @@ function UserManagement() {
                                 <th>Id</th>
                                 <th>Nom</th>
                                 <th>Prénom</th>
+                                <th>Validé</th>
                                 <th>Rôle</th>
                                 <th>Email</th>
                                 <th>Actions</th>
@@ -69,6 +94,14 @@ function UserManagement() {
                                     <td>{user._id}</td>
                                     <td>{user.lastname}</td>
                                     <td>{user.firstname}</td>
+                                    {/* <td>{user.isValidated ? "oui" : "non"}</td> */}
+                                    <td>
+                                        <select value={user.isValidated} onChange={e => handleValidateChange(user._id, e.target.value)}>
+                                            <option value="true">Oui</option>
+                                            <option value="false">Non</option>
+                                        </select>
+                                        <button onClick={() => handleUpdateValidate(user._id)}>Valider</button>
+                                    </td>
                                     <td>
                                         <select value={user.role} onChange={e => handleRoleChange(user._id, e.target.value)}>
                                             <option value="registered">Registered</option>
