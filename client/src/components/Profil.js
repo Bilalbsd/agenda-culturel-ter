@@ -19,6 +19,7 @@ function Profil() {
     }, [userId, nbMaxEvent]);
 
     const handleChange = e => {
+        console.log(e.target.value, "e.target.value");
         setUser({ ...user, [e.target.name]: e.target.value });
     };
 
@@ -83,16 +84,19 @@ function Profil() {
                                 </Box>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField label="Prénom" value={"" + user.firstname} fullWidth onChange={handleChange} />
+                                <TextField label="Prénom" name="firstname" value={"" + user.firstname} fullWidth onChange={handleChange} />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField label="Nom" value={"" + user.lastname} fullWidth onChange={handleChange} />
+                                <TextField label="Nom" name="lastname" value={"" + user.lastname} fullWidth onChange={handleChange} />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField label="Email" value={"" + user.email} fullWidth onChange={handleChange} />
+                                <TextField label="Email" name="email" value={"" + user.email} fullWidth onChange={handleChange} />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField disabled label="Rôle" value={"" + userRole} fullWidth onChange={handleChange} />
+                            </Grid>
+                            <Grid item xs={12} >
+                                <Button value="Envoyer" onClick={handleSubmit}>Mettre à jour</Button>
                             </Grid>
                         </Grid>
                     )
