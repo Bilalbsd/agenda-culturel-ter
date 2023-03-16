@@ -11,7 +11,7 @@ import { DropzoneArea } from "mui-file-dropzone";
 
 
 function CreateEvent() {
-    const { userId, userRole, nbMaxEvent, setNbMaxEvent } = useContext(AuthContext);
+    const { userId, userRole, nbMaxEvent, setNbMaxEvent, isValidated } = useContext(AuthContext);
     const [event, setEvent] = useState({});
     const [location, setLocation] = useState("");
     const [map, setMap] = useState(null);
@@ -209,9 +209,10 @@ function CreateEvent() {
 
     return (
         <Grid container justifyContent="center">
-            {userRole !== 'creator' ? (
+            {userRole !== 'creator' || !isValidated ? (
                 <Grid item xs={12}>
                     <Typography variant="h5">Vous n'avez pas les permissions nécessaires pour accéder à cette page !</Typography>
+                    <Typography variant="h5">Votre compte n'a pas encore été validé !</Typography>
                 </Grid>
             ) : nbMaxEvent === 0 ? (
                 <Grid item xs={12}>
