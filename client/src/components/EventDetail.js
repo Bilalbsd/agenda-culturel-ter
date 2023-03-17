@@ -10,6 +10,8 @@ import FavButton from "./FavButton";
 import FavButton2 from "./FavButton2";
 import TwitterIcon from '@mui/icons-material/Twitter';
 import UserGroupList from './UserGroupList';
+import FriendGroups from './FriendGroups';
+import FriendGroupsList from './FriendGroupsList';
 moment.locale('fr');
 
 function EventDetail() {
@@ -72,7 +74,7 @@ function EventDetail() {
         const newComment = {
             rating: rating,
             commenterId: userId ? userId : "anonymous",
-            commenterUsername: userFirstname ? userFirstname + ' ' + userLastname : "Anonyme",
+            commenterUsername: userFirstname ? userFirstname + ' ' + userLastname : " Anonyme",
             text: comment,
             timestamp: Date.now(),
         };
@@ -120,7 +122,7 @@ function EventDetail() {
                     <Typography variant="h3" align="left" color="text.primary" component="p">
                         Informations
                     </Typography>
-                    <Grid spacing={5}>
+                    <Grid>
                         <Grid item xs={12} md={6}>
                             <Typography variant="h5" component="h5">Pays: {event.country}</Typography>
                         </Grid>
@@ -204,6 +206,8 @@ function EventDetail() {
                     </IconButton>
 
                 </Container>
+                <FriendGroups />
+                <FriendGroupsList />
             </Container >
         </div >
     );

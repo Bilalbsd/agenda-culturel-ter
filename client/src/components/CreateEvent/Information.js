@@ -1,11 +1,10 @@
 import { Box, Modal, Typography } from '@mui/material';
+import axios from 'axios';
 import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../../context/AuthContext';
-import { FirstConnectionContext } from '../../context/FirstConnectionContext';
 
 function Information() {
-    const { hasSeenMessage, setHasSeenMessage } = useContext(FirstConnectionContext);
-    const { userId, userRole, nbMaxEvent, isAuthenticated } = useContext(AuthContext);
+    const { userId, userRole, userFirstname, nbMaxEvent, isAuthenticated, firstConnection, setFirstConnection } = useContext(AuthContext);
 
     const style = {
         position: 'absolute',
@@ -21,11 +20,27 @@ function Information() {
 
     const [open, setOpen] = useState(false);
 
+
     useEffect(() => {
-        if (hasSeenMessage && isAuthenticated) {
-            setOpen(true);
+        if (firstConnection && isAuthenticated && userRole ==='creator') {
+            console.log(firstConnection, "firstConnection");
+            try {
+                axios.put(`http://localhost:5000/api/user/${userId}`, { firstConnection: false })
+                    .then(res => {
+                        setFirstConnection(res.data.firstConnection);
+                        console.log(res.data, "res.data");
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+                setOpen(true);
+            } catch (err) {
+                console.log(err);
+            }
         }
-    }, [hasSeenMessage, isAuthenticated]);
+    }, [userId]);
+
+
 
     const handleClose = () => {
         setOpen(false);
@@ -41,7 +56,7 @@ function Information() {
             >
                 <Box sx={style}>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Text in a modal
+                        Bienvenue {userFirstname} ! {`test ${firstConnection}`} {userId}
                     </Typography>
                     <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                         Duis mollis, est non commodo luctus, nisi erat porttitor ligula.

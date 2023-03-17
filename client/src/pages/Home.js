@@ -43,7 +43,7 @@ const Home = () => {
             <Information /> */}
             <NavBar />
             {/* <Localisation /> */}
-            {/* <Information /> */}
+            <Information />
             <EventsList />
             <Footer />
         </div>

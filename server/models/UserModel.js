@@ -58,6 +58,16 @@ const UserSchema = new mongoose.Schema({
     isValidated: {
         type: Boolean,
         default: true
+    },
+    firstConnection: {
+        type: Boolean,
+        default: true
+    },
+    groups: {
+        type: [{
+            groupName: String,
+            members: [String],
+        }]
     }
 },
     {

@@ -13,6 +13,7 @@ import Pricing from './pages/Pricing';
 import Payment from './pages/Payment';
 import NotFound from './pages/NotFound';
 import FavoriteEvent from './pages/FavoriteEvent';
+import Group from './pages/Group';
 
 // import { AuthContext } from './context/AuthContext';
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/personal-events" element={<PersonalEvents />} />
         <Route path="/favorite" element={<FavoriteEvent />} />
+        <Route path="/group" element={<Group />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/events/:id" element={<Event />} />
