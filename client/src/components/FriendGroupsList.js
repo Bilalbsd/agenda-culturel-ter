@@ -11,8 +11,12 @@ function FriendGroupsList() {
 
     const { userId } = useContext(AuthContext);
 
+    const handleDelete = (groupName) => {
+        setGroups(groups.filter((group) => group.groupName !== groupName));
+      };
+      
+
     useEffect(() => {
-        // Make two separate requests using Promise.all to fetch data in parallel
         Promise.all([
             axios.get(`http://localhost:5000/api/user`),
             axios.get(`http://localhost:5000/api/user/${userId}`)
@@ -25,19 +29,6 @@ function FriendGroupsList() {
                 console.error(error);
             });
     }, [userId]);
-
-    function handleDelete(groupNameToDelete) {
-        const updatedGroups = groups.filter(group => group.groupName !== groupNameToDelete);
-        axios
-            .put(`http://localhost:5000/api/user/${userId}`, {
-                groups: updatedGroups
-            })
-            .then(res => {
-                setGroups(updatedGroups);
-            })
-            .catch(err => console.error(err));
-    }
-
 
     return (
         <Container maxWidth="md">

@@ -1,6 +1,7 @@
 
 import React from 'react';
 import EventDetail from '../components/EventDetail';
+import FriendGroups from '../components/FriendGroups';
 import NavBar from '../components/NavBar';
 
 function Event() {
@@ -8,6 +9,7 @@ function Event() {
         <div>
             <NavBar />
             <EventDetail/>
+            <FriendGroups />
         </div>
     );
 }

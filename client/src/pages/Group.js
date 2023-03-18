@@ -2,6 +2,7 @@ import React from 'react';
 import FriendGroups from '../components/FriendGroups';
 import NavBar from '../components/NavBar';
 import FriendGroupsList from '../components/FriendGroupsList';
+import Notification from '../components/Notification';
 
 const Group = () => {
     return (
@@ -9,7 +10,8 @@ const Group = () => {
             <NavBar />
             <br /> <br /> <br />
             <FriendGroups />
-            <FriendGroupsList />
+            {/* <Notification /> */}
+            {/* <FriendGroupsList /> */}
         </div>
     );
 };

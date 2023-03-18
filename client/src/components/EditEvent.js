@@ -22,6 +22,9 @@ function EditEvent() {
     const [coords, setCoords] = useState(null);
     const [initialCoords, setInitialCoords] = useState(null);
 
+    const [discount, setDiscount] = useState(0);
+    const [duration, setDuration] = useState(0);
+
     useEffect(() => {
         setEvent(prevState => {
             return {
@@ -38,6 +41,8 @@ function EditEvent() {
                 price: prevState.price || 0,
                 ticketLink: prevState.ticketLink || '',
                 description: prevState.description || '',
+                discountedPrice: discount || 0,
+                promotionExpirationDate : duration || '',
                 lat: prevState.lat || '',
                 lng: prevState.lng || '',
             }
@@ -64,10 +69,21 @@ function EditEvent() {
         setEvent({ ...event, [e.target.name]: speakers });
     }
 
+    const handleDiscountChange = e => {
+        setDiscount(e.target.value);
+    };
+
+    const handleDurationChange = e => {
+        setDuration(e.target.value);
+    };
+
     const handleSubmit = e => {
         e.preventDefault();
+        const discountedPrice = event.price * (1 - discount / 100);
+        const promotionExpirationDate = new Date(Date.now() + duration * 24 * 60 * 60 * 1000);
+        const updatedEvent = { ...event, discountedPrice, promotionExpirationDate };
         axios
-            .put(`http://localhost:5000/api/event/${id}`, event)
+            .put(`http://localhost:5000/api/event/${id}`, updatedEvent)
             .then(res => {
                 console.log(res);
                 setInitialCoords([event.lat, event.lng]);
@@ -554,6 +570,30 @@ function EditEvent() {
                                     fullWidth
                                     value={event.price}
                                     onChange={handleChange}
+                                    inputProps={{ min: 0 }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    id="discount-input"
+                                    label="Pourcentage de réduction"
+                                    type="number"
+                                    name="discount"
+                                    fullWidth
+                                    value={discount}
+                                    onChange={handleDiscountChange}
+                                    inputProps={{ min: 0, max: 100 }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    id="duration-input"
+                                    label="Durée de la promotion (en jours)"
+                                    type="number"
+                                    name="duration"
+                                    fullWidth
+                                    value={duration}
+                                    onChange={handleDurationChange}
                                     inputProps={{ min: 0 }}
                                 />
                             </Grid>

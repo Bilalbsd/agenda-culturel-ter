@@ -134,7 +134,19 @@ function EventDetail() {
                         <Typography variant="h5" component="h5">Date fin: {moment(event.endDate).format('lll')}</Typography>
                         <Typography variant="h5" component="h5">Adresse: {event.location}</Typography>
                         <Typography variant="h5" component="h5">Intervenants: {event.speakers}</Typography>
-                        <Typography variant="h5" component="h5">Prix: {event.price === 0 ? "Gratuit" : 0 + "€"}</Typography>
+                        <Typography gutterBottom variant="h5" component="div" color="green">
+                            {event.promotionExpirationDate && "Fin de la promotion " + moment(event.promotionExpirationDate).fromNow()}
+                        </Typography>
+                        <Typography variant="h5" component="h5">
+                            Prix: {
+                                event.discountedPrice
+                                    ? <span><span style={{ textDecoration: 'line-through' }}>{event.price}€</span> {event.discountedPrice}€ en réduction</span>
+                                    : event.price === 0
+                                        ? "Gratuit"
+                                        : `${event.price}€`
+                            }
+                        </Typography>
+
                         <Typography variant="h5" component="h5">lien du site:<Link href={event.ticketLink}>{event.ticketLink}</Link></Typography>
                     </Grid>
 
@@ -206,8 +218,6 @@ function EventDetail() {
                     </IconButton>
 
                 </Container>
-                <FriendGroups />
-                <FriendGroupsList />
             </Container >
         </div >
     );

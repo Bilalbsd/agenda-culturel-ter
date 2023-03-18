@@ -53,6 +53,12 @@ const EventSchema = new mongoose.Schema({
     price: {
         type: Number
     },
+    discountedPrice : {
+        type: Number
+    },
+    promotionExpirationDate : {
+        type: Date
+    },
     ticketLink: {
         type: String
     },

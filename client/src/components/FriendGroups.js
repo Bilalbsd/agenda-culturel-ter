@@ -2,23 +2,22 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { useContext } from 'react';
-import { Autocomplete, Button, Container, Grid, TextField, Typography } from '@mui/material';
-import FriendGroupsList from './FriendGroupsList';
+import { Autocomplete, Avatar, Button, Card, CardActions, CardContent, Container, Grid, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
+
 
 function FriendGroups() {
     const [users, setUsers] = useState([]);
     const [groupName, setGroupName] = useState('');
     const [selectedFriends, setSelectedFriends] = useState([]);
     const [allGroups, setAllGroups] = useState([]);
-    const [searchInput, setSearchInput] = useState(''); // ajout de l'état pour stocker la valeur de la recherche
+    const [searchInput, setSearchInput] = useState('');
     const [isGroupNameValid, setIsGroupNameValid] = useState(true);
-
+    const [nbGroups, setNbGroups] = useState(0);
 
     const { userId, userRole, userFirstname, nbMaxEvent, isAuthenticated } = useContext(AuthContext);
 
     useEffect(() => {
-        // Récupérer tous les utilisateurs depuis la base de données
         axios.get('http://localhost:5000/api/user')
             .then(response => {
                 setUsers(response.data);
@@ -29,11 +28,10 @@ function FriendGroups() {
     }, []);
 
     useEffect(() => {
-        // Récupérer les groupes d'amis de l'utilisateur courant depuis la base de données
         axios.get(`http://localhost:5000/api/user/${userId}`)
             .then(response => {
                 setAllGroups(response.data.groups);
-                console.log(response.data.groups, "allGroups");
+                setNbGroups(response.data.groups.length);
             })
             .catch(error => {
                 console.log(error);
@@ -47,18 +45,15 @@ function FriendGroups() {
     };
 
     const handleGroupNameChange = event => {
-        // Mettre à jour le nom du groupe avec la valeur de l'input
         setGroupName(event.target.value);
         validateGroupName();
     };
 
-    const handleFriendSelection = (event, values) => { // modification de la fonction de sélection d'amis pour prendre en compte la valeur sélectionnée
+    const handleFriendSelection = (event, values) => {
         setSelectedFriends(values.map(value => value._id));
     };
 
-
-
-    const handleSubmit = event => {
+    const handleSubmit = (event) => {
         event.preventDefault();
 
         if (!isGroupNameValid) {
@@ -67,19 +62,26 @@ function FriendGroups() {
 
         const newGroup = {
             groupName: groupName,
-            members: selectedFriends
+            members: selectedFriends,
         };
 
+        // if (allGroups.length >= 3) {
+        //     // Limite de groupes atteinte
+        //     console.log("Limite de  groupes atteinte");
+        //     return;
+        // }
+
         // Ajouter le nouveau groupe d'amis à la liste des groupes de l'utilisateur courant dans la base de données
-        axios.put(`http://localhost:5000/api/user/${userId}`, {
-            groups: [...allGroups, newGroup]
-        })
-            .then(response => {
+        axios
+            .put(`http://localhost:5000/api/user/${userId}`, {
+                groups: [...allGroups, newGroup],
+            })
+            .then((response) => {
                 setAllGroups([...allGroups, newGroup]);
                 console.log(response.data);
-                setGroupName('');
+                setGroupName("");
             })
-            .catch(error => {
+            .catch((error) => {
                 console.log(error);
             });
     };
@@ -88,6 +90,36 @@ function FriendGroups() {
         const regex = new RegExp(searchInput, 'gi');
         return regex.test(user.firstname);
     }); // ajout d'une variable qui contient la liste des utilisateurs filtrés selon la recherche
+
+
+    const [groups, setGroups] = useState([]);
+
+    useEffect(() => {
+        Promise.all([
+            axios.get(`http://localhost:5000/api/user`),
+            axios.get(`http://localhost:5000/api/user/${userId}`)
+        ])
+            .then(([usersResponse, groupsResponse]) => {
+                setUsers(usersResponse.data);
+                setGroups(groupsResponse.data.groups);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }, [userId, groups]);
+
+    function handleDelete(groupNameToDelete) {
+        const updatedGroups = groups.filter(group => group.groupName !== groupNameToDelete);
+        axios
+            .put(`http://localhost:5000/api/user/${userId}`, {
+                groups: updatedGroups
+            })
+            .then(res => {
+                setGroups(updatedGroups);
+                console.log(res.data, "updatedGroups");
+            })
+            .catch(err => console.error(err));
+    }
 
     return (
         <Container maxWidth="md">
@@ -129,7 +161,37 @@ function FriendGroups() {
                     </Button>
                 </form>
             </Box >
-        </Container >
+            <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                {groups.map((group, index) => (
+                    <Box key={group.groupName} sx={{ maxWidth: 345, flexGrow: 1, margin: '0 10px 20px 10px' }}>
+                        <Card sx={{ height: '100%', position: 'relative' }}>
+                            <CardContent sx={{ height: 'calc(100% - 60px)', overflowY: 'auto' }}>
+                                <div>
+                                    <Typography variant="h6" component="h2">
+                                        {group.groupName}
+                                    </Typography>
+                                    <ul style={{ maxHeight: '250px', minHeight: '100px', paddingInlineStart: '10px' }}>
+                                        {group.members.map((memberId) => {
+                                            const user = users.find((u) => u._id === memberId);
+                                            return user ? (
+                                                <Box key={user._id} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                                    <Avatar alt={user.firstname} src="/static/images/avatar/1.jpg" sx={{ mr: 2 }} />
+                                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{user.firstname}</Typography>
+                                                </Box>
+                                            ) : null;
+                                        })}
+                                    </ul>
+                                </div>
+                            </CardContent>
+                            <CardActions sx={{ position: 'absolute', bottom: 0 }}>
+                                <Button size="small">Partager</Button>
+                                <Button size="small" color="error" onClick={() => handleDelete(group.groupName)}>Supprimer</Button>
+                            </CardActions>
+                        </Card>
+                    </Box>
+                ))}
+            </Box>
+        </Container>
     );
 }
 

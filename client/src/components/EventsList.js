@@ -11,11 +11,13 @@ import { NavLink } from 'react-router-dom';
 import 'moment/locale/fr'
 moment.locale('fr')
 
+
 function EventsList() {
     const [events, setEvents] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
     const [geolocationEnabled, setGeolocationEnabled] = useState(false);
+
 
 
     useEffect(() => {
@@ -204,7 +206,10 @@ function EventsList() {
                                         </CardActionArea>
                                         <CardContent>
                                             <Typography gutterBottom variant="h5" component="div">
-                                                {event.title} - {navigator.geolocation ? Math.round(event.distance) + "km" : null} 
+                                                {event.title} - {navigator.geolocation ? Math.round(event.distance) + "km" : null}
+                                            </Typography>
+                                            <Typography gutterBottom variant="p" component="div" color="green">
+                                                {event.promotionExpirationDate && "Fin de la promotion " + moment(event.promotionExpirationDate).fromNow()}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
                                                 <Chip label={moment(event.startDate).format('ll') + " - " + moment(event.endDate).format('ll')} sx={{ marginBottom: 1 }} />
