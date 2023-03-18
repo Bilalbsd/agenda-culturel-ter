@@ -10,6 +10,7 @@ function UserCreatorManagement() {
     const [selectedRole, setSelectedRole] = useState({});
     const [validation, setValidation] = useState({});
 
+
     useEffect(() => {
         axios
             .get(`http://localhost:5000/api/user/`)
@@ -81,7 +82,7 @@ function UserCreatorManagement() {
                 .catch(err => console.error(err));
         });
     }, [selectedRole]);
-    
+
     useEffect(() => {
         // Effectue la mise à jour de la validation pour tous les utilisateurs dont l'ID est présent dans l'état validation
         Object.keys(validation).forEach(id => {
@@ -94,6 +95,7 @@ function UserCreatorManagement() {
                                 return { ...user, isValidated: validation[id] };
                             }
                             return user;
+
                         })
                     );
                     console.log(res.data, "res2")
@@ -101,6 +103,25 @@ function UserCreatorManagement() {
                 .catch(err => console.error(err));
         });
     }, [validation]);
+
+    const handleValidation = async (user) => {
+        try {
+            const response = await axios.put(`http://localhost:5000/api/user/${user._id}`, {
+                ...user,
+                isValidated: true
+            });
+            const updatedUser = response.data;
+            setUsers(prevState => prevState.map(u => {
+                if (u._id === updatedUser._id) {
+                    return updatedUser;
+                }
+                return u;
+            }));
+            console.log(response.data); // pour déboguer
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     const handleDelete = id => {
         axios
@@ -137,36 +158,35 @@ function UserCreatorManagement() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {filteredUsers.map(user => (
-                                        <TableRow key={user._id}>
-                                            <TableCell>{user._id}</TableCell>
-                                            <TableCell>{user.lastname}</TableCell>
-                                            <TableCell>{user.firstname}</TableCell>
-                                            <TableCell>
-                                                <Select value={user.isValidated}>
-                                                    <MenuItem value="true">Oui</MenuItem>
-                                                    <MenuItem value="false">Non</MenuItem>
-                                                </Select>
-                                                <Button variant="contained" color="primary">Valider</Button>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Select value={user.role} >
-                                                    <MenuItem value="registered">Registered</MenuItem>
-                                                    <MenuItem value="creator">Creator</MenuItem>
-                                                    <MenuItem value="manager">Manager</MenuItem>
-                                                    <MenuItem value="admin">Admin</MenuItem>
-                                                </Select>
-                                                <Button variant="contained" color="primary">Valider</Button>
-                                            </TableCell>
-                                            <TableCell>{user.email}</TableCell>
-                                            <TableCell>
-                                                <Button variant="contained" color="secondary">Supprimer</Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
+                                    {filteredUsers.map(user => {
+                                        return (
+                                            <TableRow key={user._id}>
+                                                <TableCell>{user._id}</TableCell>
+                                                <TableCell>{user.lastname}</TableCell>
+                                                <TableCell>{user.firstname}</TableCell>
+                                                <TableCell>
+                                                    {user.isValidated ? (
+                                                        <Button variant="contained" color="primary" disabled>
+                                                            Validé
+                                                        </Button>
+                                                    ) : (
+                                                        <Button variant="contained" color="primary" onClick={() => handleValidation(user)}>
+                                                            Valider
+                                                        </Button>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>{user.role}</TableCell>
+                                                <TableCell>{user.email}</TableCell>
+                                                <TableCell>
+                                                    <Button variant="contained" color="error" onClick={() => handleDelete(user._id)}>Supprimer</Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
                                 </TableBody>
                             </Table>
                         </TableContainer>
+
                         {/* <Pagination count={pageCount} page={page} onChange={handlePageChange} /> */}
                     </Container>
                 </div>

@@ -101,7 +101,6 @@ function UserCreatorManagement() {
                                         <TableCell>Id</TableCell>
                                         <TableCell>Nom</TableCell>
                                         <TableCell>Prénom</TableCell>
-                                        <TableCell>Validé</TableCell>
                                         <TableCell>Rôle</TableCell>
                                         <TableCell>Email</TableCell>
                                         <TableCell>Actions</TableCell>
@@ -113,14 +112,14 @@ function UserCreatorManagement() {
                                             <TableCell>{user._id}</TableCell>
                                             <TableCell>{user.lastname}</TableCell>
                                             <TableCell>{user.firstname}</TableCell>
-                                            <TableCell>
+                                            {/* <TableCell>
                                                 <Select value={user.isValidated} onChange={(e) => handleValidateChange(user._id, e.target.value)}>
                                                     <MenuItem value="true">Oui</MenuItem>
                                                     <MenuItem value="false">Non</MenuItem>
                                                 </Select>
                                                 <Button variant="contained" color="primary" onClick={() => handleUpdateValidate(user._id)}>Valider</Button>
-                                            </TableCell>
-                                            <TableCell>
+                                            </TableCell> */}
+                                            {/* <TableCell>
                                                 <Select value={user.role} onChange={(e) => handleRoleChange(user._id, e.target.value)}>
                                                     <MenuItem value="registered">Registered</MenuItem>
                                                     <MenuItem value="creator">Creator</MenuItem>
@@ -128,10 +127,11 @@ function UserCreatorManagement() {
                                                     <MenuItem value="admin">Admin</MenuItem>
                                                 </Select>
                                                 <Button variant="contained" color="primary" onClick={() => handleUpdateRole(user._id)}>Valider</Button>
-                                            </TableCell>
+                                            </TableCell> */}
+                                            <TableCell>{user.role}</TableCell>
                                             <TableCell>{user.email}</TableCell>
                                             <TableCell>
-                                                <Button variant="contained" color="secondary" onClick={() => handleDelete(user._id)}>Supprimer</Button>
+                                                <Button variant="contained" color="error" onClick={() => handleDelete(user._id)}>Supprimer</Button>
                                             </TableCell>
                                         </TableRow>
                                     ))}
