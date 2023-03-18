@@ -3,7 +3,7 @@ import axios from 'axios';
 import { NavLink, useParams } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import moment from 'moment';
-import { Alert, Button, FormControl, Grid, Input, InputAdornment, InputLabel, List, ListItem, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Alert, Button, Checkbox, FormControl, FormControlLabel, Grid, Input, InputAdornment, InputLabel, List, ListItem, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 // import 'moment/locale/fr'
 // moment.locale('fr')
@@ -22,9 +22,6 @@ function EditEvent() {
     const [coords, setCoords] = useState(null);
     const [initialCoords, setInitialCoords] = useState(null);
 
-    const [discount, setDiscount] = useState(0);
-    const [duration, setDuration] = useState(0);
-
     useEffect(() => {
         setEvent(prevState => {
             return {
@@ -41,8 +38,8 @@ function EditEvent() {
                 price: prevState.price || 0,
                 ticketLink: prevState.ticketLink || '',
                 description: prevState.description || '',
-                discountedPrice: discount || 0,
-                promotionExpirationDate : duration || '',
+                inPromotion: prevState.inPromotion || false,
+                discountedPrice: prevState.discountedPrice || 0,
                 lat: prevState.lat || '',
                 lng: prevState.lng || '',
             }
@@ -61,7 +58,13 @@ function EditEvent() {
     }, [id]);
 
     const handleChange = e => {
-        setEvent({ ...event, [e.target.name]: e.target.value });
+        if (e.target.name === 'inPromotion') {
+            setEvent({ ...event, inPromotion: e.target.checked });
+        } else if (e.target.name === 'promotionValue') {
+            setEvent({ ...event, promotionValue: parseFloat(e.target.value) });
+        } else {
+            setEvent({ ...event, [e.target.name]: e.target.value });
+        }
     };
 
     const handleSpeakersChange = (e, index) => {
@@ -69,19 +72,17 @@ function EditEvent() {
         setEvent({ ...event, [e.target.name]: speakers });
     }
 
-    const handleDiscountChange = e => {
-        setDiscount(e.target.value);
-    };
-
-    const handleDurationChange = e => {
-        setDuration(e.target.value);
-    };
-
     const handleSubmit = e => {
         e.preventDefault();
-        const discountedPrice = event.price * (1 - discount / 100);
-        const promotionExpirationDate = new Date(Date.now() + duration * 24 * 60 * 60 * 1000);
-        const updatedEvent = { ...event, discountedPrice, promotionExpirationDate };
+        const updatedEvent = { ...event };
+        if (event.inPromotion) {
+            updatedEvent.promotionValue = event.promotionValue;
+            updatedEvent.discountedPrice = event.price * (event.promotionValue / 100);
+            updatedEvent.inPromotion = true;
+        } else {
+            updatedEvent.inPromotion = false;
+            updatedEvent.discountedPrice = 0;
+        }
         axios
             .put(`http://localhost:5000/api/event/${id}`, updatedEvent)
             .then(res => {
@@ -560,7 +561,6 @@ function EditEvent() {
                             <Grid item xs={12}>
                                 <div id="map" style={{ height: "400px", width: "100%" }}></div>
                             </Grid>
-
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     id="price-input"
@@ -574,28 +574,22 @@ function EditEvent() {
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <TextField
-                                    id="discount-input"
-                                    label="Pourcentage de réduction"
-                                    type="number"
-                                    name="discount"
-                                    fullWidth
-                                    value={discount}
-                                    onChange={handleDiscountChange}
-                                    inputProps={{ min: 0, max: 100 }}
+                                <FormControlLabel
+                                    control={<Checkbox checked={event.inPromotion} onChange={handleChange} name="inPromotion" />}
+                                    label="Offre promotionnelle"
                                 />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    id="duration-input"
-                                    label="Durée de la promotion (en jours)"
-                                    type="number"
-                                    name="duration"
-                                    fullWidth
-                                    value={duration}
-                                    onChange={handleDurationChange}
-                                    inputProps={{ min: 0 }}
-                                />
+                                {event.inPromotion && (
+                                    <TextField
+                                        id="promo-value-input"
+                                        label="Valeur de la promotion (%)"
+                                        type="number"
+                                        name="promotionValue"
+                                        fullWidth
+                                        value={event.promotionValue}
+                                        onChange={handleChange}
+                                        inputProps={{ min: 0 }}
+                                    />
+                                )}
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField

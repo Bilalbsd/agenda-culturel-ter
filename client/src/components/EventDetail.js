@@ -102,7 +102,7 @@ function EventDetail() {
 
     return (
         <div>
-            <Container maxWidth="lg" >
+            <Container maxWidth="lg">
                 <Container disableGutters maxWidth="md" component="main" sx={{ pt: 8, pb: 6 }}>
                     <Typography
                         component="h1"
@@ -135,12 +135,12 @@ function EventDetail() {
                         <Typography variant="h5" component="h5">Adresse: {event.location}</Typography>
                         <Typography variant="h5" component="h5">Intervenants: {event.speakers}</Typography>
                         <Typography gutterBottom variant="h5" component="div" color="green">
-                            {event.promotionExpirationDate && "Fin de la promotion " + moment(event.promotionExpirationDate).fromNow()}
+                        {event.inPromotion && "En promotion -" + event.promotionValue + "%"}
                         </Typography>
                         <Typography variant="h5" component="h5">
                             Prix: {
-                                event.discountedPrice
-                                    ? <span><span style={{ textDecoration: 'line-through' }}>{event.price}€</span> {event.discountedPrice}€ en réduction</span>
+                                event.inPromotion
+                                    ? <span><span style={{ textDecoration: 'line-through' }}>{event.price}€</span> {event.discountedPrice}€</span>
                                     : event.price === 0
                                         ? "Gratuit"
                                         : `${event.price}€`

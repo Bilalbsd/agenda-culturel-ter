@@ -209,7 +209,7 @@ function EventsList() {
                                                 {event.title} - {navigator.geolocation ? Math.round(event.distance) + "km" : null}
                                             </Typography>
                                             <Typography gutterBottom variant="p" component="div" color="green">
-                                                {event.promotionExpirationDate && "Fin de la promotion " + moment(event.promotionExpirationDate).fromNow()}
+                                                {event.inPromotion && "En promotion -" + event.promotionValue + "%"}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
                                                 <Chip label={moment(event.startDate).format('ll') + " - " + moment(event.endDate).format('ll')} sx={{ marginBottom: 1 }} />
