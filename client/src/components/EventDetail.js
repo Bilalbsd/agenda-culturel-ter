@@ -74,7 +74,7 @@ function EventDetail() {
         const newComment = {
             rating: rating,
             commenterId: userId ? userId : "anonymous",
-            commenterUsername: userFirstname ? userFirstname + ' ' + userLastname : " Anonyme",
+            commenterUsername: userFirstname ? userFirstname + ' ' + userLastname : "Anonyme",
             text: comment,
             timestamp: Date.now(),
         };
@@ -133,9 +133,13 @@ function EventDetail() {
                         <Typography variant="h5" component="h5">Date début: {moment(event.startDate).format('lll')}</Typography>
                         <Typography variant="h5" component="h5">Date fin: {moment(event.endDate).format('lll')}</Typography>
                         <Typography variant="h5" component="h5">Adresse: {event.location}</Typography>
-                        <Typography variant="h5" component="h5">Intervenants: {event.speakers}</Typography>
+                        {event.speaker && <Typography variant="h5" component="h5">Intervenants: {event.speaker}</Typography>}
+                        {event.speakerPresentation && <Typography variant="h5" component="h5">Présentation des Intervenants: {event.speakerPresentation}</Typography>}
+                        {event.capacity && <Typography variant="h5" component="h5">Capacité d'accueil: {event.capacity}</Typography>}
+                        {event.typeEvent && <Typography variant="h5" component="h5">Type de sport: {event.typeEvent}</Typography>}
+                        {event.nbEvent && <Typography variant="h5" component="h5">Nombres de matches: {event.nbEvent}</Typography>}
                         <Typography gutterBottom variant="h5" component="div" color="green">
-                        {event.inPromotion && "En promotion -" + event.promotionValue + "%"}
+                            {event.inPromotion && "En promotion -" + event.promotionValue + "%"}
                         </Typography>
                         <Typography variant="h5" component="h5">
                             Prix: {
@@ -210,9 +214,9 @@ function EventDetail() {
                             Ajouter
                         </Button>
                     </Grid>
-                    <Grid item>
+                    {/* <Grid item>
                         <Typography variant="h5" component="h5">Note moyenne : {averageRating ? averageRating.toFixed(1) : "Aucune évaluation"}</Typography>
-                    </Grid>
+                    </Grid> */}
                     <IconButton component="a" href={shareUrl} target="_blank" rel="noopener">
                         <TwitterIcon />
                     </IconButton>

@@ -14,6 +14,7 @@ import Container from '@mui/material/Container';
 
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
+import { NavLink } from 'react-router-dom';
 
 function Register() {
     const { isAuthenticated } = React.useContext(AuthContext);
@@ -241,9 +242,11 @@ function Register() {
                                 </Button>
                                 <Grid container justifyContent="flex-end">
                                     <Grid item>
-                                        <Link href="#" variant="body2">
-                                            Se connecter
-                                        </Link>
+                                        <NavLink to={`/login`} style={{ textDecoration: 'none' }}>
+                                            <Link variant="body2">
+                                                Se connecter
+                                            </Link>
+                                        </NavLink>
                                     </Grid>
                                 </Grid>
                             </Grid>

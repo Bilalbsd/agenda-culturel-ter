@@ -68,7 +68,20 @@ const UserSchema = new mongoose.Schema({
             groupName: String,
             members: [String],
         }]
-    }
+    },
+    // promoNotification: {
+    //     type: Boolean
+    // },
+    // proximityNotification: {
+    //     type: Boolean
+    // },
+    // notifications: {
+    //     type: [{
+    //         eventId: String,
+    //         message: String,
+    //         timestamp: Date.now()
+    //     }]
+    // }
 },
     {
         timestamps: true

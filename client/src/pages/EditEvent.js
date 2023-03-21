@@ -1,6 +1,8 @@
 import React from 'react';
 import NavBar from '../components/NavBar';
 import EditEvent from '../components/EditEvent';
+import Footer from '../components/Footer';
+
 
 function EditEventPage() {
     return (
@@ -8,6 +10,7 @@ function EditEventPage() {
             <NavBar />
             <br /> <br />
             <EditEvent />
+            <Footer />
         </div>
     );
 }

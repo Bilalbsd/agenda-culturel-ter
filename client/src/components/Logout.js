@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 
 function Logout() {
 
@@ -7,10 +8,12 @@ function Logout() {
         localStorage.removeItem('token');
         // window.location.reload()
     };
-    
+
     return (
         <form onSubmit={handleSubmit}>
-            <button type="submit">Logout</button>
+            <NavLink to={`/`} style={{ textDecoration: 'none' }}>
+                <button type="submit">Logout</button>
+            </NavLink>
         </form>
     );
 }

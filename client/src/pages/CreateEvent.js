@@ -1,6 +1,7 @@
 import React from 'react';
 import CreateEvent from '../components/CreateEvent';
 import NavBar from '../components/NavBar';
+import Footer from '../components/Footer';
 
 function CreateEventPage() {
     return (
@@ -8,6 +9,7 @@ function CreateEventPage() {
             <NavBar />
             <br /> <br /> <br />
             <CreateEvent />
+            <Footer />
         </div>
 
     )

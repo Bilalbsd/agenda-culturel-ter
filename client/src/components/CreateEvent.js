@@ -206,10 +206,9 @@ function CreateEvent() {
 
     };
 
-
     return (
         <Grid container justifyContent="center">
-            {userRole !== 'creator' || !isValidated ? (
+            {userRole !== 'creator' || isValidated === 'false' ? (
                 <Grid item xs={12}>
                     <Typography variant="h5">Vous n'avez pas les permissions nécessaires pour accéder à cette page !</Typography>
                     <Typography variant="h5">Votre compte n'a pas encore été validé !</Typography>
@@ -272,7 +271,7 @@ function CreateEvent() {
                                             type="number"
                                             value={event.nbEvent}
                                             onChange={handleChange}
-                                            inputProps={{ min: '1', max: '5', required: true }}
+                                            inputProps={{ min: '1', max: '100', required: true }}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -319,7 +318,7 @@ function CreateEvent() {
                                             type="number"
                                             value={event.nbEvent}
                                             onChange={handleChange}
-                                            inputProps={{ min: '1', max: '5', required: true }}
+                                            inputProps={{ min: '1', max: '100', required: true }}
                                         />
                                     </Grid>
                                 </>

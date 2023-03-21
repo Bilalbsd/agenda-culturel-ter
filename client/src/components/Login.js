@@ -99,11 +99,11 @@ function Login() {
             Se connecter
           </Button>
           <Grid container>
-            <Grid item xs>
+            {/* <Grid item xs>
               <Link href="#" variant="body2">
                 Mot de passe oublié ?
               </Link>
-            </Grid>
+            </Grid> */}
             <Grid item>
               <NavLink to="/register" >
                 <Link href="#" variant="body2">

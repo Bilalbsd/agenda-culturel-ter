@@ -11,12 +11,16 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import CheckIcon from '@mui/icons-material/Check';
 
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
+import { NavLink } from 'react-router-dom';
+import { Alert, Dialog, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 function Register() {
     const { isAuthenticated } = React.useContext(AuthContext);
+    const [confirmPassword, setConfirmPassword] = React.useState("");
     const [formData, setFormData] = React.useState({
         firstname: '',
         lastname: '',
@@ -28,23 +32,79 @@ function Register() {
 
     const [emailError, setEmailError] = React.useState("");
     const [passwordError, setPasswordError] = React.useState("");
+    const [confirmPasswordError, setConfirmPasswordError] = React.useState("");
+    const [phoneError, setPhoneError] = React.useState("");
 
     const handleChange = e => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const handleConfirmPasswordChange = event => {
+        setConfirmPassword(event.target.value);
+    };
+
     const handleSubmit = e => {
         e.preventDefault();
-        axios
-            .post(`http://localhost:5000/api/user/register`, formData)
-            .then(res => {
-                console.log(res);
-            })
-            .catch(err => {
-                setEmailError(err.response.data.errors.email)
-                setPasswordError(err.response.data.errors.password)
-                console.error(err)
-            });
+        // Vérification de la validité des données avant de les envoyer au serveur
+        let isValid = true;
+
+        // Vérification de l'email ou du numéro de téléphone
+        if (!formData.email && !formData.phone) {
+            setEmailError("Veuillez fournir un email ou un numéro de téléphone");
+            setPhoneError("Veuillez fournir un email ou un numéro de téléphone");
+            isValid = false;
+        } else {
+            setEmailError("");
+            setPhoneError("");
+        }
+
+        // Vérification du mot de passe
+        if (!formData.password) {
+            setPasswordError("Veuillez fournir un mot de passe");
+            isValid = false;
+        } else {
+            setPasswordError("");
+        }
+
+        // Vérification de la confirmation de mot de passe
+        if (!confirmPassword) {
+            setConfirmPasswordError("Veuillez confirmer votre mot de passe");
+            isValid = false;
+        } else if (formData.password !== confirmPassword) {
+            setConfirmPasswordError("Les mots de passe ne correspondent pas");
+            isValid = false;
+        } else {
+            setConfirmPasswordError("");
+        }
+
+        // Si toutes les données sont valides, envoyer la requête au serveur
+        console.log(formData.email, "formData.email");
+        if (isValid) {
+            <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
+                This is a success alert — check it out!
+            </Alert>
+            axios
+                .post(`http://localhost:5000/api/user/register`, formData)
+                .then(res => {
+                    console.log(res);
+                })
+                .catch(err => {
+                    setEmailError(err.response.data.errors.email);
+                    setPhoneError(err.response.data.errors.phone);
+                    setPasswordError(err.response.data.errors.password);
+                    console.error(err);
+                });
+        }
+    };
+
+    const [open, setOpen] = React.useState(false);
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
     };
 
     return (
@@ -121,10 +181,62 @@ function Register() {
                                 </Grid>
                                 {passwordError === "" ? null : <p>{passwordError}</p>}
                                 <Grid item xs={12}>
-                                    <FormControlLabel
-                                        control={<Checkbox value="allowExtraEmails" color="primary" />}
-                                        label="I want to receive inspiration, marketing promotions and updates via email."
+                                    <TextField
+                                        required
+                                        value={confirmPassword}
+                                        onChange={handleConfirmPasswordChange}
+                                        fullWidth
+                                        name="confirm-password"
+                                        label="Confirmer Mot de passe"
+                                        type="password"
+                                        id="confirm-password"
+                                        autoComplete="confirm-password"
                                     />
+                                </Grid>
+                                {confirmPasswordError === "" ? null : <p>{confirmPasswordError}</p>}
+                                <Grid item xs={12}>
+                                    <FormControlLabel
+                                        required
+                                        control={<Checkbox value="allowExtraEmails" color="primary" />}
+                                        label={
+                                            <Link href="#" onClick={handleOpen}>
+                                                Accepter les conditions d'utilisation
+                                            </Link>
+                                        }
+                                    />
+                                    <Dialog open={open} onClose={handleClose} maxWidth="sm">
+                                        <DialogTitle>Conditions d'utilisation</DialogTitle>
+                                        <DialogContent dividers>
+                                            <DialogContentText>
+                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ut
+                                                lectus et ante luctus tincidunt. Vestibulum ante ipsum primis in
+                                                faucibus orci luctus et ultrices posuere cubilia curae; Duis
+                                                bibendum, tellus vel hendrerit faucibus, odio magna hendrerit augue,
+                                                sit amet tristique metus turpis eget massa. Proin vel ipsum sit amet
+                                                lorem aliquet porttitor. Sed at sapien nec odio sagittis molestie.
+                                                Nulla facilisi. Aenean non velit luctus, luctus risus in, lobortis
+                                                nibh. Vestibulum ut malesuada lectus. Sed nec turpis eget lacus
+                                                finibus porttitor ac eu mauris. Vestibulum lacinia libero id quam
+                                                tincidunt aliquet. Sed consectetur nulla nec enim mollis, vel
+                                                facilisis dolor sollicitudin. Ut ac ipsum in enim venenatis aliquam.
+                                                Nulla facilisi. Duis bibendum velit id sem faucibus, at ultricies
+                                                massa pellentesque. Nam iaculis tellus nec turpis tristique, eget
+                                                auctor lectus scelerisque. Donec vehicula semper ex, vitae dapibus
+                                                nunc fermentum eu. Integer blandit libero a enim ullamcorper, ac
+                                                vehicula dolor euismod. Donec efficitur, velit eu pretium semper,
+                                                quam leo mattis mi, vel placerat neque est a ante. Fusce vel nisl
+                                                suscipit, convallis velit vel, pretium sapien. Sed non metus vel
+                                                erat pulvinar egestas. Nam eu elit eget enim dignissim malesuada.
+                                                Duis dignissim massa a posuere lobortis. Vestibulum ante ipsum primis
+                                                in faucibus orci luctus et ultrices posuere cubilia curae; In
+                                                venenatis augue eget eros tristique, id consectetur dolor pulvinar.
+                                                Vivamus dictum bibendum dolor eu scelerisque. Duis quis quam eget
+                                                ipsum fermentum gravida. Maecenas vitae faucibus sapien. Nullam
+                                                tincidunt libero ut magna cursus, vel iaculis ipsum posuere.
+                                                Praesent ac dui nulla. Quisque lobortis est et sapien.
+                                            </DialogContentText>
+                                        </DialogContent>
+                                    </Dialog>
                                 </Grid>
                             </Grid>
                             <Button
@@ -137,9 +249,11 @@ function Register() {
                             </Button>
                             <Grid container justifyContent="flex-end">
                                 <Grid item>
-                                    <Link href="#" variant="body2">
-                                        Se connecter
-                                    </Link>
+                                    <NavLink to={`/login`} style={{ textDecoration: 'none' }}>
+                                        <Link variant="body2">
+                                            Se connecter
+                                        </Link>
+                                    </NavLink>
                                 </Grid>
                             </Grid>
                         </Box>
