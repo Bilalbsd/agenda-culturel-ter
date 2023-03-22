@@ -53,6 +53,13 @@ const EventSchema = new mongoose.Schema({
     price: {
         type: Number
     },
+    prices : {
+        type: [{
+            price: Number,
+            title: String,
+            conditions : String
+        }]
+    },
     inPromotion : {
         type: Boolean
     },
