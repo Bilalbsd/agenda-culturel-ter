@@ -15,6 +15,7 @@ import NotFound from './pages/NotFound';
 import FavoriteEvent from './pages/FavoriteEvent';
 import Group from './pages/Group';
 import Notification from './pages/Notification';
+import AgendaPage from './pages/AgendaPage';
 
 // import { AuthContext } from './context/AuthContext';
 
@@ -29,6 +30,7 @@ function App() {
         <Route path="/personal-events" element={<PersonalEvents />} />
         <Route path="/favorite" element={<FavoriteEvent />} />
         <Route path="/group" element={<Group />} />
+        <Route path="/agenda" element={<AgendaPage />} />
         <Route path="/notification" element={<Notification />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/payment" element={<Payment />} />
