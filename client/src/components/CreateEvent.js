@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { Alert, Button, FormControl, Grid, IconButton, Input, InputAdornment, InputLabel, List, ListItem, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Alert, Button, FormControl, Grid, Input, InputAdornment, InputLabel, List, ListItem, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import CheckIcon from '@mui/icons-material/Check';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { DropzoneArea } from "mui-file-dropzone";
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvGBV9DUig0t9hvtFy4YcTrouE8S22lQM"></script>
@@ -53,8 +51,6 @@ function CreateEvent() {
                 location: location || '',
                 creator: userId || '',
                 image: '',
-                speakers: prevState.speakers || [],
-                price: prevState.price || 0,
                 prices: prevState.prices || [],
                 ticketLink: prevState.ticketLink || '',
                 description: prevState.description || '',
@@ -73,7 +69,30 @@ function CreateEvent() {
     const handleChange = e => {
         setEvent({ ...event, [e.target.name]: e.target.value });
         setImage(e.target.files[0]);
-        setChangeEvent(e.target.value);
+        setChangeEvent(e.target.value)
+    };
+
+    const [prices, setPrices] = useState([]);
+
+    const handlePriceChange = (index, field, value) => {
+        const newPrices = [...prices];
+        newPrices[index][field] = value.toString();
+        setPrices(newPrices);
+        setEvent({ ...event, prices: prices });
+    };
+
+    console.log(JSON.stringify(prices), "aaaaaaaaaaaaaaaaa");
+
+    console.log(event, "event");
+
+    const handleAddPrice = () => {
+        setPrices([...prices, { title: '', condition: '', price: '' }]);
+    };
+
+    const handleRemovePrice = index => {
+        const newPrices = [...prices];
+        newPrices.splice(index, 1);
+        setPrices(newPrices);
     };
 
     const [speakersCount, setSpeakersCount] = useState(1);
@@ -184,52 +203,49 @@ function CreateEvent() {
     // console.log(coords, "coords")
 
     console.log(event.title, "event.title");
-    console.log(event.location, "event.location")
-
-    const [prices, setPrices] = useState([]);
-
-    const handlePriceChange = (index, field, value) => {
-        const newPrices = [...prices];
-        newPrices[index][field] = value;
-        setPrices(newPrices);
-        console.log(prices, "prices");
-        setEvent({...event, prices: [prices]});
-    };
-    console.log(event, "event");
-
-    const handleAddPrice = () => {
-        setPrices([...prices, { title: '', condition: '', price: '' }]);
-    };
-
-    const handleRemovePrice = index => {
-        const newPrices = [...prices];
-        newPrices.splice(index, 1);
-        setPrices(newPrices);
-    };
+    console.log(event.location, "event.location");
+    prices.forEach((price, index) => {
+        const priceObj = { condition: price.condition, price: price.price, title: price.title };
+        console.log(`prices[${index}]`, "test1");
+        console.log(JSON.stringify(priceObj), "JSON.stringify");
+    });
 
     const handleSubmit = async e => {
         e.preventDefault();
 
+        // updateNbMaxEvent();
         const formData = new FormData();
         formData.append('image', image);
+        // On ajoute les éléments de event dans formData
+        // Object.keys(event).forEach(key => formData.append(key, event[key]));
 
-        Object.keys(event).forEach(key => formData.append(key, event[key]));
+        // prices.forEach((price, index) => {
+        //     const priceObj = { condition: price.condition, price: price.price, title: price.title };
+        //     formData.append(`prices[${index}]`, price);
+        // });
 
-        prices.forEach((price, index) => {
-            formData.append(`priceTitle${index}`, price.title);
-            formData.append(`priceCondition${index}`, price.condition);
-            formData.append(`pricePrice${index}`, price.price);
+        Object.keys(event).forEach(key => {
+            if (key === 'prices') {
+                event.prices.forEach((price, index) => {
+                    formData.append(`prices[${index}][title]`, price.title);
+                    formData.append(`prices[${index}][price]`, price.price);
+                    formData.append(`prices[${index}][condition]`, price.condition);
+                });
+            } else {
+                formData.append(key, event[key]);
+            }
         });
 
-        formData.append('prices', JSON.stringify(prices));
 
+        // formData.append('prices', JSON.stringify( prices ));
+        // console.log(image, "image")
+        // console.log(formData, "formData")
         try {
-            const res = await axios.put(`http://localhost:5000/api/event`, formData, {
+            const res = await axios.post(`http://localhost:5000/api/event`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            window.location.replace('/');
             console.log(res);
         } catch (err) {
             console.log(err);
@@ -686,7 +702,7 @@ function CreateEvent() {
                                         onChange={e => handlePriceChange(index, 'title', e.target.value)}
                                     />
                                     <TextField
-                                        type="number"
+                                        // type="number"
                                         name={`price${index}`}
                                         label="Prix"
                                         fullWidth
@@ -700,26 +716,14 @@ function CreateEvent() {
                                         value={price.condition}
                                         onChange={e => handlePriceChange(index, 'condition', e.target.value)}
                                     />
-                                    <IconButton onClick={() => handleRemovePrice(index)}>
-                                        <DeleteIcon />
-                                    </IconButton>
+                                    <Button onClick={() => handleRemovePrice(index)}>
+                                        Retirer un prix
+                                    </Button>
                                 </div>
                             ))}
-                            <IconButton onClick={handleAddPrice}>
-                                <AddIcon />
-                            </IconButton>
-                            {/* <Grid item xs={12} sm={6}>
-                                <TextField
-                                    id="price-input"
-                                    label="Prix"
-                                    type="number"
-                                    name="price"
-                                    fullWidth
-                                    value={event.price}
-                                    onChange={handleChange}
-                                    inputProps={{ min: 0 }}
-                                />
-                            </Grid> */}
+                            <Button onClick={handleAddPrice}>
+                                Ajouter un prix
+                            </Button>
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     id="ticket-link-input"
