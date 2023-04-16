@@ -96,6 +96,12 @@ function EditEvent() {
         setPrices(newPrices);
     };
 
+    const [users, setUsers] = useState([]);
+    useEffect(() => {
+        axios.get(`http://localhost:5000/api/user`)
+            .then(res => setUsers(res.data));
+    }, []);
+
     const handleSubmit = e => {
         e.preventDefault();
         const updatedEvent = {
@@ -106,6 +112,21 @@ function EditEvent() {
                 ...price,
                 discountedPrice: (price.price * (100 - event.promotionValue)) / 100
             }));
+
+            users.map((user) => {
+                if (user.promotionNotifications) {
+                    try {
+                        const existingNotifications = user.notifications || [];
+                        const updatedNotifications = [...existingNotifications, id];
+                        axios.put(`http://localhost:5000/api/user/${user._id}`, {
+                            notifications: updatedNotifications
+                        }).then(res => console.log(res, "add event notification"));
+                    } catch (err) {
+                        console.error(err);
+                    }
+                }
+            });
+
         }
         axios
             .put(`http://localhost:5000/api/event/${id}`, updatedEvent)

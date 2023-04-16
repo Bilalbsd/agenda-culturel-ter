@@ -1,10 +1,14 @@
 import React from 'react';
-import Notification from '../components/Notification';
+import NavBar from '../components/NavBar';
+import Notifications from '../components/Notifications';
+import Footer from '../components/Footer';
 
 const NotificationPage = () => {
     return (
         <div>
-            <Notification />
+            <NavBar />
+            <Notifications />
+            <Footer />
         </div>
     );
 };

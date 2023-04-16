@@ -86,7 +86,7 @@ function CreateEvent() {
     console.log(event, "event");
 
     const handleAddPrice = () => {
-        setPrices([...prices, { title: '', condition: '', price: '' }]);
+        setPrices([...prices, { title: '', condition: '', price: 0 }]);
     };
 
     const handleRemovePrice = index => {
@@ -202,28 +202,36 @@ function CreateEvent() {
     // console.log(predictions, "predictions")
     // console.log(coords, "coords")
 
-    console.log(event.title, "event.title");
-    console.log(event.location, "event.location");
-    prices.forEach((price, index) => {
-        const priceObj = { condition: price.condition, price: price.price, title: price.title };
-        console.log(`prices[${index}]`, "test1");
-        console.log(JSON.stringify(priceObj), "JSON.stringify");
-    });
+    const [users, setUsers] = useState([]);
+    useEffect(() => {
+        axios.get(`http://localhost:5000/api/user`)
+        .then(res => setUsers(res.data));
+    }, []);
+
+    users.map((user) => {
+        console.log(user._id, "user id");
+    })
 
     const handleSubmit = async e => {
         e.preventDefault();
 
-        // updateNbMaxEvent();
+        users.map((user) => {
+            if (user.eventNotifications) {
+              try {
+                const existingNotifications = user.notifications || [];
+                const updatedNotifications = [...existingNotifications, event.title];
+                axios.put(`http://localhost:5000/api/user/${user._id}`, {
+                  notifications: updatedNotifications
+                }).then(res => console.log(res, "add event notification"));
+              } catch (err) {
+                console.error(err);
+              }
+            }
+          });
+          
+        
         const formData = new FormData();
         formData.append('image', image);
-        // On ajoute les éléments de event dans formData
-        // Object.keys(event).forEach(key => formData.append(key, event[key]));
-
-        // prices.forEach((price, index) => {
-        //     const priceObj = { condition: price.condition, price: price.price, title: price.title };
-        //     formData.append(`prices[${index}]`, price);
-        // });
-
         Object.keys(event).forEach(key => {
             if (key === 'prices') {
                 event.prices.forEach((price, index) => {
@@ -235,11 +243,6 @@ function CreateEvent() {
                 formData.append(key, event[key]);
             }
         });
-
-
-        // formData.append('prices', JSON.stringify( prices ));
-        // console.log(image, "image")
-        // console.log(formData, "formData")
         try {
             const res = await axios.post(`http://localhost:5000/api/event`, formData, {
                 headers: {
@@ -702,7 +705,7 @@ function CreateEvent() {
                                         onChange={e => handlePriceChange(index, 'title', e.target.value)}
                                     />
                                     <TextField
-                                        // type="number"
+                                        type="number"
                                         name={`price${index}`}
                                         label="Prix"
                                         fullWidth

@@ -27,19 +27,22 @@ function ResponsiveAppBar() {
     const { userId, userRole, userFirstname, isAuthenticated } = React.useContext(AuthContext);
 
     const [nbMaxEvent, setNbMaxEvent] = React.useState(null);
+    const [notifications, setNotifications] = React.useState(0);
 
     React.useEffect(() => {
         const fetchUser = async () => {
             try {
                 const res = await axios.get(`http://localhost:5000/api/user/${userId}`);
                 setNbMaxEvent(res.data.nbMaxEvent); // mettre à jour la valeur de nbMaxEvent
+                setNotifications(res.data.notifications);
             } catch (err) {
                 console.log(err);
             }
         };
         fetchUser();
-    }, [userId, nbMaxEvent]); // déclencher l'effet à chaque changement de userId
+    }, [nbMaxEvent, notifications]);
 
+    console.log(notifications.length, "notifications");
 
     let pages = []
 
@@ -277,13 +280,17 @@ function ResponsiveAppBar() {
                     <MenuItem>
                         <IconButton
                             size="large"
-                            aria-label="show 17 new notifications"
+                            aria-label="show new notifications"
                             color="inherit"
                             onClick={handleOpen}
                         >
-                            <Badge badgeContent={17} color="error">
-                                <NotificationsIcon />
-                            </Badge>
+                            {isAuthenticated &&
+                                <NavLink to="/notification" style={{ textDecoration: 'none', color: 'white'}}>
+                                    <Badge badgeContent={notifications.length} color="error">
+                                        <NotificationsIcon />
+                                    </Badge>
+                                </NavLink>
+                            }
                         </IconButton>
                         {/* <p>Notifications</p> */}
                         {!isAuthenticated &&
@@ -329,12 +336,12 @@ function ResponsiveAppBar() {
                                 open={Boolean(anchorElUser)}
                                 onClose={handleCloseUserMenu}
                             >
-                                <NavLink to="/profil" style={{ textDecoration: 'none', color: 'black'}}>
+                                <NavLink to="/profil" style={{ textDecoration: 'none', color: 'black' }}>
                                     <MenuItem onClick={handleCloseUserMenu}>
                                         <Typography textAlign="center">Profil</Typography>
                                     </MenuItem>
                                 </NavLink>
-                                <NavLink to="/favorite" style={{ textDecoration: 'none', color: 'black'}}>
+                                <NavLink to="/favorite" style={{ textDecoration: 'none', color: 'black' }}>
                                     <MenuItem onClick={handleCloseUserMenu}>
                                         <Typography textAlign="center">Favoris</Typography>
                                     </MenuItem>

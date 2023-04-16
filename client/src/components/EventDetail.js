@@ -104,17 +104,27 @@ function EventDetail() {
     useEffect(() => {
         const intervalId = setInterval(() => {
             setEvent(prevEvent => {
-                if (prevEvent.inPromotion && moment(prevEvent.promotionExpirationDate).diff(moment()) > 0) {
+                if (prevEvent.inPromotion) {
                     const remainingTime = moment.duration(moment(prevEvent.promotionExpirationDate).diff(moment()));
-                    return { ...prevEvent, remainingTime };
+                    if (remainingTime <= 0) { // vérifie si la promotion est terminée
+                        axios.put(`http://localhost:5000/api/event/${id}`, { inPromotion: false })
+                            .then(res => {
+                                setEvent(prevEvent => ({ ...prevEvent, inPromotion: false }));
+                            })
+                            .catch(err => console.error(err));
+                        return prevEvent;
+                    } else {
+                        return { ...prevEvent, remainingTime };
+                    }
                 } else {
-                    return { ...prevEvent, inPromotion: false };
+                    return prevEvent;
                 }
             });
         }, 1000);
 
         return () => clearInterval(intervalId);
-    }, []);
+    }, [id]);
+
 
     // console.log(moment(event.promotionExpirationDate).fromNow(), "event.promotionExpirationDate");
 
