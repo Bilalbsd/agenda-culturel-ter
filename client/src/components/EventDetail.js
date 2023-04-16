@@ -6,6 +6,8 @@ import { Box, Grid, Typography, TextField, Rating, Button, IconButton, Avatar } 
 import { Container } from '@mui/system';
 import 'moment/locale/fr';
 import { AuthContext } from '../context/AuthContext';
+import AgendaButton from "./AgendaButton";
+import AgendaButton2 from "./AgendaButton2";
 import FavButton from "./FavButton";
 import FavButton2 from "./FavButton2";
 import TwitterIcon from '@mui/icons-material/Twitter';
@@ -99,6 +101,23 @@ function EventDetail() {
             });
     };
 
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setEvent(prevEvent => {
+                if (prevEvent.inPromotion && moment(prevEvent.promotionExpirationDate).diff(moment()) > 0) {
+                    const remainingTime = moment.duration(moment(prevEvent.promotionExpirationDate).diff(moment()));
+                    return { ...prevEvent, remainingTime };
+                } else {
+                    return { ...prevEvent, inPromotion: false };
+                }
+            });
+        }, 1000);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
+    // console.log(moment(event.promotionExpirationDate).fromNow(), "event.promotionExpirationDate");
+
 
     return (
         <div>
@@ -138,10 +157,9 @@ function EventDetail() {
                         {event.capacity && <Typography variant="h5" component="h5">Capacité d'accueil: {event.capacity}</Typography>}
                         {event.typeEvent && <Typography variant="h5" component="h5">Type de sport: {event.typeEvent}</Typography>}
                         {event.nbEvent && <Typography variant="h5" component="h5">Nombres de matches: {event.nbEvent}</Typography>}
-                        <Typography gutterBottom variant="h5" component="div" color="green">
-                            {event.inPromotion && "En promotion -" + event.promotionValue + "%"}
-                        </Typography>
-                        <Typography variant="h5" component="h5">
+                        <br />
+
+                        {/* <Typography variant="h5" component="h5">
                             Prix: {
                                 event.inPromotion
                                     ? <span><span style={{ textDecoration: 'line-through' }}>{event.price}€</span> {event.discountedPrice}€</span>
@@ -149,12 +167,35 @@ function EventDetail() {
                                         ? "Gratuit"
                                         : `${event.price}€`
                             }
-                        </Typography>
+                        </Typography> */}
+
+                        {event.inPromotion && (
+                            <Typography gutterBottom variant="h5" component="div" color="green">
+                                En promotion -{event.promotionValue}% {event.promotionHasExpiration && " jusqu'à " + moment(event.promotionExpirationDate).format('LLLL') + " (" + moment(event.promotionExpirationDate).fromNow() + ")"}
+                            </Typography>
+                        )}
+
+                        {event.prices &&
+                            event.prices.map(price => (
+                                <>
+                                    <Typography variant="h5" component="h5">
+                                        Titre : {price.title} <br />
+                                    </Typography>
+                                    <Typography variant="h5" component="h5">
+                                        Prix : {event.inPromotion ? `${price.discountedPrice}€ (prix initial : ${price.price}€)` : price.price === 0 ? "Gratuit" : `${price.price}€`} <br />
+                                    </Typography>
+                                    <Typography variant="h5" component="h5">
+                                        Condition : {price.condition} <br /> <br />
+                                    </Typography>
+                                </>
+                            ))}
+
 
                         <Typography variant="h5" component="h5">lien du site:<Link href={event.ticketLink}>{event.ticketLink}</Link></Typography>
                     </Grid>
 
                     {isAuthenticated ? <FavButton /> : <FavButton2 event={event} />}
+                    {isAuthenticated ? <AgendaButton /> : <AgendaButton2 event={event} />}
 
                     {/* <UserGroupList /> */}
 

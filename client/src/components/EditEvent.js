@@ -36,9 +36,11 @@ function EditEvent() {
                 image: '',
                 speakers: prevState.speakers || [],
                 price: prevState.price || 0,
+                prices: prevState.prices || [],
                 ticketLink: prevState.ticketLink || '',
                 description: prevState.description || '',
                 inPromotion: prevState.inPromotion || false,
+                promotionHasExpiration: prevState.promotionHasExpiration || false,
                 discountedPrice: prevState.discountedPrice || 0,
                 lat: prevState.lat || '',
                 lng: prevState.lng || '',
@@ -46,13 +48,16 @@ function EditEvent() {
         });
     }, [userId, location]);
 
+    const [prices, setPrices] = useState([]);
+    const [newPrice, setNewPrice] = useState({ title: '', condition: '', price: '' });
+    // const [promotion, setPromotion] = useState({ inPromotion: false, promotionHasExpiration: false, promotionValue: 0, promotionDuration: 0 });
 
     useEffect(() => {
         axios
             .get(`http://localhost:5000/api/event/${id}`)
             .then(res => {
                 setEvent(res.data);
-                console.log(event, "event")
+                setPrices(res.data.prices || []);
             })
             .catch(err => console.error(err));
     }, [id]);
@@ -62,26 +67,45 @@ function EditEvent() {
             setEvent({ ...event, inPromotion: e.target.checked });
         } else if (e.target.name === 'promotionValue') {
             setEvent({ ...event, promotionValue: parseFloat(e.target.value) });
-        } else {
+        } else if (e.target.name === 'promotionHasExpiration') {
+            setEvent({ ...event, promotionHasExpiration: e.target.checked });
+        }
+        else {
             setEvent({ ...event, [e.target.name]: e.target.value });
         }
     };
 
-    const handleSpeakersChange = (e, index) => {
-        let speakers = e.target.value.split(',')
-        setEvent({ ...event, [e.target.name]: speakers });
-    }
+    const handlePriceChange = (index, field, value) => {
+        const newPrices = [...prices];
+        newPrices[index][field] = value.toString();
+        setPrices(newPrices);
+    };
+
+    const handleNewPriceChange = (field, value) => {
+        setNewPrice({ ...newPrice, [field]: value });
+    };
+
+    const handleAddPrice = () => {
+        setPrices([...prices, newPrice]);
+        setNewPrice({ title: '', condition: '', price: '' });
+    };
+
+    const handleRemovePrice = index => {
+        const newPrices = [...prices];
+        newPrices.splice(index, 1);
+        setPrices(newPrices);
+    };
 
     const handleSubmit = e => {
         e.preventDefault();
-        const updatedEvent = { ...event };
+        const updatedEvent = {
+            ...event
+        };
         if (event.inPromotion) {
-            updatedEvent.promotionValue = event.promotionValue;
-            updatedEvent.discountedPrice = event.price * (event.promotionValue / 100);
-            updatedEvent.inPromotion = true;
-        } else {
-            updatedEvent.inPromotion = false;
-            updatedEvent.discountedPrice = 0;
+            updatedEvent.prices = updatedEvent.prices.map(price => ({
+                ...price,
+                discountedPrice: (price.price * (100 - event.promotionValue)) / 100
+            }));
         }
         axios
             .put(`http://localhost:5000/api/event/${id}`, updatedEvent)
@@ -161,6 +185,8 @@ function EditEvent() {
             });
         });
     };
+
+    console.log(event)
 
     // console.log(event.creator === userId, "true si Id du créateur de l'event a le même Id de l'user connecté")
 
@@ -522,7 +548,7 @@ function EditEvent() {
                                 {/* <DropzoneArea onChange={handleChange} /> */}
                             </Grid>
                             <Grid item xs={12} >
-                                <TextField fullWidth label="Location" defaultValue={event.location} value={location} onChange={handleInputChange} />
+                                <TextField fullWidth label="Location" defaultValue={event.location} value={event.location} onChange={handleInputChange} />
                                 {predictions && (
                                     <List>
                                         {predictions.map((prediction) => (
@@ -561,7 +587,7 @@ function EditEvent() {
                             <Grid item xs={12}>
                                 <div id="map" style={{ height: "400px", width: "100%" }}></div>
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            {/* <Grid item xs={12} sm={6}>
                                 <TextField
                                     id="price-input"
                                     label="Prix"
@@ -572,25 +598,77 @@ function EditEvent() {
                                     onChange={handleChange}
                                     inputProps={{ min: 0 }}
                                 />
-                            </Grid>
+                            </Grid> */}
+
+                            {event.prices.map((price, index) => (
+                                <div key={index}>
+                                    <TextField
+                                        name={`priceTitle${index}`}
+                                        label="Titre du prix"
+                                        fullWidth
+                                        value={price.title}
+                                        onChange={e => handlePriceChange(index, 'title', e.target.value)}
+                                    />
+                                    <TextField
+                                        // type="number"
+                                        name={`price${index}`}
+                                        label="Prix"
+                                        fullWidth
+                                        value={price.price}
+                                        onChange={e => handlePriceChange(index, 'price', e.target.value)}
+                                    />
+                                    <TextField
+                                        name={`priceCondition${index}`}
+                                        label="Condition"
+                                        fullWidth
+                                        value={price.condition}
+                                        onChange={e => handlePriceChange(index, 'condition', e.target.value)}
+                                    />
+                                    <Button onClick={() => handleRemovePrice(index)}>
+                                        Retirer un prix
+                                    </Button>
+                                </div>
+                            ))}
+                            <Button onClick={handleNewPriceChange}>
+                                Ajouter un prix
+                            </Button>
+
                             <Grid item xs={12} sm={6}>
                                 <FormControlLabel
                                     control={<Checkbox checked={event.inPromotion} onChange={handleChange} name="inPromotion" />}
                                     label="Offre promotionnelle"
                                 />
                                 {event.inPromotion && (
-                                    <TextField
-                                        id="promo-value-input"
-                                        label="Valeur de la promotion (%)"
-                                        type="number"
-                                        name="promotionValue"
-                                        fullWidth
-                                        value={event.promotionValue}
-                                        onChange={handleChange}
-                                        inputProps={{ min: 0 }}
-                                    />
+                                    <div>
+                                        <TextField
+                                            id="promo-value-input"
+                                            label="Valeur de la promotion (%)"
+                                            type="number"
+                                            name="promotionValue"
+                                            fullWidth
+                                            value={event.promotionValue}
+                                            onChange={handleChange}
+                                            inputProps={{ min: 0 }}
+                                        />
+                                        <FormControlLabel
+                                            control={<Checkbox checked={event.promotionHasExpiration} onChange={handleChange} name="promotionHasExpiration" />}
+                                            label="Durée limitée"
+                                        />
+                                        {event.promotionHasExpiration && (
+                                            <TextField
+                                                id="promo-expiration-input"
+                                                label="Date d'expiration de la promotion"
+                                                type="datetime-local"
+                                                name="promotionExpirationDate"
+                                                fullWidth
+                                                value={"" + event.promotionExpirationDate}
+                                                onChange={handleChange}
+                                            />
+                                        )}
+                                    </div>
                                 )}
                             </Grid>
+
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     id="ticket-link-input"
