@@ -104,7 +104,7 @@ function EventDetail() {
     useEffect(() => {
         const intervalId = setInterval(() => {
             setEvent(prevEvent => {
-                if (prevEvent.inPromotion) {
+                if (prevEvent.inPromotion && prevEvent.promotionHasExpiration) {
                     const remainingTime = moment.duration(moment(prevEvent.promotionExpirationDate).diff(moment()));
                     if (remainingTime <= 0) { // vérifie si la promotion est terminée
                         axios.put(`http://localhost:5000/api/event/${id}`, { inPromotion: false })
