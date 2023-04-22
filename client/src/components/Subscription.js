@@ -24,9 +24,7 @@ const tiers = [
     price: '5',
     description: [
       '10 jetons de création',
-      '2 GB of storage',
-      'Help center access',
-      'Email support',
+      'Durée de 30 jours'
     ],
     buttonText: 'Choisir',
     buttonVariant: 'outlined',
@@ -38,8 +36,7 @@ const tiers = [
     description: [
       '30 jetons de création',
       'Mettre en avant (publicité)',
-      'Help center access',
-      'Email support',
+      'Durée de 30 jours'
     ],
     buttonText: 'Choisir',
     buttonVariant: 'outlined',
@@ -49,10 +46,7 @@ const tiers = [
     // subheader: 'Most popular',
     price: '15',
     description: [
-      '20 users included',
-      '10 GB of storage',
-      'Help center access',
-      'Priority email support',
+      '10 jetons de création',
     ],
     buttonText: 'Choisir',
     buttonVariant: 'outlined',
@@ -62,10 +56,8 @@ const tiers = [
     subheader: 'Très populaire',
     price: '30',
     description: [
-      '50 users included',
-      '30 GB of storage',
-      'Help center access',
-      'Phone & email support',
+      '50 jetons de création',
+      'Mettre en avant (publicité)',
     ],
     buttonText: 'Choisir',
     buttonVariant: 'outlined',
