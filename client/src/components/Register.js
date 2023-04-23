@@ -17,18 +17,23 @@ import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { NavLink } from 'react-router-dom';
 import { Alert, Dialog, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { MuiTelInput } from 'mui-tel-input';
 
 function Register() {
     const { isAuthenticated } = React.useContext(AuthContext);
     const [confirmPassword, setConfirmPassword] = React.useState("");
+    const [phone, setPhone] = React.useState('');
     const [formData, setFormData] = React.useState({
-        firstname: '',
-        lastname: '',
-        email: '',
-        password: '',
         // Le rôle de base pour tout utilisateur sera 'registered' jusqu'à la modification par un gestionnaire
         role: 'registered',
     });
+
+    console.log(formData, "formData");
+
+    const generateRandomEmail = () => {
+        const randomString = Math.random().toString(36).substring(2, 8);
+        return `${randomString}@example.com`;
+    };
 
     const [emailError, setEmailError] = React.useState("");
     const [passwordError, setPasswordError] = React.useState("");
@@ -36,35 +41,51 @@ function Register() {
     const [phoneError, setPhoneError] = React.useState("");
 
     const handleChange = e => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
     };
 
+    const handlePhoneChange = phone => {
+        if (typeof phone === "string") {
+            setFormData({ ...formData, phone });
+        }
+    };
+    
     const handleConfirmPasswordChange = event => {
         setConfirmPassword(event.target.value);
     };
 
+    const validateEmail = email => {
+        const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return re.test(email);
+    };
+    
     const handleSubmit = e => {
         e.preventDefault();
-        // Vérification de la validité des données avant de les envoyer au serveur
-        let isValid = true;
+        const { firstname, lastname, email, phone, password } = formData;
 
-        // Vérification de l'email ou du numéro de téléphone
-        if (!formData.email && !formData.phone) {
-            setEmailError("Veuillez fournir un email ou un numéro de téléphone");
-            setPhoneError("Veuillez fournir un email ou un numéro de téléphone");
-            isValid = false;
+        if (!email && !phone) {
+            setEmailError("Veuillez entrer un email ou un numéro de téléphone");
+            setPhoneError("Veuillez entrer un email ou un numéro de téléphone");
         } else {
             setEmailError("");
             setPhoneError("");
         }
 
-        // Vérification du mot de passe
-        if (!formData.password) {
-            setPasswordError("Veuillez fournir un mot de passe");
-            isValid = false;
-        } else {
-            setPasswordError("");
+        if (!email) {
+            const randomEmail = generateRandomEmail();
+            setFormData({ ...formData, email: randomEmail });
         }
+
+        if (email && !validateEmail(email)) {
+            setEmailError("Veuillez entrer une adresse email valide");
+        }
+
+        if (phone && !validatePhone(phone)) {
+            setPhoneError("Veuillez entrer un numéro de téléphone valide");
+        }
+
+        let isValid = true;
 
         // Vérification de la confirmation de mot de passe
         if (!confirmPassword) {
@@ -77,25 +98,26 @@ function Register() {
             setConfirmPasswordError("");
         }
 
-        // Si toutes les données sont valides, envoyer la requête au serveur
-        console.log(formData.email, "formData.email");
         if (isValid) {
-            <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
-                This is a success alert — check it out!
-            </Alert>
             axios
                 .post(`http://localhost:5000/api/user/register`, formData)
                 .then(res => {
                     console.log(res);
+                    window.location.href = "/login";
                 })
                 .catch(err => {
-                    setEmailError(err.response.data.errors.email);
-                    setPhoneError(err.response.data.errors.phone);
-                    setPasswordError(err.response.data.errors.password);
                     console.error(err);
                 });
         }
     };
+
+
+    const validatePhone = phone => {
+        const re = /^\d{10}$/;
+        return re.test(phone);
+    };
+
+    console.log(phone, "phone");
 
     const [open, setOpen] = React.useState(false);
 
@@ -155,7 +177,7 @@ function Register() {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField
-                                        required
+                                        // required
                                         value={formData.email}
                                         onChange={handleChange}
                                         fullWidth
@@ -164,6 +186,9 @@ function Register() {
                                         name="email"
                                         autoComplete="email"
                                     />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <MuiTelInput id="phone" label="Phone" name="phone" value={formData.phone} onChange={handlePhoneChange} fullWidth defaultCountry='FR' />
                                 </Grid>
                                 {emailError === "" ? null : <p>{emailError}</p>}
                                 <Grid item xs={12}>

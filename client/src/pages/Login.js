@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import Login from '../components/Login';
 import NavBar from '../components/NavBar';
 import { AuthContext } from '../context/AuthContext';
+import GoogleAuth from '../components/GoogleAuth';
 
 function LoginPage() {
     const { isAuthenticated } = useContext(AuthContext);
@@ -10,6 +11,7 @@ function LoginPage() {
         <div>
             <NavBar />
             <Login />
+            {/* <GoogleAuth /> */}
         </div>
     );
 }

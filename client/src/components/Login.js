@@ -13,19 +13,44 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { NavLink } from 'react-router-dom';
+import { MuiTelInput } from 'mui-tel-input';
+import GoogleAuth from './GoogleAuth';
+import { FormControl, IconButton, InputAdornment, OutlinedInput } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 function Login() {
   const [formData, setFormData] = React.useState({
     email: '',
+    phone: '',
     password: '',
   });
 
-  const [emailNotFound, setEmailNotFound] = React.useState("")
-  const [passwordNotFound, setPasswordNotFound] = React.useState("")
+  const [emailNotFound, setEmailNotFound] = React.useState("");
+  const [errorIdentifier, setErrorIdentifier] = React.useState("");
+  const [passwordNotFound, setPasswordNotFound] = React.useState("");
+
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   const handleChange = e => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
+
+  const handlePhoneChange = phone => {
+    if (typeof phone === "string") {
+      setFormData({ ...formData, phone });
+    }
+  };
+
+  console.log(formData, "formData");
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -37,6 +62,7 @@ function Login() {
       window.location.href = "/"
     } catch (err) {
       setEmailNotFound(err.response.data.errors.email)
+      setErrorIdentifier(err.response.data.errors.identifier)
       setPasswordNotFound(err.response.data.errors.password)
       console.error(err)
     }
@@ -64,15 +90,18 @@ function Login() {
             margin="normal"
             value={formData.email}
             onChange={handleChange}
-            required
             fullWidth
             id="email"
-            label="Email ou Numéro de téléphone"
+            label="Email"
             name="email"
             autoComplete="email"
             autoFocus
           />
+          <Grid item xs={12}>
+            <MuiTelInput id="phone" label="Phone" name="phone" value={formData.phone} onChange={handlePhoneChange} fullWidth defaultCountry='FR' />
+          </Grid>
           {emailNotFound === "" ? null : <h4>{emailNotFound}</h4>}
+          {errorIdentifier === "" ? null : <h4>{errorIdentifier}</h4>}
           <TextField
             margin="normal"
             value={formData.password}
@@ -81,15 +110,29 @@ function Login() {
             fullWidth
             name="password"
             label="Mot de passe"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             id="password"
             autoComplete="current-password"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           {passwordNotFound === "" ? null : <p>{passwordNotFound}</p>}
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Se souvenir de moi"
-          />
+          /> */}
           <Button
             type="submit"
             fullWidth
@@ -110,11 +153,12 @@ function Login() {
                   {"S'inscrire"}
                 </Link>
               </NavLink>
+              <GoogleAuth />
             </Grid>
           </Grid>
         </Box>
       </Box>
-    </Container>
+    </Container >
   );
 }
 

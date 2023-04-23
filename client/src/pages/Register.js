@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Register from '../components/Register';
 import RegisterCreator from '../components/CreateEvent/Register';
 import NavBar from "../components/NavBar";
+import Footer from "../components/Footer";
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -32,6 +33,7 @@ function RegisterPage() {
         </Grid>
       </Grid>
       {showRegisterCreator ? <RegisterCreator /> : <Register />}
+      <Footer />
     </div>
   );
 }
