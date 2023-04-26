@@ -75,44 +75,33 @@ function EventsList() {
 
     const filterAndSortEvents = (events, searchQuery, sortOrder) => {
         const now = new Date();
-
-        // Fonction pour calculer le score de pertinence d'un événement par rapport à la recherche
-        const filteredAndSortedEvents = events.filter(event => {
-            // Initialiser le score à 0
-            let score = 0;
-
+        return events.filter((event) => {
             // Transformer les chaînes de caractères en minuscules et sans accents
             const title = removeAccents(event.title.toLowerCase());
             const country = removeAccents(event.country.toLowerCase());
             const city = removeAccents(event.city.toLowerCase());
             const theme = removeAccents(event.theme.toLowerCase());
-            const location = removeAccents(event.location.toLowerCase());
-            const description = removeAccents(event.description.toLowerCase());
+            // const location = removeAccents(event.location.toLowerCase());
+            // const description = removeAccents(event.description.toLowerCase());
 
             // Transformer la recherche en minuscules et sans accents
             const query = removeAccents(searchQuery.toLowerCase());
 
             // Rechercher le texte de la recherche dans les différents attributs inscrits
-            if (title.includes(query)) {
-                score += 5; // Titre correspondant à la recherche, score +5
-            }
-            if (country.includes(query)) {
-                score += 3; // Pays correspondant à la recherche, score +3
-            }
-            if (city.includes(query)) {
-                score += 3; // Ville correspondant à la recherche, score +3
-            }
-            if (theme.includes(query)) {
-                score += 2; // Thème correspondant à la recherche, score +2
-            }
-            if (location.includes(query)) {
-                score += 2; // Emplacement correspondant à la recherche, score +2
-            }
-            if (description.includes(query)) {
-                score += 1; // Description correspondant à la recherche, score +1
-            }
-
-            return score;
+            return (
+                title.indexOf(query) !== -1 ||
+                country.indexOf(query) !== -1 ||
+                city.indexOf(query) !== -1 ||
+                theme.indexOf(query) !== -1 || 
+                // location.indexOf(query) !== -1 ||
+                // description.indexOf(query) !== -1 ||
+                query.indexOf(title) !== -1 ||
+                query.indexOf(country) !== -1 ||
+                query.indexOf(city) !== -1 ||
+                query.indexOf(theme) !== -1
+                // query.indexOf(location) !== -1 ||
+                // query.indexOf(description) !== -1
+            );
         })
             .filter((event) => {
                 const endDate = new Date(event.endDate);
@@ -297,15 +286,15 @@ function EventsList() {
                     <Grid style={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap' }}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
-                                <TextField name="title" label="Titre" value={valuesFilter.title} onChange={handleChangeFilter} fullWidth/>
+                                <TextField name="title" label="Titre" value={valuesFilter.title} onChange={handleChangeFilter} fullWidth />
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <TextField name="country" label="Pays" value={valuesFilter.country} onChange={handleChangeFilter} fullWidth/>
+                                <TextField name="country" label="Pays" value={valuesFilter.country} onChange={handleChangeFilter} fullWidth />
                             </Grid>
                         </Grid>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
-                                <TextField name="city" label="Ville" value={valuesFilter.city} onChange={handleChangeFilter} fullWidth/>
+                                <TextField name="city" label="Ville" value={valuesFilter.city} onChange={handleChangeFilter} fullWidth />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <FormControl required fullWidth>
