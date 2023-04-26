@@ -33,6 +33,7 @@ moment.locale('fr');
 function EventDetail() {
     const { id } = useParams();
     const [event, setEvent] = useState({ comments: [] });
+    const [user, setUser] = useState([]);
 
     const [comment, setComment] = useState("");
     const [rating, setRating] = useState(0);
@@ -42,11 +43,16 @@ function EventDetail() {
     const [averageRating, setAverageRating] = useState(0);
 
 
-    const { userId, userRole, userFirstname, userLastname, isAuthenticated } = useContext(AuthContext);
+    const { userId, userRole, userFirstname, userLastname, picture, isAuthenticated } = useContext(AuthContext);
 
     const encodedText = encodeURIComponent("Je partage cet événement incroyable !");
     const encodedUrl = encodeURIComponent(`http://localhost:5000/api/event/${id}`);
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+
+    useEffect(() => {
+        axios.get(`http://localhost:5000/api/user`)
+            .then(res => setUser(res.data));
+    }, [user])
 
 
     useEffect(() => {
@@ -172,16 +178,9 @@ function EventDetail() {
         document.body.appendChild(script);
     }, [initialCoords]);
 
-    const [state, setState] = useState([
-        {
-            startDate: moment(event.startDate).toDate(),
-            endDate: moment(event.endDate).toDate(),
-            key: 'selection'
-        }
-    ]);
+    console.log(user, "user");
 
     // console.log(moment(event.promotionExpirationDate).fromNow(), "event.promotionExpirationDate");
-
 
     return (
         <div>
@@ -222,18 +221,18 @@ function EventDetail() {
                     </Typography>
                     <Grid>
                         <Grid item xs={12} md={6}>
-                            <Typography variant="h5" component="h5">Pays: {event.country}</Typography>
+                            <Typography variant="h5" component="h5" textAlign="center">Pays: {event.country}</Typography>
                         </Grid>
                         <Grid item xs={12} md={6}>
-                            <Typography variant="h5" component="h5">Ville: {event.city}</Typography>
+                            <Typography variant="h5" component="h5" textAlign="center">Ville: {event.city}</Typography>
                         </Grid>
-                        <Typography variant="h5" component="h5">Adresse: {event.location}</Typography>
+                        <Typography variant="h5" component="h5" textAlign="center">Adresse: {event.location}</Typography>
                         <Grid item xs={12}>
-                            <div id="map" style={{ height: "400px", width: "100%" }}></div>
+                            <div id="map" style={{ height: "400px", width: "80%", margin: '0 auto' }}></div>
                         </Grid>
-                        <Typography variant="h5" component="h5">Theme: {event.theme}</Typography>
-                        <Typography variant="h5" component="h5">Date début: {moment(event.startDate).format('lll')}</Typography>
-                        <Typography variant="h5" component="h5">Date fin: {moment(event.endDate).format('lll')}</Typography>
+                        <Typography variant="h5" component="h5" textAlign="center">Theme: {event.theme}</Typography>
+                        <Typography variant="h5" component="h5" textAlign="center">Date début: {moment(event.startDate).format('lll')}</Typography>
+                        <Typography variant="h5" component="h5" textAlign="center">Date fin: {moment(event.endDate).format('lll')}</Typography>
 
                         {/* <h1>{event.title}</h1>
                         {moment &&
@@ -251,11 +250,11 @@ function EventDetail() {
                             ranges={state}
                         /> */}
 
-                        {event.speaker && <Typography variant="h5" component="h5">Intervenants: {event.speaker}</Typography>}
-                        {event.speakerPresentation && <Typography variant="h5" component="h5">Présentation des Intervenants: {event.speakerPresentation}</Typography>}
-                        {event.capacity && <Typography variant="h5" component="h5">Capacité d'accueil: {event.capacity}</Typography>}
-                        {event.typeEvent && <Typography variant="h5" component="h5">Type de sport: {event.typeEvent}</Typography>}
-                        {event.nbEvent && <Typography variant="h5" component="h5">Nombres de matches: {event.nbEvent}</Typography>}
+                        {event.speaker && <Typography variant="h5" component="h5" textAlign="center">Intervenants: {event.speaker}</Typography>}
+                        {event.speakerPresentation && <Typography variant="h5" component="h5" textAlign="center">Présentation des Intervenants: {event.speakerPresentation}</Typography>}
+                        {event.capacity && <Typography variant="h5" component="h5" textAlign="center">Capacité d'accueil: {event.capacity}</Typography>}
+                        {event.typeEvent && <Typography variant="h5" component="h5" textAlign="center">Type de sport: {event.typeEvent}</Typography>}
+                        {event.nbEvent && <Typography variant="h5" component="h5" textAlign="center">Nombres de matches: {event.nbEvent}</Typography>}
                         <br />
 
                         {/* <Typography variant="h5" component="h5">
@@ -269,7 +268,7 @@ function EventDetail() {
                         </Typography> */}
 
                         {event.inPromotion && (
-                            <Typography gutterBottom variant="h5" component="div" color="green">
+                            <Typography gutterBottom variant="h5" component="div" color="green" textAlign="center">
                                 En promotion -{event.promotionValue}% {event.promotionHasExpiration && " jusqu'à " + moment(event.promotionExpirationDate).format('LLLL') + " (" + moment(event.promotionExpirationDate).fromNow() + ")"}
                             </Typography>
                         )}
@@ -279,7 +278,7 @@ function EventDetail() {
                                 {event.prices.map(price => (
                                     <Card key={price.title} style={{ padding: "10px", maxWidth: '250px', textAlign: 'center' }}>
                                         <CardContent>
-                                            <Typography component="h3" variant="h3" color="text.primary">
+                                            <Typography component="h4" variant="h4" color="text.primary" fontWeight={"bold"}>
                                                 {price.title}
                                             </Typography>
                                             <Typography component="h2" variant="h3" color="text.primary">
@@ -299,14 +298,16 @@ function EventDetail() {
                                 ))}
                             </div>
                         )}
-
-                        <Typography variant="h5" component="h5">lien du site:<Link href={event.ticketLink}>{event.ticketLink}</Link></Typography>
+                        <br />
+                        <Typography variant="h5" component="h5" textAlign="center">Lien du site : <a href={event.ticketLink && event.ticketLink.startsWith("http") ? event.ticketLink : `https://${event.ticketLink}`} target="_blank" rel="noopener">{event.ticketLink}</a></Typography>
                     </Grid>
 
-                    <Box sx={{ width: '100%', mb: 5 }}>
+                    <Box sx={{ width: '100%', mb: 10 }}>
                         {event.comments?.map(comment => (
-                            <Box key={comment.timestamp} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <Avatar alt={comment.commenterUsername} src="/static/images/avatar/1.jpg" sx={{ mr: 2 }} />
+                            <Box key={comment.timestamp} sx={{ display: 'flex', mb: 2 }}>
+                                {/* {user.map(u => ( */}
+                                    {comment.commenterId === userId ? <Avatar key={user._id} alt={userFirstname} src={picture} /> : <Avatar alt={userFirstname} src="/static/images/avatar/1.jpg" />}
+                                {/* ))} */}
                                 <Box sx={{ flex: 1 }}>
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                                         {comment.commenterUsername}
@@ -336,6 +337,7 @@ function EventDetail() {
                             value={rating}
                             onChange={handleRatingChange}
                             size="large"
+                            textAlign="center"
                         />
                     </Grid>
                     <Grid item>
@@ -348,12 +350,14 @@ function EventDetail() {
                             value={comment}
                             onChange={handleCommentChange}
                             variant="outlined"
+                            textAlign="center"
                         />
                     </Grid>
                     <Grid item>
                         <Button
                             variant="contained"
                             onClick={handleSubmit}
+                            textAlign="center"
                         >
                             Ajouter
                         </Button>
@@ -361,7 +365,7 @@ function EventDetail() {
                     {/* <Grid item>
                         <Typography variant="h5" component="h5">Note moyenne : {averageRating ? averageRating.toFixed(1) : "Aucune évaluation"}</Typography>
                     </Grid> */}
-                    <IconButton component="a" href={shareUrl} target="_blank" rel="noopener">
+                    <IconButton component="a" href={shareUrl} target="_blank" rel="noopener" textAlign="center">
                         <TwitterIcon />
                     </IconButton>
 

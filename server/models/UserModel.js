@@ -7,10 +7,11 @@ const SALT_WORK_FACTOR = 10
 const UserSchema = new mongoose.Schema({
     email: {
         type: String,
-        validate: [isEmail],
-        lowercase: true,
-        unique: true,
-        trim: true
+        unique: true
+        // validate: [isEmail],
+        // lowercase: true,
+        // unique: true,
+        // trim: true
     },
     phone: {
         type: String,
@@ -26,10 +27,16 @@ const UserSchema = new mongoose.Schema({
         required: true,
         enum: ['creator', 'anonymous', 'registered', 'manager', 'admin']
     },
+    subscriptionExpiration: {
+        type: Date
+    },
     firstname: {
         type: String,
     },
     lastname: {
+        type: String,
+    },
+    picture: {
         type: String,
     },
     title: {
@@ -54,6 +61,18 @@ const UserSchema = new mongoose.Schema({
     },
     favoriteEvents: {
         type: [String]
+    },
+    agendaEvents: {
+        type: [String]
+    },
+    notifications: {
+        type: [String]
+    },
+    eventNotifications: {
+        type: Boolean,
+    },
+    promotionNotifications: {
+        type: Boolean
     },
     isValidated: {
         type: Boolean,

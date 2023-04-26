@@ -17,6 +17,8 @@ export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isValidated, setIsValidated] = useState(null);
   const [firstConnection, setFirstConnection] = useState(null);
+  const [userSubscription, setUserSubscription] = useState(null);
+  const [picture, setPicture] = useState(null);
 
   useEffect(() => {
     async function checkToken() {
@@ -41,6 +43,8 @@ export function AuthProvider({ children }) {
         setAddress(decoded.address);
         setIsValidated(decoded.isValidated);
         setFirstConnection(decoded.firstConnection);
+        setUserSubscription(decoded.subscription);
+        setPicture(decoded.picture);
         setIsAuthenticated(true);
       } catch (err) {
         setIsAuthenticated(false);
@@ -50,7 +54,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ userId, userFirstname, userLastname, userEmail, userRole, nbMaxEvent, phone, title, companyName, address, isAuthenticated, isValidated, firstConnection, setFirstConnection }}>
+    <AuthContext.Provider value={{ userId, userFirstname, userLastname, userEmail, userRole, nbMaxEvent, phone, title, companyName, address, isAuthenticated, isValidated, firstConnection, userSubscription, picture }}>
       {children}
     </AuthContext.Provider>
   );

@@ -140,7 +140,7 @@ const GoogleAuth = () => {
 
         google.accounts.id.renderButton(
             document.getElementById("signInDiv"),
-            { theme: "outline", size: "medium" }
+            { theme: "outline", size: "xlarge" }
         );
 
         google.accounts.id.prompt();
@@ -148,17 +148,17 @@ const GoogleAuth = () => {
 
     return (
         <div className="GoogleAuth">
-            <div id="signInDiv"></div>
-            {Object.keys(user).length !== 0 &&
+            <div id="signInDiv" style={{ width: '50%', margin: '0 auto' }}></div>
+            {/* {Object.keys(user).length !== 0 &&
                 <button onClick={(e) => handleSignOut(e)}>Se déconnecter</button>
-            }
-            {user &&
+            } */}
+            {/* {user &&
                 <div>
                     <img src={user.picture} alt="Image du profil Google"></img>
                     <h1>{user.name}</h1>
                     <h2>{user.email}</h2>
                 </div>
-            }
+            } */}
         </div>
     );
 };

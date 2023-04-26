@@ -7,6 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import EditIcon from '@mui/icons-material/Edit';
+import AddBusinessIcon from '@mui/icons-material/AddBusiness';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { CardActionArea, Chip, Fab, Grid, TextField } from '@mui/material';
 import { Container } from '@mui/system';
@@ -126,17 +127,25 @@ function PersonalEvents() {
                                         </Typography>
                                         <Typography variant="body2" color="text.secondary">
                                             <Chip label={moment(event.startDate).format('ll') + " - " + moment(event.endDate).format('ll')} sx={{ marginBottom: 1 }} />
-                                            <NavLink to={`/edit-event/${event._id}`} style={{ textDecoration: 'none', color: 'grey' }} >
-                                                <Fab aria-label="edit" size="medium" sx={{ marginLeft: 3 }}>
-                                                    <EditIcon />
-                                                </Fab>
-                                            </NavLink>
-                                            <Fab aria-label="delete" size="medium" color="error" sx={{ marginLeft: 3 }} onClick={() => handleDelete(event._id)}>
-                                                <DeleteIcon />
-                                            </Fab>
-
                                             <br />
-                                            {shortenDescription(event.description)}
+                                            <div style={{ display: 'flex', justifyContent: 'center', marginRight: '30px' }}>
+                                                <NavLink to={`/edit-event/${event._id}`} style={{ textDecoration: 'none', color: 'grey' }} >
+                                                    <Fab aria-label="edit" size="medium" sx={{ marginLeft: 3 }}>
+                                                        <EditIcon />
+                                                    </Fab>
+                                                </NavLink>
+                                                <NavLink to={`/add-advert/${event._id}`} style={{ textDecoration: 'none', color: 'grey' }} >
+                                                    <Fab aria-label="edit" size="medium" sx={{ marginLeft: 3 }}>
+                                                        <AddBusinessIcon />
+                                                    </Fab>
+                                                </NavLink>
+                                                <Fab aria-label="delete" size="medium" color="error" sx={{ marginLeft: 3 }} onClick={() => handleDelete(event._id)}>
+                                                    <DeleteIcon />
+                                                </Fab>
+                                            </div>
+
+                                            {/* <br /> <br />
+                                            {shortenDescription(event.description)} */}
                                         </Typography>
                                     </CardContent>
                                 </Card>

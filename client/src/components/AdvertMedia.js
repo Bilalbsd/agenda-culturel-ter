@@ -42,6 +42,20 @@ const AdvertMedia = () => {
         return () => clearInterval(intervalId);
     }, [events]);
 
+    useEffect(() => {
+        if (events) {
+            events.forEach((event) => {
+                if (moment(event.advert.duration).isBefore(moment())) {
+                    axios.put(`http://localhost:5000/api/event/${event._id}`, {
+                        advert: null,
+                    }).then(() => {
+                        setEvents(events.filter((e) => e._id !== event._id));
+                    });
+                }
+            });
+        }
+    }, [events]);
+
     return (
         <div style={boxStyle}>
             <Carousel>

@@ -13,6 +13,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import HelpIcon from '@mui/icons-material/Help';
 import CircleIcon from '@mui/icons-material/Circle';
 import LoginIcon from '@mui/icons-material/Login';
 import { Badge, Modal } from '@mui/material';
@@ -24,15 +25,17 @@ import axios from 'axios';
 
 function ResponsiveAppBar() {
 
-    const { userId, userRole, userFirstname, isAuthenticated } = React.useContext(AuthContext);
+    const { userId, userRole, userFirstname, picture, isAuthenticated } = React.useContext(AuthContext);
 
     const [nbMaxEvent, setNbMaxEvent] = React.useState(null);
     const [notifications, setNotifications] = React.useState(0);
+    const [user, setUser] = React.useState({});
 
     React.useEffect(() => {
         const fetchUser = async () => {
             try {
                 const res = await axios.get(`http://localhost:5000/api/user/${userId}`);
+                setUser(res.data);
                 setNbMaxEvent(res.data.nbMaxEvent); // mettre à jour la valeur de nbMaxEvent
                 setNotifications(res.data.notifications);
             } catch (err) {
@@ -40,9 +43,9 @@ function ResponsiveAppBar() {
             }
         };
         fetchUser();
-    }, [nbMaxEvent, notifications]);
+    }, [user, nbMaxEvent, notifications]);
 
-    console.log(notifications.length, "notifications");
+    // console.log(notifications.length, "notifications");
 
     let pages = []
 
@@ -108,6 +111,26 @@ function ResponsiveAppBar() {
                         </Typography>
                     </NavLink>
 
+                    {!isAuthenticated && isSmallScreen &&
+                        <>
+                            <NavLink to="/agenda" style={{ textDecoration: 'none', color: 'white' }}>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography textAlign="center" fontFamily="Roboto" fontWeight="bold">{"Mon agenda".toUpperCase()}</Typography>
+                                </MenuItem>
+                            </NavLink>
+                            <NavLink to="/favorite" style={{ textDecoration: 'none', color: 'white' }}>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography textAlign="center" fontFamily="Roboto" fontWeight="bold">{"Mes favoris".toUpperCase()}</Typography>
+                                </MenuItem>
+                            </NavLink>
+                            <NavLink to="/group" style={{ textDecoration: 'none', color: 'white' }}>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography textAlign="center" fontFamily="Roboto" fontWeight="bold">{"Groupes".toUpperCase()}</Typography>
+                                </MenuItem>
+                            </NavLink>
+                        </>
+                    }
+
                     {isAuthenticated && userRole === "creator" && isSmallScreen &&
                         <>
                             <NavLink to="/create-event" style={{ textDecoration: 'none', color: 'white' }}>
@@ -130,15 +153,41 @@ function ResponsiveAppBar() {
 
                     {isAuthenticated && userRole === "registered" && isSmallScreen &&
                         <>
-                            <MenuItem onClick={handleCloseNavMenu}>
-                                <Typography textAlign="center">Mon agenda</Typography>
-                            </MenuItem>
-                            <MenuItem onClick={handleCloseNavMenu}>
-                                <Typography textAlign="center">Mes favoris</Typography>
-                            </MenuItem>
-                            <MenuItem onClick={handleCloseNavMenu}>
-                                <Typography textAlign="center">Abonnements</Typography>
-                            </MenuItem>
+                            <NavLink to="/agenda" style={{ textDecoration: 'none', color: 'white' }}>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography textAlign="center" fontFamily="Roboto" fontWeight="bold">{"Mon agenda".toUpperCase()}</Typography>
+                                </MenuItem>
+                            </NavLink>
+                            <NavLink to="/favorite" style={{ textDecoration: 'none', color: 'white' }}>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography textAlign="center" fontFamily="Roboto" fontWeight="bold">{"Mes favoris".toUpperCase()}</Typography>
+                                </MenuItem>
+                            </NavLink>
+                            <NavLink to="/group" style={{ textDecoration: 'none', color: 'white' }}>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography textAlign="center" fontFamily="Roboto" fontWeight="bold">{"Groupes".toUpperCase()}</Typography>
+                                </MenuItem>
+                            </NavLink>
+                        </>
+                    }
+
+                    {isAuthenticated && userRole === "manager" && isSmallScreen &&
+                        <>
+                            <NavLink to="/user-management" style={{ textDecoration: 'none', color: 'white' }}>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography textAlign="center" fontFamily="Roboto" fontWeight="bold">{"Gestionnaire d'Utilisateur".toUpperCase()}</Typography>
+                                </MenuItem>
+                            </NavLink>
+                            <NavLink to="/event-management" style={{ textDecoration: 'none', color: 'white' }}>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography textAlign="center" fontFamily="Roboto" fontWeight="bold">{"Gestionnaire d'Événement".toUpperCase()}</Typography>
+                                </MenuItem>
+                            </NavLink>
+                            <NavLink to="/statistic" style={{ textDecoration: 'none', color: 'white' }}>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography textAlign="center" fontFamily="Roboto" fontWeight="bold">{"Statistiques".toUpperCase()}</Typography>
+                                </MenuItem>
+                            </NavLink>
                         </>
                     }
 
@@ -173,33 +222,26 @@ function ResponsiveAppBar() {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            {/* {pages.map((page) => (
-                                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                    <Typography textAlign="center">{page}</Typography>
-                                </MenuItem>
-                            ))} */}
-                            {/* {
-                                isAuthenticated
-                                    ? userRole === "creator"
-                                        ?
-                                        <div>
-                                            <NavLink to="/profil" style={{ textDecoration: 'none' }}>
-                                                <MenuItem key="1" onClick={handleCloseNavMenu}>
-                                                    <Typography textAlign="center">Créer un événement</Typography>
-                                                </MenuItem>
-                                            </NavLink>
-                                            <NavLink to="/compte" style={{ textDecoration: 'none' }}>
-                                                <MenuItem onClick={handleCloseNavMenu}>
-                                                    <Typography textAlign="center">Mes événements</Typography>
-                                                </MenuItem>
-                                            </NavLink>
-                                        </div>
-                                        : userRole === "registered"
-                                            ? pages = ['Mon agenda', 'Mes favoris', 'Abonnements']
-                                            : pages = []
-                                    : pages = []
-                            } */}
 
+                            {!isAuthenticated &&
+                                <>
+                                    <NavLink to="/agenda" style={{ textDecoration: 'none', color: 'black' }}>
+                                        <MenuItem onClick={handleCloseNavMenu}>
+                                            <Typography textAlign="center">{"Mon agenda"}</Typography>
+                                        </MenuItem>
+                                    </NavLink>
+                                    <NavLink to="/favorite" style={{ textDecoration: 'none', color: 'black' }}>
+                                        <MenuItem onClick={handleCloseNavMenu}>
+                                            <Typography textAlign="center">{"Mes favoris"}</Typography>
+                                        </MenuItem>
+                                    </NavLink>
+                                    <NavLink to="/group" style={{ textDecoration: 'none', color: 'black' }}>
+                                        <MenuItem onClick={handleCloseNavMenu}>
+                                            <Typography textAlign="center">{"Groupes"}</Typography>
+                                        </MenuItem>
+                                    </NavLink>
+                                </>
+                            }
 
                             {isAuthenticated && userRole === "creator" &&
                                 <>
@@ -223,17 +265,45 @@ function ResponsiveAppBar() {
 
                             {isAuthenticated && userRole === "registered" &&
                                 <>
-                                    <MenuItem onClick={handleCloseNavMenu}>
-                                        <Typography textAlign="center">Mon agenda</Typography>
-                                    </MenuItem>
-                                    <MenuItem onClick={handleCloseNavMenu}>
-                                        <Typography textAlign="center">Mes favoris</Typography>
-                                    </MenuItem>
-                                    <MenuItem onClick={handleCloseNavMenu}>
-                                        <Typography textAlign="center">Abonnements</Typography>
-                                    </MenuItem>
+                                    <NavLink to="/agenda" style={{ textDecoration: 'none', color: 'black' }}>
+                                        <MenuItem onClick={handleCloseNavMenu}>
+                                            <Typography textAlign="center">{"Mon agenda"}</Typography>
+                                        </MenuItem>
+                                    </NavLink>
+                                    <NavLink to="/favorite" style={{ textDecoration: 'none', color: 'black' }}>
+                                        <MenuItem onClick={handleCloseNavMenu}>
+                                            <Typography textAlign="center">{"Mes favoris"}</Typography>
+                                        </MenuItem>
+                                    </NavLink>
+                                    <NavLink to="/group" style={{ textDecoration: 'none', color: 'black' }}>
+                                        <MenuItem onClick={handleCloseNavMenu}>
+                                            <Typography textAlign="center">{"Groupes"}</Typography>
+                                        </MenuItem>
+                                    </NavLink>
                                 </>
                             }
+
+                            {isAuthenticated && userRole === "manager" &&
+                                <>
+                                    <NavLink to="/user-management" style={{ textDecoration: 'none', color: 'black' }}>
+                                        <MenuItem onClick={handleCloseNavMenu}>
+                                            <Typography textAlign="center">{"Gestionnaire d'Utilisateur"}</Typography>
+                                        </MenuItem>
+                                    </NavLink>
+                                    <NavLink to="/event-management" style={{ textDecoration: 'none', color: 'black' }}>
+                                        <MenuItem onClick={handleCloseNavMenu}>
+                                            <Typography textAlign="center">{"Gestionnaire d'Événement"}</Typography>
+                                        </MenuItem>
+                                    </NavLink>
+                                    <NavLink to="/statistic" style={{ textDecoration: 'none', color: 'black' }}>
+                                        <MenuItem onClick={handleCloseNavMenu}>
+                                            <Typography textAlign="center">{"Statistiques"}</Typography>
+                                        </MenuItem>
+                                    </NavLink>
+                                </>
+                            }
+
+
 
                         </Menu>
                     </Box>
@@ -280,16 +350,32 @@ function ResponsiveAppBar() {
                     <MenuItem>
                         <IconButton
                             size="large"
+                            aria-label="presentation"
+                            color="inherit"
+                            onClick={handleOpen}
+                            marginRight="30px"
+                        >
+                            <NavLink to="/information" style={{ textDecoration: 'none', color: 'white' }}>
+                                <Badge sx={{ p: 0, marginRight: 1 }}>
+                                    <HelpIcon />
+                                </Badge>
+                            </NavLink>
+                        </IconButton>
+                        <IconButton
+                            size="large"
                             aria-label="show new notifications"
                             color="inherit"
                             onClick={handleOpen}
                         >
                             {isAuthenticated &&
-                                <NavLink to="/notification" style={{ textDecoration: 'none', color: 'white'}}>
+                                <NavLink to="/notification" style={{ textDecoration: 'none', color: 'white' }}>
                                     <Badge badgeContent={notifications.length} color="error">
                                         <NotificationsIcon />
                                     </Badge>
                                 </NavLink>
+                            }
+                            {!isAuthenticated &&
+                                <NotificationsIcon />
                             }
                         </IconButton>
                         {/* <p>Notifications</p> */}
@@ -317,7 +403,7 @@ function ResponsiveAppBar() {
                         <Box sx={{ flexGrow: 0 }}>
                             <Tooltip title="Open settings">
                                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, marginLeft: 3 }}>
-                                    <Avatar alt={userFirstname} src="/static/images/avatar/1.jpg" />
+                                    {user.picture != "null" ? <Avatar alt={userFirstname} src={user.picture} /> : <Avatar alt={userFirstname} src="/static/images/avatar/1.jpg" />}
                                 </IconButton>
                             </Tooltip>
                             <Menu
@@ -346,7 +432,7 @@ function ResponsiveAppBar() {
                                         <Typography textAlign="center">Favoris</Typography>
                                     </MenuItem>
                                 </NavLink>
-                                <div onClick={() => { localStorage.removeItem('token'); window.location.reload(); }}>
+                                <div onClick={() => { localStorage.removeItem('token'); window.location.href = "/" }}>
                                     <MenuItem onClick={handleCloseUserMenu}>
                                         <Typography textAlign="center" color="red">Déconnexion</Typography>
                                     </MenuItem>

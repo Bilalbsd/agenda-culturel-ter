@@ -8,7 +8,7 @@ import { Container } from '@mui/system';
 function EventManagement() {
     const [events, setEvents] = useState([]);
     const [users, setUsers] = useState([]);
-    const { userId, userFirstname } = useContext(AuthContext);
+    const { userId, userFirstname, picture } = useContext(AuthContext);
 
     useEffect(() => {
         axios
@@ -69,7 +69,7 @@ function EventManagement() {
                                     {users.map((user) =>
                                         event.creator === user._id ? (
                                             <span key={user._id}>
-                                                <Avatar alt={user.firstname} src="/static/images/avatar/1.jpg" />
+                                                {user.picture != "null" ? <Avatar alt="Photo de profil" src={user.picture} /> : <Avatar alt={user.firstname} src="/static/images/avatar/1.jpg" />}
                                                 {user.firstname} {user.lastname}
                                             </span>
                                         ) : null

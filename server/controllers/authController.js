@@ -6,26 +6,38 @@ require('dotenv').config({ path: '../config/.env' })
 
 
 module.exports.signUp = async (req, res) => {
-  const { email, password, firstname, lastname, role, phone, title, companyName, address } = req.body
+  const { email, password, firstname, lastname, picture, role, phone, title, companyName, address } = req.body;
+
+  console.log(req.body, "req.body");
 
   try {
-    const user = await User.create({ email, password, firstname, lastname, role, phone, title, companyName, address });
+    let user;
+    user = await User.create({ email, password, firstname, lastname, picture, role, phone, title, companyName, address });
     res.status(201).json({ user: user._id });
-  }
-  catch (err) {
+  } catch (err) {
     const errors = signUpErrors(err);
-    res.status(500).send({ errors })
+    res.status(500).send({ errors });
   }
 }
 
+
 module.exports.signIn = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, phone, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    let user;
+
+    if (email) {
+      user = await User.findOne({ email });
+    } else if (phone) {
+      user = await User.findOne({ phone });
+    } else {
+      return res.status(400).json({ errors: { identifier: "Email ou téléphone requis" } });
+    }
 
     if (!user) {
-      return res.status(404).json({ errors: { email: "Utilisateur non trouvé" } });
+      const identifierName = email ? "email" : "téléphone";
+      return res.status(404).json({ errors: { identifier: `Utilisateur avec cet ${identifierName} introuvable` } });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -42,6 +54,7 @@ module.exports.signIn = async (req, res) => {
       role: user.role,
       phone: user.phone,
       title: user.title,
+      picture: user.picture,
       companyName: user.companyName,
       address: user.address,
       nbMaxEvent: user.nbMaxEvent
@@ -51,8 +64,9 @@ module.exports.signIn = async (req, res) => {
     res.status(200).json({ token });
 
   } catch (err) {
-    // console.log(err, "err")
     const errors = signInErrors(err);
     res.status(500).json({ errors });
   }
 };
+
+

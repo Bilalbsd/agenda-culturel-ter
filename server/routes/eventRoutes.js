@@ -9,8 +9,8 @@ const storage = multer.diskStorage({
     cb(null, '../client/public/uploads/')
   },
   filename: function (req, file, cb) {
-      cb(null, file.originalname)
-}
+    cb(null, file.originalname)
+  }
 })
 
 const upload = multer({ storage: storage })
@@ -19,7 +19,7 @@ const upload = multer({ storage: storage })
 router.post('/', upload.single('image'), eventController.createEvent)
 router.get('/', eventController.getAllEvents)
 router.get('/:id', eventController.getEvent)
-router.put('/:id', eventController.updateEvent)
+router.put('/:id', upload.single('file'), eventController.updateEvent)
 router.delete('/:id', eventController.deleteEvent)
 
 module.exports = router

@@ -8,7 +8,7 @@ const NotificationPage = () => {
         <div>
             <NavBar />
             <Notifications />
-            <Footer />
+            {/* <Footer /> */}
         </div>
     );
 };

@@ -5,7 +5,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { Box, Button, ButtonGroup, CardActionArea, Chip, Grid, TextField } from '@mui/material';
+import { Box, Button, ButtonGroup, CardActionArea, Chip, FormControl, Grid, InputLabel, Select, TextField } from '@mui/material';
 import { Container } from '@mui/system';
 import { NavLink } from 'react-router-dom';
 import 'moment/locale/fr'
@@ -76,7 +76,11 @@ function EventsList() {
     const filterAndSortEvents = (events, searchQuery, sortOrder) => {
         const now = new Date();
 
-        return events.filter((event) => {
+        // Fonction pour calculer le score de pertinence d'un événement par rapport à la recherche
+        const filteredAndSortedEvents = events.filter(event => {
+            // Initialiser le score à 0
+            let score = 0;
+
             // Transformer les chaînes de caractères en minuscules et sans accents
             const title = removeAccents(event.title.toLowerCase());
             const country = removeAccents(event.country.toLowerCase());
@@ -89,7 +93,26 @@ function EventsList() {
             const query = removeAccents(searchQuery.toLowerCase());
 
             // Rechercher le texte de la recherche dans les différents attributs inscrits
-            return title.includes(query) || country.includes(query) || city.includes(query) || theme.includes(query) || location.includes(query) || description.includes(query);
+            if (title.includes(query)) {
+                score += 5; // Titre correspondant à la recherche, score +5
+            }
+            if (country.includes(query)) {
+                score += 3; // Pays correspondant à la recherche, score +3
+            }
+            if (city.includes(query)) {
+                score += 3; // Ville correspondant à la recherche, score +3
+            }
+            if (theme.includes(query)) {
+                score += 2; // Thème correspondant à la recherche, score +2
+            }
+            if (location.includes(query)) {
+                score += 2; // Emplacement correspondant à la recherche, score +2
+            }
+            if (description.includes(query)) {
+                score += 1; // Description correspondant à la recherche, score +1
+            }
+
+            return score;
         })
             .filter((event) => {
                 const endDate = new Date(event.endDate);
@@ -101,8 +124,7 @@ function EventsList() {
                     return endDate >= now;
                 } else if (sortOrder === "Actuel") {
                     return startDate <= now && endDate >= now;
-                }
-                else {
+                } else {
                     return true;
                 }
             })
@@ -130,19 +152,15 @@ function EventsList() {
                 };
             })
             .sort((a, b) => a.distance - b.distance);
-    };
 
-    const filteredAndSortedEvents = filterAndSortEvents(events, searchQuery, sortOrder);
+        return filteredAndSortedEvents;
+    };
 
     const buttons = [
         {
             label: "Passé",
             value: "Passé",
         },
-        // {
-        //     label: "Actuel",
-        //     value: "Actuel",
-        // },
         {
             label: "A venir",
             value: "A venir",
@@ -161,6 +179,88 @@ function EventsList() {
         </Button>
     ));
 
+    // Recherche par filtre
+    const [openFilter, setOpenFilter] = useState(false);
+    const [valuesFilter, setValuesFilter] = useState([]);
+    const [submitFilter, setSubmitFilter] = useState(false);
+
+    useEffect(() => {
+        setValuesFilter({
+            title: '',
+            country: '',
+            city: '',
+            theme: '',
+            startDate: '',
+            endDate: ''
+        })
+    }, []);
+
+    const handleChangeFilter = (e) => {
+        setValuesFilter({ ...valuesFilter, [e.target.name]: e.target.value });
+    }
+
+    function anotherFunction(events, valuesFilter, sortOrder) {
+        const now = new Date();
+        const filteredAndSortedEvents = events
+            .filter(event => {
+                const isTitleMatched = !valuesFilter.title || removeAccents(event.title).includes(removeAccents(valuesFilter.title));
+                const isCountryMatched = !valuesFilter.country || removeAccents(event.country) === removeAccents(valuesFilter.country);
+                const isCityMatched = !valuesFilter.city || removeAccents(event.city) === removeAccents(valuesFilter.city);
+                const isThemeMatched = !valuesFilter.theme || removeAccents(event.theme) === removeAccents(valuesFilter.theme);
+                const isStartDateMatched = !valuesFilter.startDate || moment(event.startDate).isSameOrAfter(valuesFilter.startDate);
+                const isEndDateMatched = !valuesFilter.endDate || moment(event.endDate).isSameOrBefore(valuesFilter.endDate);
+
+                return isTitleMatched && isCountryMatched && isCityMatched && isThemeMatched && isStartDateMatched && isEndDateMatched;
+            })
+            .filter((event) => {
+                const endDate = new Date(event.endDate);
+                const startDate = new Date(event.startDate);
+
+                console.log(endDate, "endDate");
+                console.log(now, "now");
+
+                if (sortOrder === "Passé") {
+                    return endDate < now;
+                } else if (sortOrder === "A venir") {
+                    return endDate >= now;
+                } else if (sortOrder === "Actuel") {
+                    return startDate <= now && endDate >= now;
+                } else {
+                    return true;
+                }
+            })
+            .map((event) => {
+                const { lat: lat1, lng: lng1 } = userLocation;
+                const { lat: lat2, lng: lng2 } = event;
+
+                const R = 6371; // rayon de la Terre en km
+                const dLat = ((lat2 - lat1) * Math.PI) / 180;
+                const dLng = ((lng2 - lng1) * Math.PI) / 180;
+                const a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos((lat1 * Math.PI) / 180) *
+                    Math.cos((lat2 * Math.PI) / 180) *
+                    Math.sin(dLng / 2) *
+                    Math.sin(dLng / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                const distance = R * c;
+
+                return {
+                    ...event,
+                    distance,
+                };
+            })
+            .sort((a, b) => a.distance - b.distance);
+
+        return filteredAndSortedEvents;
+    }
+
+
+    let filteredAndSortedEvents;
+    { submitFilter ? filteredAndSortedEvents = anotherFunction(events, valuesFilter, sortOrder) : filteredAndSortedEvents = filterAndSortEvents(events, searchQuery, sortOrder); }
+
+
+    console.log(filteredAndSortedEvents, "filteredAndSorteeeeeeeeeeeeed")
     return (
         <>
             <Container maxWidth="lg">
@@ -178,14 +278,88 @@ function EventsList() {
                         Vous trouverez ici les différents événements que nous proposons.
                     </Typography>
                 </Container>
-                <TextField
-                    label="Recherche"
-                    variant="outlined"
-                    margin="normal"
-                    fullWidth
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                />
+                <Grid item xs={12} sm={9}>
+                    <TextField
+                        label="Recherche"
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={3}>
+                    <Button onClick={() => openFilter ? setOpenFilter(false) : setOpenFilter(true)}>
+                        Filtre
+                    </Button>
+                </Grid>
+                {openFilter &&
+                    <Grid style={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap' }}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                                <TextField name="title" label="Titre" value={valuesFilter.title} onChange={handleChangeFilter} fullWidth/>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField name="country" label="Pays" value={valuesFilter.country} onChange={handleChangeFilter} fullWidth/>
+                            </Grid>
+                        </Grid>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                                <TextField name="city" label="Ville" value={valuesFilter.city} onChange={handleChangeFilter} fullWidth/>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <FormControl required fullWidth>
+                                    <InputLabel htmlFor="event-theme-select">Thème</InputLabel>
+                                    <Select native value={valuesFilter.theme ? valuesFilter.theme : valuesFilter.theme = " "} onChange={handleChangeFilter} inputProps={{ name: 'theme', id: 'event-theme-select' }}>
+                                        <option aria-label="Choisir un événement" value="">Tous</option>
+                                        <option value="Théâtre">Théâtre</option>
+                                        <option value="Sport">Sport</option>
+                                        <option value="Concert">Concert</option>
+                                        <option value="Festival">Festival</option>
+                                        <option value="Danse">Danse</option>
+                                        <option value="Spectacle">Spectacle</option>
+                                        <option value="Exposition">Exposition</option>
+                                        <option value="Autre">Autre</option>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    name="startDate"
+                                    label="Date de début"
+                                    type="datetime-local"
+                                    value={valuesFilter.startDate}
+                                    onChange={handleChangeFilter}
+                                    InputLabelProps={{ shrink: true }}
+                                    fullWidth
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    name="endDate"
+                                    label="Date de fin"
+                                    type="datetime-local"
+                                    value={valuesFilter.endDate}
+                                    onChange={handleChangeFilter}
+                                    InputLabelProps={{ shrink: true }}
+                                    fullWidth
+                                    required
+                                />
+                            </Grid>
+                        </Grid>
+                        <Grid container spacing={2}>
+                            <Grid item>
+                                <Button variant="contained" onClick={() => { console.log(valuesFilter, "valuesFilter"); setSubmitFilter(true) }}>Rechercher</Button>
+                            </Grid>
+                            <Grid item>
+                                <Button variant="contained" color="error" onClick={() => { setValuesFilter({ title: '', country: '', city: '', theme: '', startDate: '', endDate: '' }) }}>Effacer</Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                }
                 <br /> <br /> <br />
                 <ButtonGroup size="large" aria-label="large button group">
                     {buttons}
@@ -223,7 +397,7 @@ function EventsList() {
                         </Grid>
                     ))}
                 </Grid>
-            </Container>
+            </Container >
         </>
     );
 }

@@ -7,6 +7,8 @@ import Footer from '../components/Footer';
 
 import { AuthContext } from '../context/AuthContext';
 import Localisation from '../components/Localisation';
+import AdvertMedia from '../components/AdvertMedia';
+import ModalMaxEvent from '../components/ModalMaxEvent';
 
 
 const Home = () => {
@@ -44,6 +46,8 @@ const Home = () => {
             <NavBar />
             {/* <Localisation /> */}
             <Information />
+            <AdvertMedia />
+            <ModalMaxEvent />
             <EventsList />
             <Footer />
         </div>

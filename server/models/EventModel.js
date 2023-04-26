@@ -38,6 +38,16 @@ const EventSchema = new mongoose.Schema({
     image: {
         type: String
     },
+    file: {
+        type: String,
+    },
+    advert: {
+        type: {
+            active: Boolean,
+            file: String,
+            duration: Date
+        }
+    },
     speaker: {
         type: String
     },
@@ -50,23 +60,27 @@ const EventSchema = new mongoose.Schema({
     nbEvent: {
         type: Number
     },
-    price: {
-        type: Number
-    },
-    prices : {
+    // price: {
+    //     type: Number
+    // },
+    prices: {
         type: [{
-            price: Number,
             title: String,
-            conditions : String
+            condition: String,
+            price: Number,
+            discountedPrice: Number
         }]
     },
-    inPromotion : {
+    inPromotion: {
         type: Boolean
     },
-    discountedPrice : {
-        type: Number
+    promotionHasExpiration: {
+        type: Boolean
     },
-    promotionValue : {
+    promotionExpirationDate: {
+        type: Date
+    },
+    promotionValue: {
         type: Number
     },
     ticketLink: {

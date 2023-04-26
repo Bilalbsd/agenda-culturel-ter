@@ -19,7 +19,15 @@ module.exports.getUser = ((req, res) => {
 
 // Mise à jour d'un utilisateur
 module.exports.updateUser = ((req, res) => {
-    User.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, user) => {
+    console.log(req.body, "req.body");
+
+    const user = req.body;
+    if (req.file) {
+        user.picture = req.file.path.replace(/\\/g, "/").replace("../client/public", "");
+    }
+    console.log(req.file)
+    
+    User.findByIdAndUpdate(req.params.id, user, { new: true }, (err, user) => {
         if (err) return res.status(500).send(err);
         return res.status(200).send(user);
     });

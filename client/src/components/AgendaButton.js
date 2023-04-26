@@ -7,6 +7,8 @@ import { Container } from '@mui/system';
 import 'moment/locale/fr'
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
+import EventIcon from '@mui/icons-material/Event';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import { AuthContext } from '../context/AuthContext';
 moment.locale('fr')
 
@@ -78,7 +80,7 @@ function EventDetail() {
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Checkbox
                             {...label}
-                            icon={!agenda ? <FavoriteBorder /> : <Favorite />}
+                            icon={!agenda ? <EventIcon /> : <EventAvailableIcon />}
                             // checkedIcon={agenda && <agenda />}
                             onClick={handleAgenda}
                         />

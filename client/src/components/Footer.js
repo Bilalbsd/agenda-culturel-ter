@@ -9,7 +9,7 @@ function Copyright() {
     return (
         <Typography variant="body2" color="text.secondary">
             {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
+            <Link color="inherit" href="">
                 Agenda Culturel
             </Link>{' '}
             {new Date().getFullYear()}
@@ -32,12 +32,13 @@ export default function StickyFooter() {
                         theme.palette.mode === 'light'
                             ? theme.palette.grey[200]
                             : theme.palette.grey[800],
+                    textAlign: 'center'
                 }}
             >
 
                 <Container maxWidth="sm">
                     <Typography variant="body1">
-                        {/* My sticky footer can be found here. */}
+                        Ceci est le footer du site...
                     </Typography>
                     <Copyright />
                 </Container>

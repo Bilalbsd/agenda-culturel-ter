@@ -19,26 +19,6 @@ function CreateEvent() {
     const [predictions, setPredictions] = useState(null);
     const [coords, setCoords] = useState(null);
 
-    // On utilise un useEffect pour initialiser 'creator: userId' car sinon on a 'creator: null'
-    // useEffect(() => {
-    //     setEvent({
-    //         title: '',
-    //         country: '',
-    //         city: '',
-    //         theme: '',
-    //         startDate: '',
-    //         endDate: '',
-    //         location: location,
-    //         creator: userId,
-    //         image: '',
-    //         speakers: '',
-    //         price: 0,
-    //         ticketLink: '',
-    //         description: ''
-    //     });
-    //     // On modifie creator à chaque update de userId
-    // }, [userId, location])
-
     useEffect(() => {
         setEvent(prevState => {
             return {
@@ -107,30 +87,6 @@ function CreateEvent() {
         setEvent({ ...event, speakers: newSpeakers });
     }
 
-    useEffect(() => {
-        try {
-            const res = axios.get(`http://localhost:5000/api/user/${userId}`);
-            setNbMaxEvent(res.data.nbMaxEvent); // mettre à jour la valeur de nbMaxEvent
-        } catch (err) {
-            console.log(err);
-        }
-    }, [userId, nbMaxEvent]); // déclencher l'effet à chaque changement de userId
-
-    const updateNbMaxEvent = async () => {
-        <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
-            This is a success alert — check it out!
-        </Alert>
-        try {
-            const res = await axios.put(`http://localhost:5000/api/user/${userId}`, {
-                nbMaxEvent: nbMaxEvent - 1 // utiliser la valeur actuelle de nbMaxEvent obtenue de l'API
-            });
-            console.log(res, "res");
-            setNbMaxEvent(nbMaxEvent - 1);
-        } catch (err) {
-            console.log(err);
-        }
-    };
-
     const CLE_API = "AIzaSyBvGBV9DUig0t9hvtFy4YcTrouE8S22lQM";
 
     useEffect(() => {
@@ -153,24 +109,6 @@ function CreateEvent() {
             setPredictions(results);
         });
     };
-
-    // const handlePlaceSelect = (prediction) => {
-    //     const placeService = new window.google.maps.places.PlacesService(map);
-    //     placeService.getDetails({ placeId: prediction.place_id }, (placeResult) => {
-    //         const lat = placeResult.geometry.location.lat();
-    //         const lng = placeResult.geometry.location.lng();
-    //         const marker = new window.google.maps.Marker({
-    //             position: { lat, lng },
-    //             map: map,
-    //         });
-    //         setMarker(marker);
-    //         setCoords({ lat, lng });
-    //         map.setCenter({ lat, lng });
-    //         map.setZoom(15);
-    //         setLocation(prediction.description);
-    //         setPredictions(null);
-    //     });
-    // };
 
     const handlePlaceSelect = (prediction) => {
         const placeService = new window.google.maps.places.PlacesService(map);
@@ -205,31 +143,49 @@ function CreateEvent() {
     const [users, setUsers] = useState([]);
     useEffect(() => {
         axios.get(`http://localhost:5000/api/user`)
-        .then(res => setUsers(res.data));
+            .then(res => setUsers(res.data));
     }, []);
 
     users.map((user) => {
         console.log(user._id, "user id");
     })
 
+
     const handleSubmit = async e => {
         e.preventDefault();
 
         users.map((user) => {
             if (user.eventNotifications) {
-              try {
-                const existingNotifications = user.notifications || [];
-                const updatedNotifications = [...existingNotifications, event.title];
-                axios.put(`http://localhost:5000/api/user/${user._id}`, {
-                  notifications: updatedNotifications
-                }).then(res => console.log(res, "add event notification"));
-              } catch (err) {
-                console.error(err);
-              }
+                try {
+                    const existingNotifications = user.notifications || [];
+                    const updatedNotifications = [...existingNotifications, event.title];
+                    axios.put(`http://localhost:5000/api/user/${user._id}`, {
+                        notifications: updatedNotifications
+                    }).then(res => console.log(res, "add event notification"));
+                } catch (err) {
+                    console.error(err);
+                }
             }
-          });
-          
-        
+        });
+
+        try {
+            const res = await axios.get(`http://localhost:5000/api/user/${userId}`);
+            setNbMaxEvent(res.data.nbMaxEvent); // mettre à jour la valeur de nbMaxEvent
+            setNbMaxEvent(nbMaxEvent - 1);
+        } catch (err) {
+            console.log(err);
+        }
+
+        try {
+            const res = await axios.put(`http://localhost:5000/api/user/${userId}`, {
+                nbMaxEvent: nbMaxEvent - 1 // décrémenter la valeur actuelle de nbMaxEvent obtenue de l'API
+            });
+            console.log(res, "res");
+        } catch (err) {
+            console.log(err);
+        }
+
+
         const formData = new FormData();
         formData.append('image', image);
         Object.keys(event).forEach(key => {
@@ -751,7 +707,7 @@ function CreateEvent() {
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <Button variant="contained" color="primary" type="submit" onClick={updateNbMaxEvent}>
+                                <Button variant="contained" color="primary" type="submit">
                                     Créer l'événement
                                 </Button>
                             </Grid>

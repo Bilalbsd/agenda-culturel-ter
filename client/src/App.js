@@ -8,7 +8,8 @@ import EditEvent from './pages/EditEvent';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profil from './pages/Profil';
-import ManagementPage from './pages/Management';
+import UserManagementPage from './pages/UserManagementPage';
+import EventManagementPage from './pages/EventManagementPage';
 import Pricing from './pages/Pricing';
 import Payment from './pages/Payment';
 import NotFound from './pages/NotFound';
@@ -16,6 +17,11 @@ import FavoriteEvent from './pages/FavoriteEvent';
 import Group from './pages/Group';
 import Notification from './pages/Notification';
 import AgendaPage from './pages/AgendaPage';
+import AdvertPage from './pages/AdvertPage';
+import InformationPage from './pages/InformationPage';
+import StatisticPage from './pages/StatisticPage';
+
+
 
 // import { AuthContext } from './context/AuthContext';
 
@@ -28,9 +34,12 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/personal-events" element={<PersonalEvents />} />
+        <Route path="/information" element={<InformationPage />} />
+        <Route path="/statistic" element={<StatisticPage />} />
         <Route path="/favorite" element={<FavoriteEvent />} />
         <Route path="/group" element={<Group />} />
         <Route path="/agenda" element={<AgendaPage />} />
+        <Route path="/add-advert/:id" element={<AdvertPage />} />
         <Route path="/notification" element={<Notification />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/payment" element={<Payment />} />
@@ -40,7 +49,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profil" element={<Profil />} />
-        <Route path="/management" element={<ManagementPage />} /> {/*Il faut avoir le rôle de manager*/}
+        <Route path="/user-management" element={<UserManagementPage />} /> {/*Il faut avoir le rôle de manager*/}
+        <Route path="/event-management" element={<EventManagementPage />} /> {/*Il faut avoir le rôle de manager*/}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

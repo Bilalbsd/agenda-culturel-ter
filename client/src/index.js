@@ -7,9 +7,9 @@ import "./normalize.css";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <AuthProvider>
-      <SubscriptionProvider>
-          <App />
-      </SubscriptionProvider>
-    </AuthProvider>
+  <AuthProvider>
+    <SubscriptionProvider>
+      <App />
+    </SubscriptionProvider>
+  </AuthProvider>
 );
