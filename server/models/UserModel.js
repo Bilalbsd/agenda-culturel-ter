@@ -76,7 +76,7 @@ const UserSchema = new mongoose.Schema({
     },
     isValidated: {
         type: Boolean,
-        default: true
+        default: false
     },
     firstConnection: {
         type: Boolean,

@@ -40,7 +40,7 @@ function getStepContent(step) {
 
 export default function Checkout() {
 
-    const { userId, userRole, nbMaxEvent, setNbMaxEvent } = React.useContext(AuthContext);
+    const { userId, userRole, } = React.useContext(AuthContext);
 
     const { supPunctual, monthly, supMonthly, punctual } = React.useContext(SubscriptionContext);
 
@@ -57,7 +57,14 @@ export default function Checkout() {
         } catch (err) {
             console.error(err);
         }
-    })
+    });
+
+    const [nbMaxEvent, setNbMaxEvent] = React.useState(0);
+
+    React.useEffect(() => {
+        axios.get(`http://localhost:5000/api/user/${userId}`)
+            .then(res => setNbMaxEvent(res.data.nbMaxEvent));
+    }, [nbMaxEvent]);
 
     const handleNext = () => {
         setActiveStep(activeStep + 1);
@@ -71,7 +78,6 @@ export default function Checkout() {
         let nbMaxEventToAdd = 0;
         let actualSubscription = "free";
         let subscriptionExpiration = null;
-        const oneMonthInMilliseconds = 2592000000; // assuming 30 days per month
 
         if (monthly) {
             actualSubscription = "mensual";
@@ -79,7 +85,7 @@ export default function Checkout() {
             subscriptionExpiration = moment().add(1, 'M');
         } else if (punctual) {
             actualSubscription = "punctual";
-            nbMaxEventToAdd = 30;
+            nbMaxEventToAdd = 10;
         } else if (supMonthly) {
             actualSubscription = "supmensual";
             nbMaxEventToAdd = 30;
@@ -89,36 +95,39 @@ export default function Checkout() {
             nbMaxEventToAdd = 30;
         }
 
-        try {
-            const res = await axios.put(`http://localhost:5000/api/user/${userId}`, {
-                subscription: actualSubscription,
-                nbMaxEvent: nbMaxEvent + nbMaxEventToAdd,
-                subscriptionExpiration: subscriptionExpiration.toDate(),
-            });
-            console.log(res);
-            handleNext();
+        if (actualSubscription !== "free") {
+            try {
+                const res = await axios.put(`http://localhost:5000/api/user/${userId}`, {
+                    subscription: actualSubscription,
+                    nbMaxEvent: nbMaxEvent + nbMaxEventToAdd,
+                    subscriptionExpiration: subscriptionExpiration?.toDate() || null,
+                });
+                console.log(res);
+                handleNext();
 
-            if (user.subscriptionExpiration) {
-                const remainingTime = moment.duration(user.subscriptionExpiration.diff(moment()));
-                if (remainingTime.asMilliseconds() > 0) {
-                    setTimeout(async () => {
-                        const freeRes = await axios.put(
-                            `http://localhost:5000/api/user/${userId}`,
-                            {
-                                subscription: "free",
-                                nbMaxEvent: 5,
-                                subscriptionExpiration: null,
-                            }
-                        );
-                        console.log(freeRes);
-                    }, remainingTime.asMilliseconds());
+                if (user.subscriptionExpiration) {
+                    const remainingTime = moment.duration(subscriptionExpiration.diff(moment()));
+                    if (remainingTime.asMilliseconds() > 0) {
+                        setTimeout(async () => {
+                            const freeRes = await axios.put(
+                                `http://localhost:5000/api/user/${userId}`,
+                                {
+                                    subscription: "free",
+                                    nbMaxEvent: 5,
+                                    subscriptionExpiration: null,
+                                }
+                            );
+                            console.log(freeRes);
+                        }, remainingTime.asMilliseconds());
+                    }
                 }
+            } catch (err) {
+                console.log(err);
             }
-        } catch (err) {
-            console.log(err);
         }
     };
-    
+
+
     return (
         <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
             <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
