@@ -11,8 +11,9 @@ import { DropzoneArea } from "mui-file-dropzone";
 
 
 function CreateEvent() {
-    const { userId, userRole, nbMaxEvent, setNbMaxEvent, isValidated } = useContext(AuthContext);
+    const { userId, userRole, isValidated } = useContext(AuthContext);
     const [event, setEvent] = useState({});
+    const [nbMaxEvent, setNbMaxEvent] = useState(10);
     const [location, setLocation] = useState("");
     const [map, setMap] = useState(null);
     const [marker, setMarker] = useState(null);
@@ -148,8 +149,14 @@ function CreateEvent() {
 
     users.map((user) => {
         console.log(user._id, "user id");
-    })
+    });
 
+    React.useEffect(() => {
+        axios.get(`http://localhost:5000/api/user/${userId}`)
+            .then(res => setNbMaxEvent(res.data.nbMaxEvent));
+    }, [nbMaxEvent]);
+
+    console.log(nbMaxEvent, "nbMaxEvent");
 
     const handleSubmit = async e => {
         e.preventDefault();
@@ -169,22 +176,13 @@ function CreateEvent() {
         });
 
         try {
-            const res = await axios.get(`http://localhost:5000/api/user/${userId}`);
-            setNbMaxEvent(res.data.nbMaxEvent); // mettre à jour la valeur de nbMaxEvent
-            setNbMaxEvent(nbMaxEvent - 1);
+            axios.put(`http://localhost:5000/api/user/${userId}`, {
+                nbMaxEvent: nbMaxEvent - 1
+            })
+                .then(res => console.log(res));
         } catch (err) {
-            console.log(err);
+            console.error(err);
         }
-
-        try {
-            const res = await axios.put(`http://localhost:5000/api/user/${userId}`, {
-                nbMaxEvent: nbMaxEvent - 1 // décrémenter la valeur actuelle de nbMaxEvent obtenue de l'API
-            });
-            console.log(res, "res");
-        } catch (err) {
-            console.log(err);
-        }
-
 
         const formData = new FormData();
         formData.append('image', image);
@@ -215,12 +213,12 @@ function CreateEvent() {
         <Grid container justifyContent="center">
             {userRole !== 'creator' || isValidated === 'false' ? (
                 <Grid item xs={12}>
-                    <Typography variant="h5">Vous n'avez pas les permissions nécessaires pour accéder à cette page !</Typography>
-                    <Typography variant="h5">Votre compte n'a pas encore été validé !</Typography>
+                    <Typography variant="h5" textAlign="center">Vous n'avez pas les permissions nécessaires pour accéder à cette page !</Typography>
+                    <Typography variant="h5" textAlign="center">Votre compte n'a pas encore été validé !</Typography>
                 </Grid>
             ) : nbMaxEvent === 0 ? (
                 <Grid item xs={12}>
-                    <Typography variant="h5">Vous avez atteint la limite de création d'événement ! Veuillez souscrire à un abonnement.</Typography>
+                    <Typography variant="h5" textAlign="center">Vous avez atteint la limite de création d'événement ! Veuillez souscrire à un abonnement.</Typography>
                 </Grid>
             ) : (
                 <Grid item xs={6} md={4}>
