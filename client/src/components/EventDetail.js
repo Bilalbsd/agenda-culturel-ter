@@ -38,12 +38,11 @@ function EventDetail() {
     const [comment, setComment] = useState("");
     const [rating, setRating] = useState(0);
 
-    const [comments, setComments] = useState([]);
+    const [comments, setComments] = useState([])
 
     const [averageRating, setAverageRating] = useState(0);
 
-
-    const { userId, userRole, userFirstname, userLastname, picture, isAuthenticated } = useContext(AuthContext);
+    const { userId, userRole, userFirstname, userLastname, isAuthenticated } = useContext(AuthContext);
 
     const encodedText = encodeURIComponent("Je partage cet événement incroyable !");
     const encodedUrl = encodeURIComponent(`http://localhost:5000/api/event/${id}`);
@@ -53,7 +52,6 @@ function EventDetail() {
         axios.get(`http://localhost:5000/api/user`)
             .then(res => setUser(res.data));
     }, [user])
-
 
     useEffect(() => {
         axios
@@ -305,9 +303,13 @@ function EventDetail() {
                     <Box sx={{ width: '100%', mb: 10 }}>
                         {event.comments?.map(comment => (
                             <Box key={comment.timestamp} sx={{ display: 'flex', mb: 2 }}>
-                                {/* {user.map(u => ( */}
-                                    {comment.commenterId === userId ? <Avatar key={user._id} alt={userFirstname} src={picture} /> : <Avatar alt={userFirstname} src="/static/images/avatar/1.jpg" />}
-                                {/* ))} */}
+                                {user.map((u) =>
+                                        comment.commenterId == u._id ? (
+                                            <span key={u._id}>
+                                                {u.picture != "null" ? <Avatar alt={u.firstname} src={u.picture} /> : <Avatar alt={u.firstname} src="/static/images/avatar/1.jpg" />}
+                                            </span>
+                                        ) : null
+                                    )}
                                 <Box sx={{ flex: 1 }}>
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                                         {comment.commenterUsername}
@@ -328,9 +330,6 @@ function EventDetail() {
                             </Box>
                         )) ?? []}
                     </Box>
-
-
-
                     <Grid item>
                         <Rating
                             name="rating"

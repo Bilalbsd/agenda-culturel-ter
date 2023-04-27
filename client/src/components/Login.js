@@ -58,8 +58,8 @@ function Login() {
       const res = await axios.post(`http://localhost:5000/api/user/login`, formData);
       const { token } = res.data;
       localStorage.setItem('token', token);
-      console.log(token, "user")
-      window.location.href = "/"
+      console.log(token, "user");
+      window.location.href = "/";
     } catch (err) {
       setEmailNotFound(err.response.data.errors.email)
       setErrorIdentifier(err.response.data.errors.identifier)

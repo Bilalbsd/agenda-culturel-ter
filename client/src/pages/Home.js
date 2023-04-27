@@ -9,6 +9,7 @@ import { AuthContext } from '../context/AuthContext';
 import Localisation from '../components/Localisation';
 import AdvertMedia from '../components/AdvertMedia';
 import ModalMaxEvent from '../components/ModalMaxEvent';
+import ModalFirstConnection from '../components/ModalFirstConnection';
 
 
 const Home = () => {
@@ -47,6 +48,7 @@ const Home = () => {
             {/* <Localisation /> */}
             <Information />
             <AdvertMedia />
+            <ModalFirstConnection />
             <ModalMaxEvent />
             <EventsList />
             <Footer />

@@ -39,6 +39,7 @@ const Advert = () => {
         try {
             const response = await axios.put(`http://localhost:5000/api/event/${id}`, formData);
             console.log(response.data);
+            window.location.href = "/";
         } catch (err) {
             console.error(err);
         }

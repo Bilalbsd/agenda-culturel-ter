@@ -47,13 +47,14 @@ export default function CustomizedDialogs() {
 
     const handleClose = () => {
         setOpen(false);
-    };
-
-    React.useEffect(() => {
         axios.put(`http://localhost:5000/api/user/${userId}`, { firstConnection: false })
             .then(res => console.log(res));
-    }, []);
+    };
 
+    // React.useEffect(() => {
+    //     axios.put(`http://localhost:5000/api/user/${userId}`, { firstConnection: false })
+    //         .then(res => console.log(res));
+    // }, []);
 
     return (
         <div>

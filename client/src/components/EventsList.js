@@ -92,7 +92,7 @@ function EventsList() {
                 title.indexOf(query) !== -1 ||
                 country.indexOf(query) !== -1 ||
                 city.indexOf(query) !== -1 ||
-                theme.indexOf(query) !== -1 || 
+                theme.indexOf(query) !== -1 ||
                 // location.indexOf(query) !== -1 ||
                 // description.indexOf(query) !== -1 ||
                 query.indexOf(title) !== -1 ||
@@ -188,18 +188,18 @@ function EventsList() {
         setValuesFilter({ ...valuesFilter, [e.target.name]: e.target.value });
     }
 
-    function anotherFunction(events, valuesFilter, sortOrder) {
+    function anotherFunction(events, filter, sortOrder) {
         const now = new Date();
         const filteredAndSortedEvents = events
             .filter(event => {
-                const isTitleMatched = !valuesFilter.title || removeAccents(event.title).includes(removeAccents(valuesFilter.title));
-                const isCountryMatched = !valuesFilter.country || removeAccents(event.country) === removeAccents(valuesFilter.country);
-                const isCityMatched = !valuesFilter.city || removeAccents(event.city) === removeAccents(valuesFilter.city);
-                const isThemeMatched = !valuesFilter.theme || removeAccents(event.theme) === removeAccents(valuesFilter.theme);
-                const isStartDateMatched = !valuesFilter.startDate || moment(event.startDate).isSameOrAfter(valuesFilter.startDate);
-                const isEndDateMatched = !valuesFilter.endDate || moment(event.endDate).isSameOrBefore(valuesFilter.endDate);
+                const isTitleMatched = event.title.includes(filter.toLowerCase());
+                const isCountryMatched = event.country.toLowerCase().includes(filter.toLowerCase());
+                const isCityMatched = event.city.toLowerCase().includes(filter.toLowerCase());
+                const isThemeMatched = event.theme.toLowerCase().includes(filter.toLowerCase());
+                const isStartDateMatched = moment(event.startDate).isSameOrAfter(now);
+                const isEndDateMatched = moment(event.endDate).isSameOrAfter(now);
 
-                return isTitleMatched && isCountryMatched && isCityMatched && isThemeMatched && isStartDateMatched && isEndDateMatched;
+                return isTitleMatched || isCountryMatched || isCityMatched || isThemeMatched || isStartDateMatched || isEndDateMatched;
             })
             .filter((event) => {
                 const endDate = new Date(event.endDate);

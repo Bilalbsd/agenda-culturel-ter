@@ -11,7 +11,7 @@ import { DropzoneArea } from "mui-file-dropzone";
 
 
 function CreateEvent() {
-    const { userId, userRole, isValidated } = useContext(AuthContext);
+    const { userId, userRole } = useContext(AuthContext);
     const [event, setEvent] = useState({});
     const [nbMaxEvent, setNbMaxEvent] = useState(10);
     const [location, setLocation] = useState("");
@@ -19,6 +19,13 @@ function CreateEvent() {
     const [marker, setMarker] = useState(null);
     const [predictions, setPredictions] = useState(null);
     const [coords, setCoords] = useState(null);
+
+    const [isValidated, setIsValidated] = useState(null);
+    console.log(isValidated, "isValidated");
+    useEffect(() => {
+        axios.get(`http://localhost:5000/api/user/${userId}`)
+            .then(res => setIsValidated(res.data.isValidated));
+    }, [isValidated]);
 
     useEffect(() => {
         setEvent(prevState => {
@@ -204,6 +211,7 @@ function CreateEvent() {
                 }
             });
             console.log(res);
+            window.location.href = "/";
         } catch (err) {
             console.log(err);
         }
@@ -211,7 +219,7 @@ function CreateEvent() {
 
     return (
         <Grid container justifyContent="center">
-            {userRole !== 'creator' || isValidated === 'false' ? (
+            {userRole !== 'creator' || !isValidated ? (
                 <Grid item xs={12}>
                     <Typography variant="h5" textAlign="center">Vous n'avez pas les permissions nécessaires pour accéder à cette page !</Typography>
                     <Typography variant="h5" textAlign="center">Votre compte n'a pas encore été validé !</Typography>

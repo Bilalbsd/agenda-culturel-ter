@@ -15,6 +15,7 @@ function Profil() {
     const [days, setDays] = useState(null);
     const [subscription, setSubscription] = useState(null);
     const [picture, setPicture] = useState(null);
+    const [isValidated, setIsValidated] = useState(null);
 
     useEffect(() => {
         axios
@@ -23,6 +24,7 @@ function Profil() {
                 setUser(res.data);
                 setNbMaxEvent(res.data.nbMaxEvent);
                 setSubscription(res.data.subscription);
+                setIsValidated(res.data.isValidated);
                 // console.log(res.data.subscription, "userSubscription");
                 // console.log(user, "user");
 
@@ -133,6 +135,9 @@ function Profil() {
                         </Grid>
                         <Grid item xs={12}>
                             <TextField label="Adresse de la société" name="address" value={"" + user.address} fullWidth onChange={handleChange} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField disabled label="Créateur validé" name="isValidated" value={"" + user.isValidated} fullWidth onChange={handleChange} />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField disabled label="Abonnement" name="subscription" value={"" + user.subscription} fullWidth onChange={handleChange} />
