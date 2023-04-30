@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { useContext } from 'react';
-import { Autocomplete, Avatar, Button, Card, CardActions, CardContent, Container, Grid, TextField, Typography } from '@mui/material';
+import { Autocomplete, Avatar, Button, Card, CardActions, CardContent, CardHeader, Container, Grid, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 
 
-function FriendGroups() {
+function FriendGroups({ id }) {
     const [users, setUsers] = useState([]);
     const [groupName, setGroupName] = useState('');
     const [selectedFriends, setSelectedFriends] = useState([]);
@@ -56,7 +56,7 @@ function FriendGroups() {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        if (!isGroupNameValid) {
+        if (!isGroupNameValid || !groupName) {
             return;
         }
 
@@ -108,8 +108,26 @@ function FriendGroups() {
             });
     }, [userId, groups]);
 
-    function handleDelete(groupNameToDelete) {
-        const updatedGroups = groups.filter(group => group.groupName !== groupNameToDelete);
+
+
+    const handleShare = () => {
+        console.log(id, "id");
+        groups.forEach(group => {
+            const existingNotifications = group.notifications || [];
+            const newNotification = "share" + id;
+            group.members.forEach(memberId => {
+                axios.put(`http://localhost:5000/api/user/${memberId}`, {
+                    notifications: [...existingNotifications, newNotification]
+                })
+                    .then(res => console.log(res))
+                    .catch(error => console.log(error));
+            });
+        });
+    };
+
+
+    function handleDelete(groupIdToDelete) {
+        const updatedGroups = groups.filter(group => group._id !== groupIdToDelete);
         axios
             .put(`http://localhost:5000/api/user/${userId}`, {
                 groups: updatedGroups
@@ -162,20 +180,24 @@ function FriendGroups() {
                 </form>
             </Box >
             <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                {groups.map((group, index) => (
+                {groups.map((group) => (
                     <Box key={group.groupName} sx={{ maxWidth: 345, flexGrow: 1, margin: '0 10px 20px 10px' }}>
                         <Card sx={{ height: '100%', position: 'relative' }}>
                             <CardContent sx={{ height: 'calc(100% - 60px)', overflowY: 'auto' }}>
+                                <Typography variant="h6" component="h2" textAlign="center">
+                                    {group.groupName}
+                                </Typography>
                                 <div>
-                                    <Typography variant="h6" component="h2">
-                                        {group.groupName}
-                                    </Typography>
                                     <ul style={{ maxHeight: '250px', minHeight: '100px', paddingInlineStart: '10px' }}>
                                         {group.members.map((memberId) => {
                                             const user = users.find((u) => u._id === memberId);
                                             return user ? (
                                                 <Box key={user._id} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                                    <Avatar alt={user.firstname} src="/static/images/avatar/1.jpg" sx={{ mr: 2 }} />
+                                                    {memberId === user._id ? (
+                                                        <span key={user._id}>
+                                                            {user.picture !== "null" ? <Avatar alt={user.firstname} src={user.picture} /> : <Avatar alt={user.firstname} src="/static/images/avatar/1.jpg" />}
+                                                        </span>
+                                                    ) : null}
                                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{user.firstname}</Typography>
                                                 </Box>
                                             ) : null;
@@ -184,8 +206,8 @@ function FriendGroups() {
                                 </div>
                             </CardContent>
                             <CardActions sx={{ position: 'absolute', bottom: 0 }}>
-                                <Button size="small">Partager</Button>
-                                <Button size="small" color="error" onClick={() => handleDelete(group.groupName)}>Supprimer</Button>
+                                <Button size="small" onClick={handleShare}>Partager</Button>
+                                <Button size="small" color="error" onClick={() => handleDelete(group._id)}>Supprimer</Button>
                             </CardActions>
                         </Card>
                     </Box>

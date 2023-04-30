@@ -154,7 +154,7 @@ function EventDetail() {
         }
     }, [event.lat, event.lng]);
 
-    console.log(initialCoords, "initialCoords")
+    // console.log(initialCoords, "initialCoords")
 
     useEffect(() => {
         const script = document.createElement("script");
@@ -176,7 +176,7 @@ function EventDetail() {
         document.body.appendChild(script);
     }, [initialCoords]);
 
-    console.log(user, "user");
+    // console.log(user, "user");
 
     // console.log(moment(event.promotionExpirationDate).fromNow(), "event.promotionExpirationDate");
 
@@ -304,12 +304,12 @@ function EventDetail() {
                         {event.comments?.map(comment => (
                             <Box key={comment.timestamp} sx={{ display: 'flex', mb: 2 }}>
                                 {user.map((u) =>
-                                        comment.commenterId == u._id ? (
-                                            <span key={u._id}>
-                                                {u.picture != "null" ? <Avatar alt={u.firstname} src={u.picture} /> : <Avatar alt={u.firstname} src="/static/images/avatar/1.jpg" />}
-                                            </span>
-                                        ) : null
-                                    )}
+                                    comment.commenterId == u._id ? (
+                                        <span key={u._id}>
+                                            {u.picture != "null" ? <Avatar alt={u.firstname} src={u.picture} /> : <Avatar alt={u.firstname} src="/static/images/avatar/1.jpg" />}
+                                        </span>
+                                    ) : null
+                                )}
                                 <Box sx={{ flex: 1 }}>
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                                         {comment.commenterUsername}
@@ -367,7 +367,7 @@ function EventDetail() {
                     <IconButton component="a" href={shareUrl} target="_blank" rel="noopener" textAlign="center">
                         <TwitterIcon />
                     </IconButton>
-
+                    <FriendGroups id={id} />
                 </Container>
             </Container >
         </div >

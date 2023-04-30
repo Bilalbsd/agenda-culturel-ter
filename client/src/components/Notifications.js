@@ -134,6 +134,33 @@ const Notifications = () => {
                             return null;
                         }
                     })}
+                {events.map((event) => {
+                    if (reversedNotifications.some((notification) => notification === "share" + event._id)) {
+                        return (
+                            <Grid item xs={12} sm={6} md={4} key={event.id}>
+                                <Card>
+                                    <CardContent>
+                                        <img src={event.image} alt="img de l'évènement" style={{ width: "30%", height: "30%" }} />
+                                        <Typography variant="h5" component="h5">{`Nouvel événement vous a été partagé !`}</Typography>
+                                        <Typography variant="h5" component="h5" color="red">{`${event.title}`}</Typography>
+                                        <br />
+                                        <NavLink
+                                            to={`/events/${event._id}`}
+                                            style={{ textDecoration: 'none', color: 'grey' }}
+                                        >
+                                            <Button variant="contained" color="primary">Voir l'événement</Button>
+                                        </NavLink>
+                                        <Button onClick={() => handleDeleteNotification(event.title)} variant="contained" color="error">
+                                            Supprimer
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        );
+                    } else {
+                        return null;
+                    }
+                })}
             </div>
         </Grid>
     );

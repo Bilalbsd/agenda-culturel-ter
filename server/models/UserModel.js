@@ -88,6 +88,12 @@ const UserSchema = new mongoose.Schema({
             members: [String],
         }]
     },
+    friendList: {
+        type: [{
+            friend_id: String,
+            accepted: Boolean,
+        }]
+    },
     // promoNotification: {
     //     type: Boolean
     // },

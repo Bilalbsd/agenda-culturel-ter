@@ -10,7 +10,7 @@ const Group = () => {
         <div>
             <NavBar />
             <br /> <br /> <br />
-            <AddFriend />
+            {/* <AddFriend /> */}
             <FriendGroups />
             {/* <Notification /> */}
             {/* <FriendGroupsList /> */}

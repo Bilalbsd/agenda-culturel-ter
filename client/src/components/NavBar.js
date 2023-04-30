@@ -28,24 +28,22 @@ function ResponsiveAppBar() {
     const { userId, userRole, userFirstname, picture, isAuthenticated } = React.useContext(AuthContext);
 
     const [nbMaxEvent, setNbMaxEvent] = React.useState(null);
-    const [notifications, setNotifications] = React.useState(0);
+    const [notifications, setNotifications] = React.useState([]);
     const [user, setUser] = React.useState({});
 
     React.useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const res = await axios.get(`http://localhost:5000/api/user/${userId}`);
-                setUser(res.data);
-                setNbMaxEvent(res.data.nbMaxEvent); // mettre à jour la valeur de nbMaxEvent
-                setNotifications(res.data.notifications);
-            } catch (err) {
-                console.log(err);
-            }
-        };
-        fetchUser();
-    }, [user, nbMaxEvent, notifications]);
+        try {
+            axios.get(`http://localhost:5000/api/user/${userId}`)
+                .then(res => {
+                    setUser(res.data);
+                    setNotifications(res.data.notifications);
+                })
+        } catch (err) {
+            console.log(err);
+        }
+    }, [user, notifications]);
 
-    // console.log(notifications.length, "notifications");
+    // console.log(notifications, "notifications");
 
     let pages = []
 
@@ -339,14 +337,14 @@ function ResponsiveAppBar() {
 
 
                     </Box>
-                    <MenuItem>
-                        {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+                    {/* <MenuItem> */}
+                    {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
                             <Badge badgeContent={nbMaxEvent} color="error">
                                 <CircleIcon />
                             </Badge>
                         </IconButton> */}
-                        {/* <p>Événements restants</p> */}
-                    </MenuItem>
+                    {/* <p>Événements restants</p> */}
+                    {/* </MenuItem> */}
                     <MenuItem>
                         <IconButton
                             size="large"
@@ -356,11 +354,13 @@ function ResponsiveAppBar() {
                             marginRight="30px"
                         >
                             <NavLink to="/information" style={{ textDecoration: 'none', color: 'white' }}>
-                                <Badge sx={{ p: 0, marginRight: 1 }}>
+                                <Badge sx={{ p: 0, }}>
                                     <HelpIcon />
                                 </Badge>
                             </NavLink>
                         </IconButton>
+                    </MenuItem>
+                    <MenuItem>
                         <IconButton
                             size="large"
                             aria-label="show new notifications"

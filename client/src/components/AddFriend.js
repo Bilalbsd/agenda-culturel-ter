@@ -9,11 +9,13 @@ const AddFriend = () => {
     const [thisUser, setThisUser] = useState([]);
     const [email, setEmail] = useState('');
     const [response, setResponse] = useState('');
+    const [friendList, setFriendList] = useState(null);
 
     useEffect(() => {
         axios.get(`http://localhost:5000/api/user`)
             .then(res => {
                 setUsers(res.data);
+                setFriendList(res.data.friendList);
             });
         axios.get(`http://localhost:5000/api/user/${userId}`)
             .then(res => {
@@ -25,9 +27,14 @@ const AddFriend = () => {
         const userToAdd = users.find(user => user.email === email);
         console.log(userToAdd);
         if (userToAdd) {
+
+            const newFriend = {
+                friend_id: thisUser._id,
+                accepted: false
+            };
+
             axios.put(`http://localhost:5000/api/user/${userToAdd}`, {
-                userId: thisUser._id,
-                friendId: userToAdd._id
+                friendList: [...friendList, newFriend]
             }).then(res => {
                 console.log(res.data);
             }).catch(err => {
@@ -36,6 +43,19 @@ const AddFriend = () => {
         } else {
             setResponse('Utilisateur introuvable');
         }
+
+        const newFriendMe = {
+            friend_id: userToAdd._id,
+            accepted: true
+        };
+
+        axios.put(`http://localhost:5000/api/user/${userId}`, {
+            friendList: [...friendList, newFriendMe]
+        }).then(res => {
+            console.log(res.data);
+        }).catch(err => {
+            console.log(err);
+        });
     }
 
     return (
