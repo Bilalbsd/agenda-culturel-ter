@@ -60,9 +60,6 @@ const EventSchema = new mongoose.Schema({
     nbEvent: {
         type: Number
     },
-    // price: {
-    //     type: Number
-    // },
     prices: {
         type: [{
             title: String,

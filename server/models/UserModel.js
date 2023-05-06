@@ -93,20 +93,7 @@ const UserSchema = new mongoose.Schema({
             friend_id: String,
             accepted: Boolean,
         }]
-    },
-    // promoNotification: {
-    //     type: Boolean
-    // },
-    // proximityNotification: {
-    //     type: Boolean
-    // },
-    // notifications: {
-    //     type: [{
-    //         eventId: String,
-    //         message: String,
-    //         timestamp: Date.now()
-    //     }]
-    // }
+    }
 },
     {
         timestamps: true

@@ -75,14 +75,12 @@ function EventsList() {
 
     const filterAndSortEvents = (events, searchQuery, sortOrder) => {
         const now = new Date();
-        return events.filter((event) => {
+        const filteredAndSortedEvents = events.filter((event) => {
             // Transformer les chaînes de caractères en minuscules et sans accents
             const title = removeAccents(event.title.toLowerCase());
             const country = removeAccents(event.country.toLowerCase());
             const city = removeAccents(event.city.toLowerCase());
             const theme = removeAccents(event.theme.toLowerCase());
-            // const location = removeAccents(event.location.toLowerCase());
-            // const description = removeAccents(event.description.toLowerCase());
 
             // Transformer la recherche en minuscules et sans accents
             const query = removeAccents(searchQuery.toLowerCase());
@@ -93,15 +91,11 @@ function EventsList() {
                 country.indexOf(query) !== -1 ||
                 city.indexOf(query) !== -1 ||
                 theme.indexOf(query) !== -1 ||
-                // location.indexOf(query) !== -1 ||
-                // description.indexOf(query) !== -1 ||
                 query.indexOf(title) !== -1 ||
                 query.indexOf(country) !== -1 ||
                 query.indexOf(city) !== -1 ||
                 query.indexOf(theme) !== -1
-                // query.indexOf(location) !== -1 ||
-                // query.indexOf(description) !== -1
-            );
+            )
         })
             .filter((event) => {
                 const endDate = new Date(event.endDate);
@@ -139,8 +133,7 @@ function EventsList() {
                     ...event,
                     distance,
                 };
-            })
-            .sort((a, b) => a.distance - b.distance);
+            }).sort((a, b) => a.distance - b.distance);
 
         return filteredAndSortedEvents;
     };
@@ -188,18 +181,31 @@ function EventsList() {
         setValuesFilter({ ...valuesFilter, [e.target.name]: e.target.value });
     }
 
-    function anotherFunction(events, filter, sortOrder) {
+    function filteredOptionEvents(events, filter, sortOrder) {
         const now = new Date();
         const filteredAndSortedEvents = events
             .filter(event => {
-                const isTitleMatched = event.title.includes(filter.toLowerCase());
-                const isCountryMatched = event.country.toLowerCase().includes(filter.toLowerCase());
-                const isCityMatched = event.city.toLowerCase().includes(filter.toLowerCase());
-                const isThemeMatched = event.theme.toLowerCase().includes(filter.toLowerCase());
+                const title = event.title.toLowerCase();
+                const country = event.country.toLowerCase();
+                const city = event.city.toLowerCase();
+                const theme = event.theme.toLowerCase();
+                const query = searchQuery.toLowerCase();
+
+                const isTitleMatched = title.includes(query);
+                const isCountryMatched = country.includes(query);
+                const isCityMatched = city.includes(query);
+                const isThemeMatched = theme.includes(query);
                 const isStartDateMatched = moment(event.startDate).isSameOrAfter(now);
                 const isEndDateMatched = moment(event.endDate).isSameOrAfter(now);
 
-                return isTitleMatched || isCountryMatched || isCityMatched || isThemeMatched || isStartDateMatched || isEndDateMatched;
+                return (
+                    isTitleMatched ||
+                    isCountryMatched ||
+                    isCityMatched ||
+                    isThemeMatched ||
+                    isStartDateMatched ||
+                    isEndDateMatched
+                )
             })
             .filter((event) => {
                 const endDate = new Date(event.endDate);
@@ -246,7 +252,7 @@ function EventsList() {
 
 
     let filteredAndSortedEvents;
-    { submitFilter ? filteredAndSortedEvents = anotherFunction(events, valuesFilter, sortOrder) : filteredAndSortedEvents = filterAndSortEvents(events, searchQuery, sortOrder); }
+    { submitFilter ? filteredAndSortedEvents = filteredOptionEvents(events, valuesFilter, sortOrder) : filteredAndSortedEvents = filterAndSortEvents(events, searchQuery, sortOrder); }
 
 
     console.log(filteredAndSortedEvents, "filteredAndSorteeeeeeeeeeeeed")

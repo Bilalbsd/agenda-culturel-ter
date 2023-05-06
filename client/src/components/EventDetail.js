@@ -308,7 +308,10 @@ function EventDetail() {
                                         <span key={u._id}>
                                             {u.picture != "null" ? <Avatar alt={u.firstname} src={u.picture} /> : <Avatar alt={u.firstname} src="/static/images/avatar/1.jpg" />}
                                         </span>
-                                    ) : null
+                                    ) :
+                                        comment.commenterId == "anonymous" ? (
+                                            <Avatar alt={" Anonymous"} src="/static/images/avatar/1.jpg" />
+                                        ) : null
                                 )}
                                 <Box sx={{ flex: 1 }}>
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>

@@ -150,7 +150,7 @@ const Notifications = () => {
                                         >
                                             <Button variant="contained" color="primary">Voir l'événement</Button>
                                         </NavLink>
-                                        <Button onClick={() => handleDeleteNotification(event.title)} variant="contained" color="error">
+                                        <Button onClick={() => handleDeleteNotification("share"+event._id)} variant="contained" color="error">
                                             Supprimer
                                         </Button>
                                     </CardContent>
