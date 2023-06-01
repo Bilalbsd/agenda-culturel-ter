@@ -10,7 +10,7 @@ function UserManagement() {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:5000/api/user/`)
+            .get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/`)
             // .then(res => console.log(res.data))
             .then(res => setUsers(res.data))
             .catch(err => console.error(err));
@@ -29,7 +29,7 @@ function UserManagement() {
 
     const handleUpdateRole = id => {
         axios
-            .put(`http://localhost:5000/api/user/${id}`, { role: selectedRole[id] })
+            .put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${id}`, { role: selectedRole[id] })
             .then(res => {
                 setUsers(
                     users.map(user => {
@@ -46,7 +46,7 @@ function UserManagement() {
 
     const handleUpdateValidate = id => {
         axios
-            .put(`http://localhost:5000/api/user/${id}`, { isValidated: validation[id] })
+            .put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${id}`, { isValidated: validation[id] })
             .then(res => {
                 setUsers(
                     users.map(user => {
@@ -63,7 +63,7 @@ function UserManagement() {
 
     const handleDelete = id => {
         axios
-            .delete(`http://localhost:5000/api/user/${id}`)
+            .delete(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${id}`)
             .then(res => {
                 setUsers(users.filter(user => user._id !== id));
                 console.log(users, "users");

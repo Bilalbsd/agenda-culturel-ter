@@ -8,11 +8,10 @@ function Localisation() {
     const [predictions, setPredictions] = useState(null);
     const [coords, setCoords] = useState(null);
 
-    const CLE_API = "AIzaSyBvGBV9DUig0t9hvtFy4YcTrouE8S22lQM";
 
     useEffect(() => {
         const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${CLE_API}&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.CLE_API_GOOGLE_MAP}&libraries=places`;
         script.onload = () => {
             const map = new window.google.maps.Map(document.getElementById("map"), {
                 center: { lat: 0, lng: 0 },

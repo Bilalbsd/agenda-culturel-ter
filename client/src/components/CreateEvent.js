@@ -23,7 +23,7 @@ function CreateEvent() {
     const [isValidated, setIsValidated] = useState(null);
     console.log(isValidated, "isValidated");
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/user/${userId}`)
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`)
             .then(res => setIsValidated(res.data.isValidated));
     }, [isValidated]);
 
@@ -95,11 +95,9 @@ function CreateEvent() {
         setEvent({ ...event, speakers: newSpeakers });
     }
 
-    const CLE_API = "AIzaSyBvGBV9DUig0t9hvtFy4YcTrouE8S22lQM";
-
     useEffect(() => {
         const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${CLE_API}&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_API_KEY_GOOGLE_MAP}&libraries=places`;
         script.onload = () => {
             const map = new window.google.maps.Map(document.getElementById("map"), {
                 center: { lat: 0, lng: 0 },
@@ -150,7 +148,7 @@ function CreateEvent() {
 
     const [users, setUsers] = useState([]);
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/user`)
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user`)
             .then(res => setUsers(res.data));
     }, []);
 
@@ -159,7 +157,7 @@ function CreateEvent() {
     });
 
     React.useEffect(() => {
-        axios.get(`http://localhost:5000/api/user/${userId}`)
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`)
             .then(res => setNbMaxEvent(res.data.nbMaxEvent));
     }, [nbMaxEvent]);
 
@@ -173,7 +171,7 @@ function CreateEvent() {
                 try {
                     const existingNotifications = user.notifications || [];
                     const updatedNotifications = [...existingNotifications, event.title];
-                    axios.put(`http://localhost:5000/api/user/${user._id}`, {
+                    axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${user._id}`, {
                         notifications: updatedNotifications
                     }).then(res => console.log(res, "add event notification"));
                 } catch (err) {
@@ -183,7 +181,7 @@ function CreateEvent() {
         });
 
         try {
-            axios.put(`http://localhost:5000/api/user/${userId}`, {
+            axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, {
                 nbMaxEvent: nbMaxEvent - 1
             })
                 .then(res => console.log(res));
@@ -205,7 +203,7 @@ function CreateEvent() {
             }
         });
         try {
-            const res = await axios.post(`http://localhost:5000/api/event`, formData, {
+            const res = await axios.post(`${process.env.REACT_APP_SERVER_API_URL}/api/event`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

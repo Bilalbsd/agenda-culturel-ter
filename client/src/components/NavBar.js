@@ -33,7 +33,7 @@ function ResponsiveAppBar() {
 
     React.useEffect(() => {
         try {
-            axios.get(`http://localhost:5000/api/user/${userId}`)
+            axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`)
                 .then(res => {
                     setUser(res.data);
                     setNotifications(res.data.notifications);
@@ -325,32 +325,13 @@ function ResponsiveAppBar() {
                         LOGO
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {/* {pages.map((page) => (
-                            <Button
-                                key={page}
-                                onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
-                            >
-                                {page}
-                            </Button>
-                        ))} */}
-
-
                     </Box>
-                    {/* <MenuItem> */}
-                    {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                            <Badge badgeContent={nbMaxEvent} color="error">
-                                <CircleIcon />
-                            </Badge>
-                        </IconButton> */}
-                    {/* <p>Événements restants</p> */}
-                    {/* </MenuItem> */}
+
                     <MenuItem>
                         <IconButton
                             size="large"
                             aria-label="presentation"
                             color="inherit"
-                            onClick={handleOpen}
                             marginRight="30px"
                         >
                             <NavLink to="/information" style={{ textDecoration: 'none', color: 'white' }}>
@@ -360,6 +341,7 @@ function ResponsiveAppBar() {
                             </NavLink>
                         </IconButton>
                     </MenuItem>
+
                     <MenuItem>
                         <IconButton
                             size="large"
@@ -378,7 +360,6 @@ function ResponsiveAppBar() {
                                 <NotificationsIcon />
                             }
                         </IconButton>
-                        {/* <p>Notifications</p> */}
                         {!isAuthenticated &&
                             <Modal
                                 open={open}
@@ -403,7 +384,7 @@ function ResponsiveAppBar() {
                         <Box sx={{ flexGrow: 0 }}>
                             <Tooltip title="Open settings">
                                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, marginLeft: 3 }}>
-                                    {user.picture != "null" ? <Avatar alt={userFirstname} src={user.picture} /> : <Avatar alt={userFirstname} src="/static/images/avatar/1.jpg" />}
+                                    {user.picture !== "null" ? <Avatar alt={userFirstname} src={user.picture} /> : <Avatar alt={userFirstname} src="/static/images/avatar/1.jpg" />}
                                 </IconButton>
                             </Tooltip>
                             <Menu

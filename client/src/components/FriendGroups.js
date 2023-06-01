@@ -18,7 +18,7 @@ function FriendGroups({ id }) {
     const { userId, userRole, userFirstname, nbMaxEvent, isAuthenticated } = useContext(AuthContext);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/user')
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user`)
             .then(response => {
                 setUsers(response.data);
             })
@@ -28,7 +28,7 @@ function FriendGroups({ id }) {
     }, []);
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/user/${userId}`)
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`)
             .then(response => {
                 setAllGroups(response.data.groups);
                 setNbGroups(response.data.groups.length);
@@ -73,7 +73,7 @@ function FriendGroups({ id }) {
 
         // Ajouter le nouveau groupe d'amis à la liste des groupes de l'utilisateur courant dans la base de données
         axios
-            .put(`http://localhost:5000/api/user/${userId}`, {
+            .put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, {
                 groups: [...allGroups, newGroup],
             })
             .then((response) => {
@@ -96,8 +96,8 @@ function FriendGroups({ id }) {
 
     useEffect(() => {
         Promise.all([
-            axios.get(`http://localhost:5000/api/user`),
-            axios.get(`http://localhost:5000/api/user/${userId}`)
+            axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user`),
+            axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`)
         ])
             .then(([usersResponse, groupsResponse]) => {
                 setUsers(usersResponse.data);
@@ -116,7 +116,7 @@ function FriendGroups({ id }) {
             const existingNotifications = group.notifications || [];
             const newNotification = "share" + id;
             group.members.forEach(memberId => {
-                axios.put(`http://localhost:5000/api/user/${memberId}`, {
+                axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${memberId}`, {
                     notifications: [...existingNotifications, newNotification]
                 })
                     .then(res => console.log(res))
@@ -129,7 +129,7 @@ function FriendGroups({ id }) {
     function handleDelete(groupIdToDelete) {
         const updatedGroups = groups.filter(group => group._id !== groupIdToDelete);
         axios
-            .put(`http://localhost:5000/api/user/${userId}`, {
+            .put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, {
                 groups: updatedGroups
             })
             .then(res => {

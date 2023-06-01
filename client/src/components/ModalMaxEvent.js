@@ -112,7 +112,7 @@ export default function CustomizedDialogs() {
     // const [nbMaxEvent, setNbMaxEvent] = React.useState(null);
 
     // React.useEffect(() => {
-    //     axios.get(`http://localhost:5000/api/user/${userId}`)
+    //     axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`)
     //         .then(res => setNbMaxEvent(res.data.nbMaxEvent));
     // }, []);
 

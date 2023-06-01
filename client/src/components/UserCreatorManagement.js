@@ -13,7 +13,7 @@ function UserCreatorManagement() {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:5000/api/user/`)
+            .get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/`)
             // .then(res => console.log(res.data))
             .then(res => setUsers(res.data))
             .catch(err => console.error(err));
@@ -31,7 +31,7 @@ function UserCreatorManagement() {
 
     // const handleUpdateRole = id => {
     //     axios
-    //         .put(`http://localhost:5000/api/user/${id}`, { role: selectedRole[id] })
+    //         .put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${id}`, { role: selectedRole[id] })
     //         .then(res => {
     //             setUsers(
     //                 users.map(user => {
@@ -48,7 +48,7 @@ function UserCreatorManagement() {
 
     // const handleUpdateValidate = id => {
     //     axios
-    //         .put(`http://localhost:5000/api/user/${id}`, { isValidated: validation[id] })
+    //         .put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${id}`, { isValidated: validation[id] })
     //         .then(res => {
     //             setUsers(
     //                 users.map(user => {
@@ -67,7 +67,7 @@ function UserCreatorManagement() {
         // Effectue la mise à jour du rôle pour tous les utilisateurs dont l'ID est présent dans l'état selectedRole
         Object.keys(selectedRole).forEach(id => {
             axios
-                .put(`http://localhost:5000/api/user/${id}`, { role: selectedRole[id] })
+                .put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${id}`, { role: selectedRole[id] })
                 .then(res => {
                     setUsers(
                         users.map(user => {
@@ -87,7 +87,7 @@ function UserCreatorManagement() {
         // Effectue la mise à jour de la validation pour tous les utilisateurs dont l'ID est présent dans l'état validation
         Object.keys(validation).forEach(id => {
             axios
-                .put(`http://localhost:5000/api/user/${id}`, { isValidated: validation[id] })
+                .put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${id}`, { isValidated: validation[id] })
                 .then(res => {
                     setUsers(
                         users.map(user => {
@@ -106,7 +106,7 @@ function UserCreatorManagement() {
 
     const handleValidation = async (user) => {
         try {
-            const response = await axios.put(`http://localhost:5000/api/user/${user._id}`, {
+            const response = await axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${user._id}`, {
                 ...user,
                 isValidated: true
             });
@@ -125,7 +125,7 @@ function UserCreatorManagement() {
 
     const handleDelete = id => {
         axios
-            .delete(`http://localhost:5000/api/user/${id}`)
+            .delete(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${id}`)
             .then(res => {
                 setUsers(users.filter(user => user._id !== id));
                 console.log(users, "users");

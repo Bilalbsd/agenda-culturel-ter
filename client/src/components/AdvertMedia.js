@@ -16,7 +16,8 @@ const AdvertMedia = () => {
     const [events, setEvents] = useState(null);
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/event`).then((res) => {
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/event`)
+        .then((res) => {
             setEvents(res.data.filter((e) => e.advert));
         });
     }, []);

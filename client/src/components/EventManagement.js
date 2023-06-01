@@ -12,12 +12,12 @@ function EventManagement() {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:5000/api/event`)
+            .get(`${process.env.REACT_APP_SERVER_API_URL}/api/event`)
             .then(res => setEvents(res.data))
             .catch(err => console.error(err));
 
         axios
-            .get(`http://localhost:5000/api/user`)
+            .get(`${process.env.REACT_APP_SERVER_API_URL}/api/user`)
             .then(res => setUsers(res.data))
             .catch(err => console.error(err));
 
@@ -28,7 +28,7 @@ function EventManagement() {
 
     const handleDelete = id => {
         axios
-            .delete(`http://localhost:5000/api/event/${id}`)
+            .delete(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`)
             .then(res => {
                 setEvents(events.filter(event => event._id !== id));
             })

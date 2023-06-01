@@ -18,7 +18,7 @@ const Advert = () => {
     const [user, setUser] = useState({});
     useEffect(() => {
         axios
-            .get(`http://localhost:5000/api/user/${userId}`)
+            .get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`)
             .then(res => { setUser(res.data); console.log(user, "user") })
             .catch(err => console.error(err));
     }, [userId]);
@@ -37,7 +37,7 @@ const Advert = () => {
         formData.append('advert[duration]', expiryDate.toISOString());
 
         try {
-            const response = await axios.put(`http://localhost:5000/api/event/${id}`, formData);
+            const response = await axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`, formData);
             console.log(response.data);
             window.location.href = "/";
         } catch (err) {

@@ -16,7 +16,7 @@ const Notifications = () => {
     const [promotionNotifications, setPromotionNotifications] = useState(null);
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/user/${userId}`)
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`)
             .then(res => {
                 setUser(res.data);
                 setNotifications(res.data.notifications);
@@ -24,7 +24,7 @@ const Notifications = () => {
                 setPromotionNotifications(res.data.promotionNotifications);
             });
 
-        axios.get(`http://localhost:5000/api/event`)
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/event`)
             .then(res => setEvents(res.data));
     }, [userId]);
 
@@ -32,13 +32,13 @@ const Notifications = () => {
     const handleDeleteNotification = (notificationId) => {
         const updatedNotifications = notifications.filter(notification => notification !== notificationId);
         setNotifications(updatedNotifications);
-        axios.put(`http://localhost:5000/api/user/${userId}`, {
+        axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, {
             notifications: updatedNotifications
         });
     };
 
     const handleDeleteAllNotification = () => {
-        axios.put(`http://localhost:5000/api/user/${userId}`, {
+        axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, {
             notifications: []
         });
     }
@@ -46,7 +46,7 @@ const Notifications = () => {
     const handleEventNotificationsToggle = () => {
         const newEventNotifications = !eventNotifications;
         setEventNotifications(newEventNotifications);
-        axios.put(`http://localhost:5000/api/user/${userId}`, {
+        axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, {
             eventNotifications: newEventNotifications
         });
     }
@@ -54,7 +54,7 @@ const Notifications = () => {
     const handlePromotionNotificationsToggle = () => {
         const newPromotionNotifications = !promotionNotifications;
         setPromotionNotifications(newPromotionNotifications);
-        axios.put(`http://localhost:5000/api/user/${userId}`, {
+        axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, {
             promotionNotifications: newPromotionNotifications
         });
     }

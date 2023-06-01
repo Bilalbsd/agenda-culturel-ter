@@ -54,7 +54,7 @@ function EditEvent() {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:5000/api/event/${id}`)
+            .get(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`)
             .then(res => {
                 setEvent(res.data);
                 setPrices(res.data.prices || []);
@@ -98,7 +98,7 @@ function EditEvent() {
 
     const [users, setUsers] = useState([]);
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/user`)
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user`)
             .then(res => setUsers(res.data));
     }, []);
 
@@ -118,7 +118,7 @@ function EditEvent() {
                     try {
                         const existingNotifications = user.notifications || [];
                         const updatedNotifications = [...existingNotifications, id];
-                        axios.put(`http://localhost:5000/api/user/${user._id}`, {
+                        axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${user._id}`, {
                             notifications: updatedNotifications
                         }).then(res => console.log(res, "add event notification"));
                     } catch (err) {
@@ -129,7 +129,7 @@ function EditEvent() {
 
         }
         axios
-            .put(`http://localhost:5000/api/event/${id}`, updatedEvent)
+            .put(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`, updatedEvent)
             .then(res => {
                 console.log(res);
                 setInitialCoords([event.lat, event.lng]);
@@ -141,15 +141,13 @@ function EditEvent() {
     const handleDelete = e => {
         e.preventDefault();
         axios
-            .delete(`http://localhost:5000/api/event/${id}`)
+            .delete(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`)
             .then(res => {
                 setEvent(event.filter(elem => elem._id !== id));
                 console.log(res)
             })
             .catch(err => console.error(err));
     };
-
-    const CLE_API = "AIzaSyBvGBV9DUig0t9hvtFy4YcTrouE8S22lQM";
 
 
     useEffect(() => {
@@ -162,7 +160,7 @@ function EditEvent() {
 
     useEffect(() => {
         const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${CLE_API}&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_API_KEY_GOOGLE_MAP}&libraries=places`;
         script.onload = () => {
             const map = new window.google.maps.Map(document.getElementById("map"), {
                 center: { lat: initialCoords[0], lng: initialCoords[1] },

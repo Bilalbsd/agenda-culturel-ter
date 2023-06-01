@@ -21,7 +21,7 @@ function EventDetail() {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:5000/api/event/${id}`)
+            .get(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`)
             .then(res => setEvent(res.data))
             .catch(err => console.error(err));
     }, [id]);
@@ -30,7 +30,7 @@ function EventDetail() {
 
     // Récupérer les données de l'utilisateur à partir de l'API
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/user/${userId}`)
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`)
             .then(res => {
                 setFavoriteEvents(res.data.favoriteEvents);
                 if (res.data.favoriteEvents.includes(id)) {
@@ -46,7 +46,7 @@ function EventDetail() {
     const handleFavorite = () => {
         if (!favorite) {
             axios
-                .put(`http://localhost:5000/api/user/${userId}`, {
+                .put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, {
                     favoriteEvents: [...favoriteEvents, id]
                 })
                 .then(res => {
@@ -58,7 +58,7 @@ function EventDetail() {
         if (favorite) {
             const updatedFavorites = favoriteEvents.filter(fav => fav !== id);
             axios
-                .put(`http://localhost:5000/api/user/${userId}`, {
+                .put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, {
                     favoriteEvents: updatedFavorites
                 })
                 .then(res => {

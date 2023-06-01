@@ -22,7 +22,7 @@ function PersonalEvents() {
 
     useEffect(() => {
         axios
-            .get('http://localhost:5000/api/event')
+            .get(`${process.env.REACT_APP_SERVER_API_URL}/api/event`)
             .then((res) => setEvents(res.data))
             .catch((err) => console.error(err));
     }, []);
@@ -74,7 +74,7 @@ function PersonalEvents() {
 
     const handleDelete = (id) => {
         axios
-            .delete(`http://localhost:5000/api/event/${id}`)
+            .delete(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`)
             .then(res => {
                 setEvents(events.filter(elem => elem._id !== id));
                 console.log(res)

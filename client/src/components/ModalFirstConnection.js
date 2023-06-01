@@ -47,12 +47,12 @@ export default function CustomizedDialogs() {
 
     const handleClose = () => {
         setOpen(false);
-        axios.put(`http://localhost:5000/api/user/${userId}`, { firstConnection: false })
+        axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, { firstConnection: false })
             .then(res => console.log(res));
     };
 
     // React.useEffect(() => {
-    //     axios.put(`http://localhost:5000/api/user/${userId}`, { firstConnection: false })
+    //     axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, { firstConnection: false })
     //         .then(res => console.log(res));
     // }, []);
 

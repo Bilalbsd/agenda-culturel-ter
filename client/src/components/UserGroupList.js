@@ -5,7 +5,7 @@ function UserGroupList() {
     const [groups, setGroups] = useState([]);
 
     useEffect(() => {
-        axios.get("http://localhost:5000/api/user")
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user`)
             .then(response => {
                 setGroups(response.data);
                 console.log(groups, "response")

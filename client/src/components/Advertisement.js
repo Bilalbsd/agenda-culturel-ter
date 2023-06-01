@@ -14,7 +14,7 @@ function EventsList() {
 
     useEffect(() => {
         axios
-            .get('http://localhost:5000/api/event')
+            .get(`${process.env.REACT_APP_SERVER_API_URL}/api/event`)
             .then((res) => setEvents(res.data))
             .catch((err) => console.error(err));
     }, []);

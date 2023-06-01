@@ -51,10 +51,10 @@ const Agenda = () => {
         const fetchAgenda = async () => {
             try {
                 let agenda = [];
-                let eventsRes = await axios.get('http://localhost:5000/api/event');
+                let eventsRes = await axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/event`);
 
                 if (isAuthenticated) {
-                    const res = await axios.get(`http://localhost:5000/api/user/${userId}`);
+                    const res = await axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`);
                     agenda = res.data.agendaEvents;
                 } else {
                     agenda = localStorage.getItem("agenda") || [];

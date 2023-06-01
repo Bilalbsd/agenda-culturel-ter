@@ -100,7 +100,7 @@ function Register() {
 
         if (isValid) {
             axios
-                .post(`http://localhost:5000/api/user/register`, formData)
+                .post(`${process.env.REACT_APP_SERVER_API_URL}/api/user/register`, formData)
                 .then(res => {
                     console.log(res);
                     window.location.href = "/login";

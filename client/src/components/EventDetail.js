@@ -45,17 +45,17 @@ function EventDetail() {
     const { userId, userRole, userFirstname, userLastname, isAuthenticated } = useContext(AuthContext);
 
     const encodedText = encodeURIComponent("Je partage cet événement incroyable !");
-    const encodedUrl = encodeURIComponent(`http://localhost:5000/api/event/${id}`);
+    const encodedUrl = encodeURIComponent(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`);
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/user`)
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user`)
             .then(res => setUser(res.data));
     }, [user])
 
     useEffect(() => {
         axios
-            .get(`http://localhost:5000/api/event/${id}`)
+            .get(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`)
             .then(res => {
                 setEvent(res.data);
                 setComments(res.data.comments);
@@ -100,7 +100,7 @@ function EventDetail() {
         };
 
         axios
-            .put(`http://localhost:5000/api/event/${id}`, {
+            .put(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`, {
                 comments: [...comments, newComment]
             })
             .then(res => {
@@ -125,7 +125,7 @@ function EventDetail() {
                 if (prevEvent.inPromotion && prevEvent.promotionHasExpiration) {
                     const remainingTime = moment.duration(moment(prevEvent.promotionExpirationDate).diff(moment()));
                     if (remainingTime <= 0) { // vérifie si la promotion est terminée
-                        axios.put(`http://localhost:5000/api/event/${id}`, { inPromotion: false })
+                        axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`, { inPromotion: false })
                             .then(res => {
                                 setEvent(prevEvent => ({ ...prevEvent, inPromotion: false }));
                             })
@@ -143,7 +143,8 @@ function EventDetail() {
         return () => clearInterval(intervalId);
     }, [id]);
 
-    const CLE_API = "AIzaSyBvGBV9DUig0t9hvtFy4YcTrouE8S22lQM";
+    // require('dotenv').config({ path: '../../.env' })
+
 
     const [initialCoords, setInitialCoords] = useState(null);
     const [map, setMap] = useState(null);
@@ -158,7 +159,7 @@ function EventDetail() {
 
     useEffect(() => {
         const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${CLE_API}&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_API_KEY_GOOGLE_MAP}&libraries=places`;
         script.onload = () => {
             const map = new window.google.maps.Map(document.getElementById("map"), {
                 center: { lat: initialCoords[0], lng: initialCoords[1] },
@@ -304,13 +305,15 @@ function EventDetail() {
                         {event.comments?.map(comment => (
                             <Box key={comment.timestamp} sx={{ display: 'flex', mb: 2 }}>
                                 {user.map((u) =>
-                                    comment.commenterId == u._id ? (
+                                    comment.commenterId === u._id ? (
                                         <span key={u._id}>
-                                            {u.picture != "null" ? <Avatar alt={u.firstname} src={u.picture} /> : <Avatar alt={u.firstname} src="/static/images/avatar/1.jpg" />}
+                                            {u.picture !== "null" ? <Avatar alt={u.firstname} src={u.picture} /> : <Avatar alt={u.firstname} src="/static/images/avatar/1.jpg" />}
                                         </span>
                                     ) :
-                                        comment.commenterId == "anonymous" ? (
-                                            <Avatar alt={" Anonymous"} src="/static/images/avatar/1.jpg" />
+                                        comment.commenterId === "anonymous" ? (
+                                            <span>
+                                            <Avatar alt={"Anonymous"} src="/static/images/avatar/1.jpg" />
+                                            </span>
                                         ) : null
                                 )}
                                 <Box sx={{ flex: 1 }}>

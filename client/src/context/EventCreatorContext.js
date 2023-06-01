@@ -16,7 +16,7 @@ export const EventCreatorProvider = ({ children }) => {
   useEffect(() => {
     const fetchMaxEventsAllowed = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/user/');
+        const response = await axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/`);
         setMaxEventsAllowed(response.data);
       } catch (error) {
         console.error(error);

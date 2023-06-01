@@ -23,7 +23,7 @@ function EventDetail() {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:5000/api/event/${id}`)
+            .get(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`)
             .then(res => setEvent(res.data))
             .catch(err => console.error(err));
     }, [id]);
@@ -32,7 +32,7 @@ function EventDetail() {
 
     // Récupérer les données de l'utilisateur à partir de l'API
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/user/${userId}`)
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`)
             .then(res => {
                 setAgendaEvents(res.data.agendaEvents);
                 if (res.data.agendaEvents.includes(id)) {
@@ -48,7 +48,7 @@ function EventDetail() {
     const handleAgenda = () => {
         if (!agenda) {
             axios
-                .put(`http://localhost:5000/api/user/${userId}`, {
+                .put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, {
                     agendaEvents: [...agendaEvents, id]
                 })
                 .then(res => {
@@ -60,7 +60,7 @@ function EventDetail() {
         if (agenda) {
             const updatedagendas = agendaEvents.filter(fav => fav !== id);
             axios
-                .put(`http://localhost:5000/api/user/${userId}`, {
+                .put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, {
                     agendaEvents: updatedagendas
                 })
                 .then(res => {

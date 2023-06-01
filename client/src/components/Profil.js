@@ -19,7 +19,7 @@ function Profil() {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:5000/api/user/${userId}`)
+            .get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`)
             .then(res => {
                 setUser(res.data);
                 setNbMaxEvent(res.data.nbMaxEvent);
@@ -70,7 +70,7 @@ function Profil() {
         formData.append('picture', picture);
         console.log(formData, "formData");
         try {
-            const response = axios.put(`http://localhost:5000/api/user/${userId}`, formData);
+            const response = axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, formData);
             console.log(response.data);
         } catch (err) {
             console.error(err);
@@ -80,7 +80,7 @@ function Profil() {
     const handleSubmit = e => {
         e.preventDefault();
         axios
-            .put(`http://localhost:5000/api/user/${userId}`, user)
+            .put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, user)
             .then(res => { console.log(res) })
             .catch(err => console.error(err));
     };

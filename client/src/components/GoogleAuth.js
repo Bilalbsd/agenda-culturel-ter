@@ -4,7 +4,6 @@ import axios from 'axios';
 import { some } from 'lodash';
 
 const GoogleAuth = () => {
-    const CLIENT_ID = '279926463854-smrvgf7c7ddp6kkc2t9dischkp1b1j2h.apps.googleusercontent.com';
 
     const [user, setUser] = useState({});
     const [userRegister, setUserRegister] = useState({
@@ -26,7 +25,7 @@ const GoogleAuth = () => {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/user`)
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user`)
             .then(res => setUsers(res.data));
     }, [users]);
 
@@ -66,7 +65,7 @@ const GoogleAuth = () => {
     }
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/user`).then((res) => {
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user`).then((res) => {
             setUsers(res.data);
         });
     }, []);
@@ -77,7 +76,7 @@ const GoogleAuth = () => {
 
             if (userExists) {
                 axios
-                    .post(`http://localhost:5000/api/user/login`, userLogin)
+                    .post(`${process.env.REACT_APP_SERVER_API_URL}/api/user/login`, userLogin)
                     .then((res) => {
                         const { token } = res.data;
                         localStorage.setItem("token", token);
@@ -89,7 +88,7 @@ const GoogleAuth = () => {
                     });
             } else {
                 axios
-                    .post(`http://localhost:5000/api/user/register`, userRegister)
+                    .post(`${process.env.REACT_APP_SERVER_API_URL}/api/user/register`, userRegister)
                     .then((res) => {
                         console.log(res);
                     })
@@ -98,7 +97,7 @@ const GoogleAuth = () => {
                     });
 
                 axios
-                    .post(`http://localhost:5000/api/user/login`, userLogin)
+                    .post(`${process.env.REACT_APP_SERVER_API_URL}/api/user/login`, userLogin)
                     .then((res) => {
                         const { token } = res.data;
                         localStorage.setItem("token", token);
@@ -134,7 +133,7 @@ const GoogleAuth = () => {
     useEffect(() => {
         /* global google */
         google.accounts.id.initialize({
-            client_id: CLIENT_ID,
+            client_id: process.env.REACT_APP_CLIENT_ID_GOOGLE_AUTH,
             callback: handleCallbackResponse
         });
 

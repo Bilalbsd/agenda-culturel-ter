@@ -18,8 +18,8 @@ function FriendGroupsList() {
 
     useEffect(() => {
         Promise.all([
-            axios.get(`http://localhost:5000/api/user`),
-            axios.get(`http://localhost:5000/api/user/${userId}`)
+            axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user`),
+            axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`)
         ])
             .then(([usersResponse, groupsResponse]) => {
                 setUsers(usersResponse.data);
