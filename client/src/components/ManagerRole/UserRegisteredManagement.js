@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../../context/AuthContext';
 import { Table, TableHead, TableBody, TableRow, TableCell, Select, MenuItem, Button, Pagination, TableContainer, Typography } from '@mui/material';
 import { Container } from '@mui/system';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import NavBar from "../components/NavBar";
-import Advert from "../components/Advert";
+import Advert from "../components/CreatorRole/Advert";
 import Footer from "../components/Footer";
 
 const AdvertPage = () => {

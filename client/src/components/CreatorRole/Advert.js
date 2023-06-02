@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Button, Container, Grid, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 import { useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../../context/AuthContext';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';

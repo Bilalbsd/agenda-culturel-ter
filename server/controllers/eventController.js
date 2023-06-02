@@ -1,49 +1,83 @@
-const Event = require('../models/EventModel');
-const User = require('../models/UserModel');
+const Event = require("../models/EventModel");
+const User = require("../models/UserModel");
 
-const server = require('http').createServer();
-const io = require('socket.io')(server);
+const server = require("http").createServer();
+const io = require("socket.io")(server);
 
-io.on('connection', (socket) => {
-    console.log('a user connected');
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-    });
+io.on("connection", (socket) => {
+  console.log("a user connected");
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
 });
 
 // Récupération de tous les événements
-module.exports.getAllEvents = ((req, res) => {
-    Event.find((err, events) => {
-        if (err) return res.status(500).send(err);
-        return res.status(200).send(events);
-    });
-});
+module.exports.getAllEvents = (req, res) => {
+  Event.find((err, events) => {
+    if (err) return res.status(500).send(err);
+    return res.status(200).send(events);
+  });
+};
 
 // Récupération d'un événement spécifique
-module.exports.getEvent = ((req, res) => {
-    Event.findById(req.params.id, (err, event) => {
-        if (err) return res.status(500).send(err);
-        if (!event) return res.status(404).send("Event not found");
-        return res.status(200).send(event);
-    });
+module.exports.getEvent = (req, res) => {
+  Event.findById(req.params.id, (err, event) => {
+    if (err) return res.status(500).send(err);
+    if (!event) return res.status(404).send("Event not found");
+    return res.status(200).send(event);
+  });
+};
+
+const cloudinary = require("cloudinary").v2;
+
+// Configuration
+cloudinary.config({
+  cloud_name: "djevxsshz",
+  api_key: "652261179676898",
+  api_secret: "SwEJ4_hr9d8c1wLnnDx-gt0trjA",
 });
 
 // Ajout d'un événement
-module.exports.createEvent = ((req, res) => {
-    // On vérifie que l'utilisateur est un créateur d'événements
-    // if (req.user.role != "creator") return res.status(403).send("Forbidden");
-    console.log(req.body, "req.body");
-    console.log(req.body.prices, "req.body");
+module.exports.createEvent = (req, res) => {
+  // On vérifie que l'utilisateur est un créateur d'événements
+  // if (req.user.role != "creator") return res.status(403).send("Forbidden");
+  console.log(req.body, "req.body");
+  console.log(req.body.prices, "req.body");
 
-    const newEvent = new Event(req.body);
-    newEvent.image = req.file.path.replace(/\\/g, "/").replace("../client/public", "");
-    console.log(req.file.path, "req.file.path");
-    newEvent.save((err, event) => {
+  const newEvent = new Event(req.body);
+  //   newEvent.image = req.file.path
+  //     .replace(/\\/g, "/")
+  //     .replace("../client/public", "");
+  //   console.log(req.file.path, "req.file.path");
+
+  // Upload
+  const uploadedFile = cloudinary.uploader.upload(req.file.path, {
+    public_id: req.file.filename,
+  });
+
+  console.log(req.file);
+
+  uploadedFile
+    .then((data) => {
+      console.log(data);
+      console.log(data.secure_url);
+      newEvent.image = data.secure_url;
+      newEvent.save((err, event) => {
         if (err) return res.status(500).send(err);
 
         return res.status(201).send(event);
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     });
-});
+
+//   // Generate
+//   const url = cloudinary.url("imagetest1");
+
+//   // The output url
+//   console.log(url, "url");
+};
 
 // module.exports.createEvent = ((req, res) => {
 //     // On vérifie que l'utilisateur est un créateur d'événements
@@ -77,22 +111,22 @@ module.exports.createEvent = ((req, res) => {
 //     });
 // });
 
-
-
 // // Mise à jour d'un événement
-module.exports.updateEvent = ((req, res) => {
-    console.log(req.body, "req.body");
+module.exports.updateEvent = (req, res) => {
+  console.log(req.body, "req.body");
 
-    const event = req.body;
-    if (req.file) {
-        event.file = req.file.path.replace(/\\/g, "/").replace("../client/public", "");
-    }
+  const event = req.body;
+  if (req.file) {
+    event.file = req.file.path
+      .replace(/\\/g, "/")
+      .replace("../client/public", "");
+  }
 
-    Event.findByIdAndUpdate(req.params.id, event, { new: true }, (err, event) => {
-        if (err) return res.status(500).send(err);
-        return res.status(200).send(event);
-    });
-});
+  Event.findByIdAndUpdate(req.params.id, event, { new: true }, (err, event) => {
+    if (err) return res.status(500).send(err);
+    return res.status(200).send(event);
+  });
+};
 
 // module.exports.updateEvent = ((req, res) => {
 //     Event.findById(req.params.id, (err, event) => {
@@ -133,11 +167,9 @@ module.exports.updateEvent = ((req, res) => {
 // });
 
 // Suppression d'un événement
-module.exports.deleteEvent = ((req, res) => {
-    Event.findByIdAndRemove(req.params.id, (err, event) => {
-        if (err) return res.status(500).send(err);
-        return res.status(200).send(event);
-    });
-});
-
-
+module.exports.deleteEvent = (req, res) => {
+  Event.findByIdAndRemove(req.params.id, (err, event) => {
+    if (err) return res.status(500).send(err);
+    return res.status(200).send(event);
+  });
+};

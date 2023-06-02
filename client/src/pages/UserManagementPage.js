@@ -1,9 +1,9 @@
 import { Typography } from '@mui/material';
 import React, { useContext } from 'react';
 import NavBar from '../components/NavBar';
-import EventManagement from '../components/EventManagement';
-import UserCreatorManagement from '../components/UserCreatorManagement';
-import UserRegisteredManagement from '../components/UserRegisteredManagement';
+import EventManagement from '../components/ManagerRole/EventManagement';
+import UserCreatorManagement from '../components/ManagerRole/UserCreatorManagement';
+import UserRegisteredManagement from '../components/ManagerRole/UserRegisteredManagement';
 
 import { AuthContext } from '../context/AuthContext';
 

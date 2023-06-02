@@ -1,6 +1,6 @@
 import React from 'react';
 import NavBar from '../components/NavBar';
-import EditEvent from '../components/EditEvent';
+import EditEvent from '../components/CreatorRole/EditEvent';
 import Footer from '../components/Footer';
 
 

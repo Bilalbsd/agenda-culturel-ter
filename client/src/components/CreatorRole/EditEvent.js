@@ -1,31 +1,26 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { AuthContext } from '../context/AuthContext';
-import { Alert, Button, FormControl, Grid, Input, InputAdornment, InputLabel, List, ListItem, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
-import EventIcon from '@mui/icons-material/Event';
+import { NavLink, useParams } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
+import moment from 'moment';
+import { Alert, Button, Checkbox, FormControl, FormControlLabel, Grid, Input, InputAdornment, InputLabel, List, ListItem, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import CheckIcon from '@mui/icons-material/Check';
-import { DropzoneArea } from "mui-file-dropzone";
+// import 'moment/locale/fr'
+// moment.locale('fr')
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvGBV9DUig0t9hvtFy4YcTrouE8S22lQM"></script>
-
-
-function CreateEvent() {
-    const { userId, userRole } = useContext(AuthContext);
+function EditEvent() {
+    const { id } = useParams();
     const [event, setEvent] = useState({});
-    const [nbMaxEvent, setNbMaxEvent] = useState(10);
+    const { userId } = useContext(AuthContext);
+
+    const [open, setOpen] = useState(false);
+
     const [location, setLocation] = useState("");
     const [map, setMap] = useState(null);
     const [marker, setMarker] = useState(null);
     const [predictions, setPredictions] = useState(null);
     const [coords, setCoords] = useState(null);
-
-    const [isValidated, setIsValidated] = useState(null);
-    console.log(isValidated, "isValidated");
-    useEffect(() => {
-        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`)
-            .then(res => setIsValidated(res.data.isValidated));
-    }, [isValidated]);
+    const [initialCoords, setInitialCoords] = useState(null);
 
     useEffect(() => {
         setEvent(prevState => {
@@ -39,42 +34,60 @@ function CreateEvent() {
                 location: location || '',
                 creator: userId || '',
                 image: '',
+                speakers: prevState.speakers || [],
+                price: prevState.price || 0,
                 prices: prevState.prices || [],
                 ticketLink: prevState.ticketLink || '',
                 description: prevState.description || '',
+                inPromotion: prevState.inPromotion || false,
+                promotionHasExpiration: prevState.promotionHasExpiration || false,
+                discountedPrice: prevState.discountedPrice || 0,
                 lat: prevState.lat || '',
                 lng: prevState.lng || '',
             }
         });
     }, [userId, location]);
 
+    const [prices, setPrices] = useState([]);
+    const [newPrice, setNewPrice] = useState({ title: '', condition: '', price: '' });
+    // const [promotion, setPromotion] = useState({ inPromotion: false, promotionHasExpiration: false, promotionValue: 0, promotionDuration: 0 });
 
-    // console.log(userId, "creatorBefore")
-
-    const [image, setImage] = useState(null);
-    const [changeEvent, setChangeEvent] = useState(null);
+    useEffect(() => {
+        axios
+            .get(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`)
+            .then(res => {
+                setEvent(res.data);
+                setPrices(res.data.prices || []);
+            })
+            .catch(err => console.error(err));
+    }, [id]);
 
     const handleChange = e => {
-        setEvent({ ...event, [e.target.name]: e.target.value });
-        setImage(e.target.files[0]);
-        setChangeEvent(e.target.value)
+        if (e.target.name === 'inPromotion') {
+            setEvent({ ...event, inPromotion: e.target.checked });
+        } else if (e.target.name === 'promotionValue') {
+            setEvent({ ...event, promotionValue: parseFloat(e.target.value) });
+        } else if (e.target.name === 'promotionHasExpiration') {
+            setEvent({ ...event, promotionHasExpiration: e.target.checked });
+        }
+        else {
+            setEvent({ ...event, [e.target.name]: e.target.value });
+        }
     };
-
-    const [prices, setPrices] = useState([]);
 
     const handlePriceChange = (index, field, value) => {
         const newPrices = [...prices];
         newPrices[index][field] = value.toString();
         setPrices(newPrices);
-        setEvent({ ...event, prices: prices });
     };
 
-    console.log(JSON.stringify(prices), "aaaaaaaaaaaaaaaaa");
-
-    console.log(event, "event");
+    const handleNewPriceChange = (field, value) => {
+        setNewPrice({ ...newPrice, [field]: value });
+    };
 
     const handleAddPrice = () => {
-        setPrices([...prices, { title: '', condition: '', price: 0 }]);
+        setPrices([...prices, newPrice]);
+        setNewPrice({ title: '', condition: '', price: '' });
     };
 
     const handleRemovePrice = index => {
@@ -83,30 +96,80 @@ function CreateEvent() {
         setPrices(newPrices);
     };
 
-    const [speakersCount, setSpeakersCount] = useState(1);
+    const [users, setUsers] = useState([]);
+    useEffect(() => {
+        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user`)
+            .then(res => setUsers(res.data));
+    }, []);
 
-    const handleSpeakersCountChange = (e) => {
-        setSpeakersCount(e.target.value);
-    }
+    const handleSubmit = e => {
+        e.preventDefault();
+        const updatedEvent = {
+            ...event
+        };
+        if (event.inPromotion) {
+            updatedEvent.prices = updatedEvent.prices.map(price => ({
+                ...price,
+                discountedPrice: (price.price * (100 - event.promotionValue)) / 100
+            }));
 
-    const handleSpeakersChange = (e, index) => {
-        const newSpeakers = [...event.speakers];
-        newSpeakers[index] = e.target.value;
-        setEvent({ ...event, speakers: newSpeakers });
-    }
+            users.map((user) => {
+                if (user.promotionNotifications) {
+                    try {
+                        const existingNotifications = user.notifications || [];
+                        const updatedNotifications = [...existingNotifications, id];
+                        axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${user._id}`, {
+                            notifications: updatedNotifications
+                        }).then(res => console.log(res, "add event notification"));
+                    } catch (err) {
+                        console.error(err);
+                    }
+                }
+            });
+
+        }
+        axios
+            .put(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`, updatedEvent)
+            .then(res => {
+                console.log(res);
+                setInitialCoords([event.lat, event.lng]);
+                setOpen(true);
+            })
+            .catch(err => console.error(err));
+    };
+
+    const handleDelete = e => {
+        e.preventDefault();
+        axios
+            .delete(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`)
+            .then(res => {
+                setEvent(event.filter(elem => elem._id !== id));
+                console.log(res)
+            })
+            .catch(err => console.error(err));
+    };
+
+
+    useEffect(() => {
+        if (event.lat && event.lng) {
+            setInitialCoords([event.lat, event.lng]);
+        }
+    }, [event.lat, event.lng]);
+
+    console.log(initialCoords, "initialCoords")
 
     useEffect(() => {
         const script = document.createElement("script");
         script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_API_KEY_GOOGLE_MAP}&libraries=places`;
         script.onload = () => {
             const map = new window.google.maps.Map(document.getElementById("map"), {
-                center: { lat: 0, lng: 0 },
-                zoom: 2,
+                center: { lat: initialCoords[0], lng: initialCoords[1] },
+                zoom: 15,
             });
             setMap(map);
         };
         document.body.appendChild(script);
-    }, []);
+    }, [initialCoords]);
 
     const handleInputChange = (event) => {
         setLocation(event.target.value);
@@ -122,7 +185,7 @@ function CreateEvent() {
             const lat = placeResult.geometry.location.lat();
             const lng = placeResult.geometry.location.lng();
             const marker = new window.google.maps.Marker({
-                position: { lat, lng },
+                position: { lat: lat, lng: lng },
                 map: map,
             });
             setMarker(marker);
@@ -135,96 +198,22 @@ function CreateEvent() {
                 ...event,
                 country: placeResult.address_components.find(component => component.types.includes('country')).long_name,
                 city: placeResult.address_components.find(component => component.types.includes('locality')).long_name,
-                lat: lat,
-                lng: lng
+                location: location,
+                lat: coords.lat,
+                lng: coords.lng
             });
         });
     };
 
-    // console.log(location, "location")
-    // console.log(marker, "marker")
-    // console.log(predictions, "predictions")
-    // console.log(coords, "coords")
+    console.log(event)
 
-    const [users, setUsers] = useState([]);
-    useEffect(() => {
-        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user`)
-            .then(res => setUsers(res.data));
-    }, []);
-
-    users.map((user) => {
-        console.log(user._id, "user id");
-    });
-
-    React.useEffect(() => {
-        axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`)
-            .then(res => setNbMaxEvent(res.data.nbMaxEvent));
-    }, [nbMaxEvent]);
-
-    console.log(nbMaxEvent, "nbMaxEvent");
-
-    const handleSubmit = async e => {
-        e.preventDefault();
-
-        users.map((user) => {
-            if (user.eventNotifications) {
-                try {
-                    const existingNotifications = user.notifications || [];
-                    const updatedNotifications = [...existingNotifications, event.title];
-                    axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${user._id}`, {
-                        notifications: updatedNotifications
-                    }).then(res => console.log(res, "add event notification"));
-                } catch (err) {
-                    console.error(err);
-                }
-            }
-        });
-
-        try {
-            axios.put(`${process.env.REACT_APP_SERVER_API_URL}/api/user/${userId}`, {
-                nbMaxEvent: nbMaxEvent - 1
-            })
-                .then(res => console.log(res));
-        } catch (err) {
-            console.error(err);
-        }
-
-        const formData = new FormData();
-        formData.append('image', image);
-        Object.keys(event).forEach(key => {
-            if (key === 'prices') {
-                event.prices.forEach((price, index) => {
-                    formData.append(`prices[${index}][title]`, price.title);
-                    formData.append(`prices[${index}][price]`, price.price);
-                    formData.append(`prices[${index}][condition]`, price.condition);
-                });
-            } else {
-                formData.append(key, event[key]);
-            }
-        });
-        try {
-            const res = await axios.post(`${process.env.REACT_APP_SERVER_API_URL}/api/event`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            console.log(res);
-            window.location.href = "/";
-        } catch (err) {
-            console.log(err);
-        }
-    };
+    // console.log(event.creator === userId, "true si Id du créateur de l'event a le même Id de l'user connecté")
 
     return (
         <Grid container justifyContent="center">
-            {userRole !== 'creator' || !isValidated ? (
+            {event.creator !== userId ? (
                 <Grid item xs={12}>
-                    <Typography variant="h5" textAlign="center">Vous n'avez pas les permissions nécessaires pour accéder à cette page !</Typography>
-                    <Typography variant="h5" textAlign="center">Votre compte n'a pas encore été validé !</Typography>
-                </Grid>
-            ) : nbMaxEvent === 0 ? (
-                <Grid item xs={12}>
-                    <Typography variant="h5" textAlign="center">Vous avez atteint la limite de création d'événement ! Veuillez souscrire à un abonnement.</Typography>
+                    <Typography variant="h5">Vous n'avez pas les permissions nécessaires pour accéder à cette page !</Typography>
                 </Grid>
             ) : (
                 <Grid item xs={6} md={4}>
@@ -233,7 +222,7 @@ function CreateEvent() {
                         // bgcolor="lightgreen"
                         alignItems="center"
                         justifyContent="center">
-                        <Typography variant="h4">Créer un événement</Typography>
+                        <Typography variant="h4">Modifier un événement</Typography>
                     </Grid>
                     <form onSubmit={handleSubmit}>
                         <Grid container spacing={2}>
@@ -242,7 +231,7 @@ function CreateEvent() {
                                     name="title"
                                     label="Titre"
                                     fullWidth
-                                    value={event.title}
+                                    value={'' + event.title}
                                     onChange={handleChange}
                                 />
                             </Grid>
@@ -280,7 +269,7 @@ function CreateEvent() {
                                             type="number"
                                             value={event.nbEvent}
                                             onChange={handleChange}
-                                            inputProps={{ min: '1', max: '100', required: true }}
+                                            inputProps={{ min: '1', max: '5', required: true }}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -327,7 +316,7 @@ function CreateEvent() {
                                             type="number"
                                             value={event.nbEvent}
                                             onChange={handleChange}
-                                            inputProps={{ min: '1', max: '100', required: true }}
+                                            inputProps={{ min: '1', max: '5', required: true }}
                                         />
                                     </Grid>
                                 </>
@@ -543,7 +532,7 @@ function CreateEvent() {
                                     label="Date de début"
                                     fullWidth
                                     type="datetime-local"
-                                    value={event.startDate}
+                                    value={moment(event.startDate).format('YYYY-MM-DDTHH:MM')}
                                     onChange={handleChange}
                                     InputLabelProps={{ shrink: true }}
                                     required
@@ -555,13 +544,13 @@ function CreateEvent() {
                                     label="Date de fin"
                                     fullWidth
                                     type="datetime-local"
-                                    value={event.endDate}
+                                    value={moment(event.endDate).format('YYYY-MM-DDTHH:MM')}
                                     onChange={handleChange}
                                     InputLabelProps={{ shrink: true }}
                                     required
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} sm={3}>
                                 <input
                                     accept="image/*"
                                     style={{ display: 'none' }}
@@ -577,20 +566,8 @@ function CreateEvent() {
                                 </label>
                                 {/* <DropzoneArea onChange={handleChange} /> */}
                             </Grid>
-                            <Grid item xs={12}>
-                                {/* <TextField
-                                    id="location-input"
-                                    label="Adresse"
-                                    type="text"
-                                    name="location"
-                                    fullWidth
-                                    value={event.location}
-                                    onChange={handleChange}
-                                    inputRef={(ref) => { this.addressInput = ref; }}
-                                    onFocus={handlePlaceSelect}
-                                    required
-                                /> */}
-                                <TextField fullWidth label="Location" value={location} onChange={handleInputChange} />
+                            <Grid item xs={12} >
+                                <TextField fullWidth label="Location" defaultValue={event.location} value={event.location} onChange={handleInputChange} />
                                 {predictions && (
                                     <List>
                                         {predictions.map((prediction) => (
@@ -605,6 +582,7 @@ function CreateEvent() {
                                     </List>
                                 )}
                             </Grid>
+
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     name="country"
@@ -628,34 +606,20 @@ function CreateEvent() {
                             <Grid item xs={12}>
                                 <div id="map" style={{ height: "400px", width: "100%" }}></div>
                             </Grid>
-
-                            {/* <Grid item xs={12} sm={3}>
+                            {/* <Grid item xs={12} sm={6}>
                                 <TextField
-                                    id="speakers-count-input"
-                                    label="Nombre d'intervenants"
+                                    id="price-input"
+                                    label="Prix"
                                     type="number"
+                                    name="price"
                                     fullWidth
-                                    value={speakersCount}
-                                    onChange={handleSpeakersCountChange}
-                                    inputProps={{ min: 0, max: 10 }}
+                                    value={event.price}
+                                    onChange={handleChange}
+                                    inputProps={{ min: 0 }}
                                 />
-                            </Grid>
-                            <Grid item xs={12} sm={9}>
-                                {Array.from({ length: speakersCount }, (_, i) => (
-                                    <div key={i}>
-                                        <TextField
-                                            fullWidth
-                                            id={`speaker-name-input-${i}`}
-                                            label={`Nom de l'intervenant ${i + 1}`}
-                                            type="text"
-                                            value={event.speakers[i] || ''}
-                                            onChange={(e) => handleSpeakersChange(e, i)}
-                                        />
-                                    </div>
-                                ))}
                             </Grid> */}
 
-                            {prices.map((price, index) => (
+                            {event.prices.map((price, index) => (
                                 <div key={index}>
                                     <TextField
                                         name={`priceTitle${index}`}
@@ -665,7 +629,7 @@ function CreateEvent() {
                                         onChange={e => handlePriceChange(index, 'title', e.target.value)}
                                     />
                                     <TextField
-                                        type="number"
+                                        // type="number"
                                         name={`price${index}`}
                                         label="Prix"
                                         fullWidth
@@ -684,9 +648,46 @@ function CreateEvent() {
                                     </Button>
                                 </div>
                             ))}
-                            <Button onClick={handleAddPrice}>
+                            <Button onClick={handleNewPriceChange}>
                                 Ajouter un prix
                             </Button>
+
+                            <Grid item xs={12} sm={6}>
+                                <FormControlLabel
+                                    control={<Checkbox checked={event.inPromotion} onChange={handleChange} name="inPromotion" />}
+                                    label="Offre promotionnelle"
+                                />
+                                {event.inPromotion && (
+                                    <div>
+                                        <TextField
+                                            id="promo-value-input"
+                                            label="Valeur de la promotion (%)"
+                                            type="number"
+                                            name="promotionValue"
+                                            fullWidth
+                                            value={event.promotionValue}
+                                            onChange={handleChange}
+                                            inputProps={{ min: 0 }}
+                                        />
+                                        <FormControlLabel
+                                            control={<Checkbox checked={event.promotionHasExpiration} onChange={handleChange} name="promotionHasExpiration" />}
+                                            label="Durée limitée"
+                                        />
+                                        {event.promotionHasExpiration && (
+                                            <TextField
+                                                id="promo-expiration-input"
+                                                label="Date d'expiration de la promotion"
+                                                type="datetime-local"
+                                                name="promotionExpirationDate"
+                                                fullWidth
+                                                value={"" + event.promotionExpirationDate}
+                                                onChange={handleChange}
+                                            />
+                                        )}
+                                    </div>
+                                )}
+                            </Grid>
+
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     id="ticket-link-input"
@@ -711,12 +712,16 @@ function CreateEvent() {
                                 />
                             </Grid>
                             <Grid item xs={12}>
+                                {open &&
+                                    <Alert variant="outlined" >Cet événement a été modifié avec succès !</Alert>
+                                }
+                            </Grid>
+                            <Grid item xs={9} sm={4}>
                                 <Button variant="contained" color="primary" type="submit">
-                                    Créer l'événement
+                                    Modifier l'événement
                                 </Button>
                             </Grid>
                         </Grid>
-
                     </form>
                 </Grid >
             )
@@ -724,5 +729,4 @@ function CreateEvent() {
         </Grid >
     );
 }
-
-export default CreateEvent;
+export default EditEvent;

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import moment from 'moment';
-import { Box, Grid, Typography, TextField, Rating, Button, IconButton, Avatar, List, Card, CardContent } from '@mui/material';
+import { Box, Grid, Typography, TextField, Rating, Button, IconButton, Avatar, Card, CardContent } from '@mui/material';
 import { Container } from '@mui/system';
 import 'moment/locale/fr';
 import { AuthContext } from '../context/AuthContext';
@@ -11,22 +11,7 @@ import AgendaButton2 from "./AgendaButton2";
 import FavButton from "./FavButton";
 import FavButton2 from "./FavButton2";
 import TwitterIcon from '@mui/icons-material/Twitter';
-import UserGroupList from './UserGroupList';
 import FriendGroups from './FriendGroups';
-import FriendGroupsList from './FriendGroupsList';
-
-import dayjs from 'dayjs';
-import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateRangeCalendar } from '@mui/x-date-pickers-pro/DateRangeCalendar';
-
-import 'react-date-range/dist/styles.css'; // main style file
-import 'react-date-range/dist/theme/default.css'; // theme css file
-import { DateRange } from 'react-date-range';
-
-import { DateRangePicker } from 'react-dates';
-import 'react-dates/lib/css/_datepicker.css';
 
 moment.locale('fr');
 
@@ -42,7 +27,7 @@ function EventDetail() {
 
     const [averageRating, setAverageRating] = useState(0);
 
-    const { userId, userRole, userFirstname, userLastname, isAuthenticated } = useContext(AuthContext);
+    const { userId, userFirstname, userLastname, isAuthenticated } = useContext(AuthContext);
 
     const encodedText = encodeURIComponent("Je partage cet événement incroyable !");
     const encodedUrl = encodeURIComponent(`${process.env.REACT_APP_SERVER_API_URL}/api/event/${id}`);
@@ -71,9 +56,9 @@ function EventDetail() {
                 setAverageRating(average);
             })
             .catch(err => console.error(err));
-    }, [id]);
+    }, [event, id]);
 
-    const handleRatingChange = (event, value) => {
+    const handleRatingChange = (value) => {
         setRating(value);
     };
 
@@ -84,9 +69,7 @@ function EventDetail() {
     const handleSubmit = event => {
         event.preventDefault();
 
-        // Input validation
         if (!comment || !rating || rating < 1 || rating > 5) {
-            // Display an error message to the user
             console.error('Commentaire ou note invalide !');
             return;
         }
@@ -143,9 +126,6 @@ function EventDetail() {
         return () => clearInterval(intervalId);
     }, [id]);
 
-    // require('dotenv').config({ path: '../../.env' })
-
-
     const [initialCoords, setInitialCoords] = useState(null);
     const [map, setMap] = useState(null);
 
@@ -176,10 +156,6 @@ function EventDetail() {
         };
         document.body.appendChild(script);
     }, [initialCoords]);
-
-    // console.log(user, "user");
-
-    // console.log(moment(event.promotionExpirationDate).fromNow(), "event.promotionExpirationDate");
 
     return (
         <div>
@@ -233,39 +209,12 @@ function EventDetail() {
                         <Typography variant="h5" component="h5" textAlign="center">Date début: {moment(event.startDate).format('lll')}</Typography>
                         <Typography variant="h5" component="h5" textAlign="center">Date fin: {moment(event.endDate).format('lll')}</Typography>
 
-                        {/* <h1>{event.title}</h1>
-                        {moment &&
-                            <DateRangePicker
-                                startDate={moment(event.startDate).format('MM/DD/YYYY')}
-                                endDate={moment(event.endDate).format('MM/DD/YYYY')}
-                                readOnly={true}
-                                readOnlyInputs={true}
-                            />
-                        } */}
-
-                        {/* <DateRange
-                            editableDateInputs={true}
-                            moveRangeOnFirstSelection={false}
-                            ranges={state}
-                        /> */}
-
                         {event.speaker && <Typography variant="h5" component="h5" textAlign="center">Intervenants: {event.speaker}</Typography>}
                         {event.speakerPresentation && <Typography variant="h5" component="h5" textAlign="center">Présentation des Intervenants: {event.speakerPresentation}</Typography>}
                         {event.capacity && <Typography variant="h5" component="h5" textAlign="center">Capacité d'accueil: {event.capacity}</Typography>}
                         {event.typeEvent && <Typography variant="h5" component="h5" textAlign="center">Type de sport: {event.typeEvent}</Typography>}
                         {event.nbEvent && <Typography variant="h5" component="h5" textAlign="center">Nombres de matches: {event.nbEvent}</Typography>}
                         <br />
-
-                        {/* <Typography variant="h5" component="h5">
-                            Prix: {
-                                event.inPromotion
-                                    ? <span><span style={{ textDecoration: 'line-through' }}>{event.price}€</span> {event.discountedPrice}€</span>
-                                    : event.price === 0
-                                        ? "Gratuit"
-                                        : `${event.price}€`
-                            }
-                        </Typography> */}
-
                         {event.inPromotion && (
                             <Typography gutterBottom variant="h5" component="div" color="green" textAlign="center">
                                 En promotion -{event.promotionValue}% {event.promotionHasExpiration && " jusqu'à " + moment(event.promotionExpirationDate).format('LLLL') + " (" + moment(event.promotionExpirationDate).fromNow() + ")"}
@@ -367,9 +316,9 @@ function EventDetail() {
                             Ajouter
                         </Button>
                     </Grid>
-                    {/* <Grid item>
+                    <Grid item>
                         <Typography variant="h5" component="h5">Note moyenne : {averageRating ? averageRating.toFixed(1) : "Aucune évaluation"}</Typography>
-                    </Grid> */}
+                    </Grid>
                     <IconButton component="a" href={shareUrl} target="_blank" rel="noopener" textAlign="center">
                         <TwitterIcon />
                     </IconButton>

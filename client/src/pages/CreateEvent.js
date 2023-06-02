@@ -1,5 +1,5 @@
 import React from 'react';
-import CreateEvent from '../components/CreateEvent';
+import CreateEvent from '../components/CreatorRole/CreateEvent';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
 

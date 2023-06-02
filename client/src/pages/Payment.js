@@ -1,6 +1,6 @@
 import React from 'react';
 import NavBar from '../components/NavBar';
-import Checkout from '../components/CreateEvent/Checkout';
+import Checkout from '../components/CreatorRole/Checkout';
 
 const Payment = () => {
     return (

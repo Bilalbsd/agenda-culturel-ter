@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Register from '../components/Register';
-import RegisterCreator from '../components/CreateEvent/Register';
+import RegisterCreator from '../components/CreatorRole/Register';
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
 import Grid from '@mui/material/Grid';
