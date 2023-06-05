@@ -8,8 +8,8 @@ import Typography from '@mui/material/Typography';
 import { Box, Button, ButtonGroup, CardActionArea, Chip, FormControl, Grid, InputLabel, Select, TextField } from '@mui/material';
 import { Container } from '@mui/system';
 import { NavLink } from 'react-router-dom';
-import 'moment/locale/fr'
-moment.locale('fr')
+import 'moment/locale/fr';
+moment.locale('fr');
 
 
 function EventsList() {
@@ -17,9 +17,7 @@ function EventsList() {
     const [searchQuery, setSearchQuery] = useState('');
     const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
     const [geolocationEnabled, setGeolocationEnabled] = useState(false);
-
-
-
+    
     useEffect(() => {
         axios
             .get(`${process.env.REACT_APP_SERVER_API_URL}/api/event`)

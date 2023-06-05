@@ -1,5 +1,6 @@
 const Event = require("../models/EventModel");
 const User = require("../models/UserModel");
+require("dotenv").config({ path: "../config/.env" });
 
 const server = require("http").createServer();
 const io = require("socket.io")(server);
@@ -32,9 +33,9 @@ const cloudinary = require("cloudinary").v2;
 
 // Configuration
 cloudinary.config({
-  cloud_name: "djevxsshz",
-  api_key: "652261179676898",
-  api_secret: "SwEJ4_hr9d8c1wLnnDx-gt0trjA",
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 // Ajout d'un événement
@@ -72,44 +73,12 @@ module.exports.createEvent = (req, res) => {
       console.log(err);
     });
 
-//   // Generate
-//   const url = cloudinary.url("imagetest1");
+  //   // Generate
+  //   const url = cloudinary.url("imagetest1");
 
-//   // The output url
-//   console.log(url, "url");
+  //   // The output url
+  //   console.log(url, "url");
 };
-
-// module.exports.createEvent = ((req, res) => {
-//     // On vérifie que l'utilisateur est un créateur d'événements
-//     // if (req.user.role != "creator") return res.status(403).send("Forbidden");
-
-//     const newEvent = new Event(req.body);
-//     console.log(req.body.creator, "req.user");
-//     newEvent.creator = req.user.id; // Définir l'utilisateur comme créateur de l'événement
-//     newEvent.image = req.file.path.replace(/\\/g, "/").replace("../client/public", "");
-
-//     User.findById(req.user._id, (err, user) => {
-//         if (err) return res.status(500).send(err);
-
-//         if (user.nbMaxEvent > 0) {
-//             user.nbMaxEvent -= 1; // Réduire le nombre maximum d'événements de 1
-//             user.save((err) => {
-//                 if (err) return res.status(500).send(err);
-//             });
-
-//             newEvent.save((err, event) => {
-//                 if (err) return res.status(500).send(err);
-
-//                 // Envoyer une notification à tous les clients connectés via Socket.io
-//                 io.emit('newEvent', event);
-
-//                 return res.status(201).send(event);
-//             });
-//         } else {
-//             return res.status(403).send("Maximum number of events reached");
-//         }
-//     });
-// });
 
 // // Mise à jour d'un événement
 module.exports.updateEvent = (req, res) => {
