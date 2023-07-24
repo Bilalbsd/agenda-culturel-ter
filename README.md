@@ -1,6 +1,8 @@
 # agenda-culturel-ter
 Projet TER d'agenda culturel et sportif en ReactJS et NodeJS
 
+(Version mobile avec React Native en cours...)
+
 ## Présentation du projet
 
 Ce projet consiste à développer, en s’appuyant sur les Frameworks React (développement
