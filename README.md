@@ -38,3 +38,7 @@ de théâtre, les matchs sportifs, les conférences, etc.
 *JsonWebToken* : Permet de générer des jetons JWT pour sécuriser l'authentification  
 *Cors* : Permet de gérer les demandes croisées  
 *Multer* : Permet de gérer les fichiers uploadés  
+
+## Partie Mobile 
+
+La partie mobile est réalisée avec React Native
