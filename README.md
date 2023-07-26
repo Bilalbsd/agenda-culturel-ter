@@ -42,3 +42,6 @@ de théâtre, les matchs sportifs, les conférences, etc.
 ## Partie Mobile 
 
 La partie mobile est réalisée avec React Native
+---
+*Expo* : Permet de faciliter le développement d'applications mobiles multi-plateformes 
+
